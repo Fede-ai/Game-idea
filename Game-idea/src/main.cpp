@@ -1,5 +1,5 @@
 #include "consts.h"
-#include <iostream>
+#include "gameState.h"
 
 int main()
 {
@@ -8,6 +8,9 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(Consts::windowSize.x, Consts::windowSize.y), Consts::gameName, sf::Style::Default);
 	window.setView(sf::View(sf::Vector2f(Consts::viewSize.x/2, Consts::viewSize.y/2), Consts::viewSize));
 	window.setFramerateLimit(60);
+
+	GameInfo gameInfo;
+	State* state = new GameState(window, gameInfo);
 
 	while (window.isOpen())
 	{
@@ -44,7 +47,8 @@ int main()
 			}
 		}
 
-
+		int status = state->update();
+		state->draw();
 
 		window.display();
 	}
