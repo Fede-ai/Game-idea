@@ -133,10 +133,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\building.cpp" />
     <ClCompile Include="src\gameState.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\building.h" />
     <ClInclude Include="src\consts.h" />
     <ClInclude Include="src\gameState.h" />
     <ClInclude Include="src\state.h" />

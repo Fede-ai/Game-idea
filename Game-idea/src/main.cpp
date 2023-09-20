@@ -6,7 +6,7 @@ int main()
 	bool isFullscreen = false;
 	bool canFullscreen = false;
 	sf::RenderWindow window(sf::VideoMode(Consts::windowSize.x, Consts::windowSize.y), Consts::gameName, sf::Style::Default);
-	window.setView(sf::View(sf::Vector2f(Consts::viewSize.x/2, Consts::viewSize.y/2), Consts::viewSize));
+	window.setView(sf::View(sf::Vector2f(0, 0), Consts::viewSize));
 	window.setFramerateLimit(60);
 
 	GameInfo gameInfo;
@@ -14,42 +14,33 @@ int main()
 
 	while (window.isOpen())
 	{
-		sf::Event event;
-		while (window.pollEvent(event)) 
+		//handle fullscreen
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
 		{
-			if (event.type == sf::Event::Closed)
+			if (canFullscreen)
 			{
-				window.close();
-			}
-			else if (event.type == sf::Event::KeyPressed)
-			{
-				//handle fullscreen
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt))
-				{
-					if (canFullscreen)
-					{
-						sf::View view = window.getView();
-						if (isFullscreen)
-							window.create(sf::VideoMode(Consts::windowSize.x, Consts::windowSize.y), Consts::gameName, sf::Style::Default);
-						else
-							window.create(sf::VideoMode::getDesktopMode(), Consts::gameName, sf::Style::Fullscreen);
-						window.setFramerateLimit(60);
-						window.setView(view);
-
-						isFullscreen = !isFullscreen;
-						canFullscreen = false;
-					}
-				}
+				sf::View view = window.getView();
+				if (isFullscreen)
+					window.create(sf::VideoMode(Consts::windowSize.x, Consts::windowSize.y), Consts::gameName, sf::Style::Default);
 				else
-				{
-					canFullscreen = true;
-				}
+					window.create(sf::VideoMode::getDesktopMode(), Consts::gameName, sf::Style::Fullscreen);
+				window.setFramerateLimit(60);
+				window.setView(view);
+
+				isFullscreen = !isFullscreen;
+				canFullscreen = false;
 			}
 		}
+		else
+		{
+			canFullscreen = true;
+		}
 
+		state->handleEvents();
 		int status = state->update();
-		state->draw();
 
+		window.clear(sf::Color::Black);
+		state->draw();
 		window.display();
 	}
 

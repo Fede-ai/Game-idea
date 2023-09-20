@@ -9,9 +9,10 @@ public:
 		window(inWindow)
 	{
 	}
+	virtual void handleEvents() = 0;
 	virtual int update() = 0;
 	virtual void draw() = 0;
 
-private:
+protected:
 	sf::RenderWindow& window;
 };
