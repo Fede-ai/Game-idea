@@ -3,16 +3,16 @@
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 	:
 	State(inWindow),
-	GameInfo(inGameInfo)
+	info(inGameInfo)
 {
 	grassTexture.loadFromFile("C:/Users/feder/Desktop/pixil-frame-0.png");
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(6, 6);
 
-	sf::Vector2i pos = sf::Mouse::getPosition(window);
-	float xProp = window.getView().getSize().x / window.getSize().x;
-	float yProp = window.getView().getSize().x / window.getSize().x;
-	lastMousePos = sf::Vector2f(pos.x * xProp, pos.y * yProp);
+	shop.setSize(sf::Vector2f(120, 120));
+
+	window.setView(info.gameView);
+	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
 }
 
 void GameState::handleEvents()
@@ -28,10 +28,14 @@ void GameState::handleEvents()
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				if (isPositioning != -1)
+				if (shop.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 				{
-					buildings.push_back(Building(isPositioning, preview.getPosition()));
-					isPositioning = -1;
+					status = 1;
+				}
+				else if (info.typeBuilding != -1 )
+				{
+					info.buildings.push_back(Building(info.typeBuilding, preview.getPosition()));
+					info.typeBuilding = -1;
 				}
 			}
 		}
@@ -40,10 +44,7 @@ void GameState::handleEvents()
 
 int GameState::update()
 {
-	sf::Vector2i pos = sf::Mouse::getPosition(window);
-	float xProp = window.getView().getSize().x / window.getSize().x;
-	float yProp = window.getView().getSize().x / window.getSize().x;
-	sf::Vector2f mousePos = sf::Vector2f(pos.x * xProp, pos.y * yProp);
+	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
@@ -56,16 +57,17 @@ int GameState::update()
 	}
 	lastMousePos = mousePos;
 
-	if (isPositioning != -1)
+	if (info.typeBuilding != -1)
 	{
-		preview.setSize(sf::Vector2f(Building::size[isPositioning].x * 6, Building::size[isPositioning].y * 6));
+		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * 6, Building::size[info.typeBuilding].y * 6));
 		sf::Vector2f previewPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		previewPos.x = (round(previewPos.x / 6) - Building::size[isPositioning].x / 2) * 6;
-		previewPos.y = (round(previewPos.y / 6) - Building::size[isPositioning].y / 2) * 6;
+		previewPos.x = (round(previewPos.x / 6) - Building::size[info.typeBuilding].x / 2) * 6;
+		previewPos.y = (round(previewPos.y / 6) - Building::size[info.typeBuilding].y / 2) * 6;
 		preview.setPosition(previewPos);
 	}
+	info.gameView = window.getView();
 
-	return 0;
+	return status;
 }
 
 void GameState::draw()
@@ -80,11 +82,14 @@ void GameState::draw()
 		}
 	}
 
-	if (isPositioning != -1)
+	if (info.typeBuilding != -1)
 	{
 		window.draw(preview);
 	}
 
-	for (auto building : buildings)
+	for (auto building : info.buildings)
 		building.draw(window);
+
+	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-150, 1080/2-150));
+	window.draw(shop);
 }

@@ -15,4 +15,5 @@ public:
 
 protected:
 	sf::RenderWindow& window;
+	int status = 0;
 };

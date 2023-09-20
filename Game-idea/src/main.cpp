@@ -1,12 +1,12 @@
 #include "consts.h"
 #include "gameState.h"
+#include "shopState.h"
 
 int main()
 {
 	bool isFullscreen = false;
 	bool canFullscreen = false;
 	sf::RenderWindow window(sf::VideoMode(Consts::windowSize.x, Consts::windowSize.y), Consts::gameName, sf::Style::Default);
-	window.setView(sf::View(sf::Vector2f(0, 0), Consts::viewSize));
 	window.setFramerateLimit(60);
 
 	GameInfo gameInfo;
@@ -42,6 +42,18 @@ int main()
 		window.clear(sf::Color::Black);
 		state->draw();
 		window.display();
+
+		switch (status)
+		{
+		case 1:
+			delete state;
+			state = new ShopState(window, gameInfo);
+			break;
+		case 2:
+			delete state;
+			state = new GameState(window, gameInfo);
+			break;
+		}
 	}
 
 	return 0;

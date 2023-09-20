@@ -110,7 +110,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\SFML-2.6.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-system.lib;sfml-window.lib;sfml-audio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-system-d.lib;sfml-window-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,11 +136,13 @@
     <ClCompile Include="src\building.cpp" />
     <ClCompile Include="src\gameState.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\shopState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\building.h" />
     <ClInclude Include="src\consts.h" />
     <ClInclude Include="src\gameState.h" />
+    <ClInclude Include="src\shopState.h" />
     <ClInclude Include="src\state.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

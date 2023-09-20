@@ -5,11 +5,12 @@
 
 struct GameInfo
 {
-	int isPositioning = 0;
+	int typeBuilding = 0;
 	std::vector<Building> buildings;
+	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
 };
 
-class GameState : public State, public GameInfo
+class GameState : public State
 {
 public:
 	GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo);
@@ -24,4 +25,7 @@ private:
 	sf::Sprite grassSprite;
 
 	sf::RectangleShape preview;
+	sf::RectangleShape shop;
+
+	GameInfo& info;
 };
