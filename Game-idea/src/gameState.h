@@ -7,7 +7,7 @@ struct GameInfo
 {
 	int typeBuilding = -1;
 	std::vector<Building> buildings;
-	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
+	sf::View gameView = sf::View(sf::Vector2f(Consts::fieldSize.x/2, Consts::fieldSize.y/2), Consts::viewSize);
 };
 
 class GameState : public State
@@ -25,6 +25,7 @@ private:
 	sf::Sprite grassSprite;
 
 	sf::RectangleShape preview;
+	bool canPosition = false;
 	sf::RectangleShape shop;
 
 	GameInfo& info;

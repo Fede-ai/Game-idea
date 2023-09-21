@@ -7,7 +7,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 {
 	grassTexture.loadFromFile("texture/grass.png");
 	grassSprite.setTexture(grassTexture);
-	grassSprite.setScale(6, 6);
+	grassSprite.setScale(Consts::pixelSize, Consts::pixelSize);
 
 	shop.setSize(sf::Vector2f(150, 150));
 
@@ -28,15 +28,22 @@ void GameState::handleEvents()
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				if (shop.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
+				if (shop.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))) && info.typeBuilding == -1)
 				{
 					status = 1;
 				}
-				else if (info.typeBuilding != -1 )
+				else if (info.typeBuilding != -1 && canPosition)
 				{
 					info.buildings.push_back(Building(info.typeBuilding, preview.getPosition()));
 					info.typeBuilding = -1;
 				}
+			}
+		}
+		else if (event.type == sf::Event::KeyPressed )
+		{
+			if (event.key.code == sf::Keyboard::B && info.typeBuilding == -1)
+			{
+				status = 1;
 			}
 		}
 	}
@@ -50,8 +57,8 @@ int GameState::update()
 	{
 		sf::View view(window.getView());
 		view.move(lastMousePos - mousePos);
-		float x = std::min(std::max(-1920.f, view.getCenter().x), 1920.f);
-		float y = std::min(std::max(-1080.f, view.getCenter().y), 1080.f);
+		float x = std::min(std::max(Consts::viewSize.x/2.f, view.getCenter().x), Consts::fieldSize.x - Consts::viewSize.x / 2.f);
+		float y = std::min(std::max(Consts::viewSize.y/2.f, view.getCenter().y), Consts::fieldSize.y - Consts::viewSize.y / 2.f);
 		view.setCenter(x, y);
 		window.setView(view);
 	}
@@ -59,11 +66,25 @@ int GameState::update()
 
 	if (info.typeBuilding != -1)
 	{
-		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * 6, Building::size[info.typeBuilding].y * 6));
+		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * Consts::pixelSize, Building::size[info.typeBuilding].y * Consts::pixelSize));
 		sf::Vector2f previewPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		previewPos.x = (round(previewPos.x / 6) - Building::size[info.typeBuilding].x / 2) * 6;
-		previewPos.y = (round(previewPos.y / 6) - Building::size[info.typeBuilding].y / 2) * 6;
+		previewPos.x = (int(previewPos.x / Consts::pixelSize) - Building::size[info.typeBuilding].x / 2) * Consts::pixelSize;
+		previewPos.x = std::min(std::max(0.f, previewPos.x), Consts::fieldSize.x - preview.getSize().x);
+		previewPos.y = (int(previewPos.y / Consts::pixelSize) - Building::size[info.typeBuilding].y / 2) * Consts::pixelSize;
+		previewPos.y = std::min(std::max(0.f, previewPos.y), Consts::fieldSize.y - preview.getSize().y);
 		preview.setPosition(previewPos);
+
+		preview.setFillColor(sf::Color::Green);
+		canPosition = true;	
+		for (auto building : info.buildings)
+		{			
+			if (preview.getGlobalBounds().intersects(building.body.getGlobalBounds()))
+			{
+				preview.setFillColor(sf::Color::Red);
+				canPosition = false;
+				break;
+			}				
+		}
 	}
 	info.gameView = window.getView();
 
@@ -73,20 +94,20 @@ int GameState::update()
 void GameState::draw()
 {
 	//draw grass
-	for (int x = 0; x < 32*3; x++)
+	for (int x = 0; x < Consts::fieldSize.x/(Consts::pixelSize * 10)+1; x++)
 	{
-		for (int y = 0; y < 18*3; y++)
+		for (int y = 0; y < Consts::fieldSize.y/(Consts::pixelSize * 10)+1; y++)
 		{
-			grassSprite.setPosition(x * 60 - 1920*1.5, y * 60 - 1080*1.5);
+			grassSprite.setPosition(x * Consts::pixelSize * 10, y * Consts::pixelSize * 10);
 			window.draw(grassSprite);
 		}
 	}
 
+	for (auto building : info.buildings)
+		building.draw(window);	
+
 	if (info.typeBuilding != -1)
 		window.draw(preview);
-
-	for (auto building : info.buildings)
-		building.draw(window);
 
 	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-200, 1080/2-200));
 	window.draw(shop);

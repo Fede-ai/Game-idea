@@ -3,7 +3,7 @@
 Building::Building(int inType, sf::Vector2f pos)
 {
 	type = inType;
-	body.setSize(sf::Vector2f(size[type].x * 6, size[type].y * 6));
+	body.setSize(sf::Vector2f(size[type].x * Consts::pixelSize, size[type].y * Consts::pixelSize));
 	body.setPosition(pos);
 }
 
@@ -13,5 +13,5 @@ void Building::draw(sf::RenderWindow& window)
 }
 
 const sf::Vector2i Building::size[1] = {
-	sf::Vector2i(4, 4)
+	sf::Vector2i(1, 1)
 };

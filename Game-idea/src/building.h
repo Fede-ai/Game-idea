@@ -8,8 +8,8 @@ public:
 	void draw(sf::RenderWindow& window);
 
 	static const sf::Vector2i size[1];
+	sf::RectangleShape body;
 
 private:
 	int type;
-	sf::RectangleShape body;
 };
