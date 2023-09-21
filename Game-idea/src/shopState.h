@@ -11,4 +11,8 @@ public:
 
 private:
 	GameInfo& info;
+	sf::RectangleShape itemBg;
+	int nItems = 1;
+	const int itemPerRow = 4;
+	const int space = 60;
 };

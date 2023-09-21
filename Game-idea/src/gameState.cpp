@@ -5,11 +5,11 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 	State(inWindow),
 	info(inGameInfo)
 {
-	grassTexture.loadFromFile("C:/Users/feder/Desktop/pixil-frame-0.png");
+	grassTexture.loadFromFile("texture/grass.png");
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(6, 6);
 
-	shop.setSize(sf::Vector2f(120, 120));
+	shop.setSize(sf::Vector2f(150, 150));
 
 	window.setView(info.gameView);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
@@ -83,13 +83,11 @@ void GameState::draw()
 	}
 
 	if (info.typeBuilding != -1)
-	{
 		window.draw(preview);
-	}
 
 	for (auto building : info.buildings)
 		building.draw(window);
 
-	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-150, 1080/2-150));
+	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-200, 1080/2-200));
 	window.draw(shop);
 }

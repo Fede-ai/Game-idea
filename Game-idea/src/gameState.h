@@ -5,7 +5,7 @@
 
 struct GameInfo
 {
-	int typeBuilding = 0;
+	int typeBuilding = -1;
 	std::vector<Building> buildings;
 	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
 };
