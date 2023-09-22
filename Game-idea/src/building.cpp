@@ -5,9 +5,8 @@ Building::Building(Texture* textures, int inType, sf::Vector2f inPos)
 	type = inType;
 	pos = sf::Vector2i(inPos.x / Consts::cellSize, inPos.y / Consts::cellSize);
 	
-	body.setTexture(textures->wall);
 	body.setScale(Consts::pixelSize, Consts::pixelSize);
-	body.setPosition(inPos.x, inPos.y - 4 * Consts::pixelSize);
+	body.setPosition(inPos.x, inPos.y - 3 * Consts::pixelSize);
 
 	hitbox.setSize(sf::Vector2f(size[type].x * Consts::cellSize, size[type].y * Consts::cellSize));
 	hitbox.setPosition(inPos);

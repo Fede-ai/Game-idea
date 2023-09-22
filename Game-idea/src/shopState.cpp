@@ -41,6 +41,7 @@ void ShopState::handleEvents()
 					if (itemBg.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 					{
 						info.typeBuilding = i;
+						info.lastBuilding = i;
 						status = 2;
 					}
 				}

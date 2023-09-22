@@ -1,4 +1,5 @@
 #include "gameState.h"
+#include <iostream>
 
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 	:
@@ -38,8 +39,10 @@ void GameState::handleEvents()
 				}
 				else if (info.typeBuilding != -1 && canPosition)
 				{
-					info.buildings.push_back(Building(textures, info.typeBuilding, preview.getPosition()));
+					info.buildings.push_back(Building(textures, info.typeBuilding, preview.getPosition()));					
 					sortBuildings();
+					if (info.typeBuilding == 0)
+						setWallsTextures();
 					info.typeBuilding = -1;
 				}
 			}
@@ -49,6 +52,10 @@ void GameState::handleEvents()
 			if (event.key.code == sf::Keyboard::B && info.typeBuilding == -1)
 			{
 				status = 1;
+			}
+			else if (event.key.code == sf::Keyboard::V && info.typeBuilding == -1)
+			{
+				info.typeBuilding = info.lastBuilding;
 			}
 		}
 	}
@@ -79,13 +86,13 @@ int GameState::update()
 		previewPos.y = std::min(std::max(0.f, previewPos.y), Consts::fieldSize.y - preview.getSize().y);
 		preview.setPosition(previewPos);
 
-		preview.setFillColor(sf::Color::Green);
+		preview.setFillColor(sf::Color(20, 110, 20, 150));
 		canPosition = true;	
 		for (auto building : info.buildings)
 		{			
 			if (preview.getGlobalBounds().intersects(building.hitbox.getGlobalBounds()))
 			{
-				preview.setFillColor(sf::Color::Red);
+				preview.setFillColor(sf::Color(180, 30, 30, 150));
 				canPosition = false;
 				break;
 			}				
@@ -130,4 +137,45 @@ void GameState::sortBuildings()
 		}
 	}
 	info.buildings = newOrder;
+}
+void GameState::setWallsTextures()
+{
+	for (auto& building : info.buildings)
+	{
+		if (building.type == 0)
+		{
+			bool top = false, bot = false, left = false, right = false;
+			for (auto other : info.buildings)
+			{
+				if (other.type == 0 && !(building.pos.x == other.pos.x && building.pos.y == other.pos.y))
+				{
+					if (building.pos.x == other.pos.x)
+					{
+						if (other.pos.y == building.pos.y + 1)
+						{
+							bot = true;
+						}
+						else if (other.pos.y == building.pos.y - 1)
+						{
+							top = true;
+						}
+					}
+					else if (building.pos.y == other.pos.y)
+					{
+						if (other.pos.x == building.pos.x + 1)
+						{
+							right = true;
+						}
+						else if (other.pos.x == building.pos.x - 1)
+						{
+							left = true;
+						}
+					}
+				}
+			}
+
+			int n = top * 8 + bot * 4 + right * 2 + left;
+			building.body.setTexture(textures->wall[n]);
+		}
+	}
 }

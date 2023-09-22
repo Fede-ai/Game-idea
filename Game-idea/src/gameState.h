@@ -6,6 +6,7 @@
 struct GameInfo
 {
 	int typeBuilding = -1;
+	int lastBuilding = -1;
 	std::vector<Building> buildings;
 	sf::View gameView = sf::View(sf::Vector2f(Consts::fieldSize.x/2, Consts::fieldSize.y/2), Consts::viewSize);
 };
@@ -20,6 +21,7 @@ public:
 
 private:
 	void sortBuildings();
+	void setWallsTextures();
 	sf::Vector2f lastMousePos;
 
 	sf::Texture grassTexture;

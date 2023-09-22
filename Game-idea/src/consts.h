@@ -13,10 +13,18 @@ namespace Consts
 
 struct Texture
 {
-	Texture(){
-		wall.loadFromFile("texture/wall.png");
+	Texture() 
+	{
+		for (int y = 0; y < 4; y++)
+		{
+			for (int x = 0; x < 4; x++)
+			{
+				sf::IntRect rect(sf::Vector2i(x*6, y*9), sf::Vector2i(6, 9));
+				wall[x + 4 * y].loadFromFile("texture/wall.png", rect);
+			}
+		}
 		shop.loadFromFile("texture/shop.png");
 	}
-	sf::Texture wall;
+	sf::Texture wall[16];
 	sf::Texture shop;
 };

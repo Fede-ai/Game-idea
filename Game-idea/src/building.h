@@ -11,7 +11,5 @@ public:
 	sf::Sprite body;
 	sf::RectangleShape hitbox;
 	sf::Vector2i pos;
-
-private:
 	int type;
 };
