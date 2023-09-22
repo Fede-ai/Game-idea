@@ -5,11 +5,14 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 	State(inWindow),
 	info(inGameInfo)
 {
+	textures = new Texture;
+
 	grassTexture.loadFromFile("texture/grass.png");
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(Consts::cellSize, Consts::cellSize);
 
-	shop.setSize(sf::Vector2f(150, 150));
+	shop.setTexture(textures->shop);
+	shop.setScale(Consts::pixelSize, Consts::pixelSize);
 
 	window.setView(info.gameView);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
@@ -28,13 +31,15 @@ void GameState::handleEvents()
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				if (shop.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))) && info.typeBuilding == -1)
+				if (shop.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 				{
-					status = 1;
+					if (info.typeBuilding == -1)
+						status = 1;
 				}
 				else if (info.typeBuilding != -1 && canPosition)
 				{
-					info.buildings.push_back(Building(&textures, info.typeBuilding, preview.getPosition()));
+					info.buildings.push_back(Building(textures, info.typeBuilding, preview.getPosition()));
+					sortBuildings();
 					info.typeBuilding = -1;
 				}
 			}
@@ -78,7 +83,7 @@ int GameState::update()
 		canPosition = true;	
 		for (auto building : info.buildings)
 		{			
-			if (preview.getGlobalBounds().intersects(building.body.getGlobalBounds()))
+			if (preview.getGlobalBounds().intersects(building.hitbox.getGlobalBounds()))
 			{
 				preview.setFillColor(sf::Color::Red);
 				canPosition = false;
@@ -109,6 +114,20 @@ void GameState::draw()
 	if (info.typeBuilding != -1)
 		window.draw(preview);
 
-	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-200, 1080/2-200));
+	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-210, 1080/2-210));
 	window.draw(shop);
+}
+
+void GameState::sortBuildings()
+{
+	std::vector<Building> newOrder;
+	for (int y = 0; y < 180; y++)
+	{
+		for (auto building : info.buildings)
+		{
+			if (building.pos.y == y)
+				newOrder.push_back(building);
+		}
+	}
+	info.buildings = newOrder;
 }

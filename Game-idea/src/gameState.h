@@ -19,6 +19,7 @@ public:
 	void draw();
 
 private:
+	void sortBuildings();
 	sf::Vector2f lastMousePos;
 
 	sf::Texture grassTexture;
@@ -26,8 +27,8 @@ private:
 
 	sf::RectangleShape preview;
 	bool canPosition = false;
-	sf::RectangleShape shop;
+	sf::Sprite shop;
 
 	GameInfo& info;
-	Texture textures;
+	Texture* textures;
 };

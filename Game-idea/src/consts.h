@@ -8,13 +8,15 @@ namespace Consts
 	static const sf::Vector2f viewSize = sf::Vector2f(1920, 1080);
 	static const std::string gameName = "Game idea";
 	static const int cellSize = 30;
-	static const int pixelSize = 6;
+	static const int pixelSize = 5;
 }
 
 struct Texture
 {
 	Texture(){
 		wall.loadFromFile("texture/wall.png");
+		shop.loadFromFile("texture/shop.png");
 	}
 	sf::Texture wall;
+	sf::Texture shop;
 };
