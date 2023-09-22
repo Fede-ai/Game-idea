@@ -1,9 +1,12 @@
 #include "building.h"
 
-Building::Building(int inType, sf::Vector2f pos)
+Building::Building(Texture* textures, int inType, sf::Vector2f pos)
 {
 	type = inType;
-	body.setSize(sf::Vector2f(size[type].x * Consts::pixelSize, size[type].y * Consts::pixelSize));
+	//body.setSize(sf::Vector2f(size[type].x * Consts::cellSize, size[type].y * Consts::cellSize));
+	
+	body.setTexture(textures->wall);
+	body.setScale(Consts::pixelSize, Consts::pixelSize);
 	body.setPosition(pos);
 }
 

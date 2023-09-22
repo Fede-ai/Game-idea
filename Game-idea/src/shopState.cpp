@@ -9,7 +9,6 @@ ShopState::ShopState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 	sf::View view(sf::Vector2f(Consts::viewSize.x / 2, Consts::viewSize.y / 2), Consts::viewSize);
 	window.setView(view);
 	itemBg.setSize(sf::Vector2f((1920 - space * (itemPerRow + 1)) / itemPerRow, 500));
-	//30
 }
 
 void ShopState::handleEvents()

@@ -29,4 +29,5 @@ private:
 	sf::RectangleShape shop;
 
 	GameInfo& info;
+	Texture textures;
 };

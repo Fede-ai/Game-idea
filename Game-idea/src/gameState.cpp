@@ -7,7 +7,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 {
 	grassTexture.loadFromFile("texture/grass.png");
 	grassSprite.setTexture(grassTexture);
-	grassSprite.setScale(Consts::pixelSize, Consts::pixelSize);
+	grassSprite.setScale(Consts::cellSize, Consts::cellSize);
 
 	shop.setSize(sf::Vector2f(150, 150));
 
@@ -34,12 +34,12 @@ void GameState::handleEvents()
 				}
 				else if (info.typeBuilding != -1 && canPosition)
 				{
-					info.buildings.push_back(Building(info.typeBuilding, preview.getPosition()));
+					info.buildings.push_back(Building(&textures, info.typeBuilding, preview.getPosition()));
 					info.typeBuilding = -1;
 				}
 			}
 		}
-		else if (event.type == sf::Event::KeyPressed )
+		else if (event.type == sf::Event::KeyPressed)
 		{
 			if (event.key.code == sf::Keyboard::B && info.typeBuilding == -1)
 			{
@@ -66,11 +66,11 @@ int GameState::update()
 
 	if (info.typeBuilding != -1)
 	{
-		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * Consts::pixelSize, Building::size[info.typeBuilding].y * Consts::pixelSize));
+		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * Consts::cellSize, Building::size[info.typeBuilding].y * Consts::cellSize));
 		sf::Vector2f previewPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		previewPos.x = (int(previewPos.x / Consts::pixelSize) - Building::size[info.typeBuilding].x / 2) * Consts::pixelSize;
+		previewPos.x = (int(previewPos.x / Consts::cellSize) - Building::size[info.typeBuilding].x / 2) * Consts::cellSize;
 		previewPos.x = std::min(std::max(0.f, previewPos.x), Consts::fieldSize.x - preview.getSize().x);
-		previewPos.y = (int(previewPos.y / Consts::pixelSize) - Building::size[info.typeBuilding].y / 2) * Consts::pixelSize;
+		previewPos.y = (int(previewPos.y / Consts::cellSize) - Building::size[info.typeBuilding].y / 2) * Consts::cellSize;
 		previewPos.y = std::min(std::max(0.f, previewPos.y), Consts::fieldSize.y - preview.getSize().y);
 		preview.setPosition(previewPos);
 
@@ -94,11 +94,11 @@ int GameState::update()
 void GameState::draw()
 {
 	//draw grass
-	for (int x = 0; x < Consts::fieldSize.x/(Consts::pixelSize * 10)+1; x++)
+	for (int x = 0; x < Consts::fieldSize.x/(Consts::cellSize * 10)+1; x++)
 	{
-		for (int y = 0; y < Consts::fieldSize.y/(Consts::pixelSize * 10)+1; y++)
+		for (int y = 0; y < Consts::fieldSize.y/(Consts::cellSize * 10)+1; y++)
 		{
-			grassSprite.setPosition(x * Consts::pixelSize * 10, y * Consts::pixelSize * 10);
+			grassSprite.setPosition(x * Consts::cellSize * 10, y * Consts::cellSize * 10);
 			window.draw(grassSprite);
 		}
 	}
