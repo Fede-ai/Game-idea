@@ -11,9 +11,9 @@ namespace Consts
 	static const int pixelSize = 5;
 }
 
-struct Texture
+struct Textures
 {
-	Texture() 
+	Textures() 
 	{
 		for (int y = 0; y < 4; y++)
 		{

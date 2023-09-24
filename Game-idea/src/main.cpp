@@ -10,7 +10,8 @@ int main()
 	window.setFramerateLimit(60);
 
 	GameInfo gameInfo;
-	State* state = new GameState(window, gameInfo);
+	Textures textures;
+	State* state = new GameState(window, gameInfo, textures);
 
 	while (window.isOpen())
 	{
@@ -51,7 +52,7 @@ int main()
 			break;
 		case 2:
 			delete state;
-			state = new GameState(window, gameInfo);
+			state = new GameState(window, gameInfo, textures);
 			break;
 		}
 	}

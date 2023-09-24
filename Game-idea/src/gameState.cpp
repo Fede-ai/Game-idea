@@ -1,20 +1,23 @@
 #include "gameState.h"
 #include <iostream>
 
-GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
+GameInfo::GameInfo()
+{
+}
+
+GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures& inTextures)
 	:
 	State(inWindow),
-	info(inGameInfo)
+	info(inGameInfo),
+	textures(inTextures)
 {
-	textures = new Texture;
-
 	grassTexture.loadFromFile("texture/grass.png");
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(Consts::cellSize, Consts::cellSize);
-
-	shop.setTexture(textures->shop);
+	
+	shop.setTexture(textures.shop);
 	shop.setScale(Consts::pixelSize, Consts::pixelSize);
-
+	
 	window.setView(info.gameView);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
 }
@@ -39,8 +42,7 @@ void GameState::handleEvents()
 				}
 				else if (info.typeBuilding != -1 && canPosition)
 				{
-					info.buildings.push_back(Building(textures, info.typeBuilding, preview.getPosition()));					
-					sortBuildings();
+					info.buildings.push_back(Building(textures, info.typeBuilding, preview.getPosition()));	
 					if (info.typeBuilding == 0)
 						setWallsTextures();
 					info.typeBuilding = -1;
@@ -64,7 +66,7 @@ void GameState::handleEvents()
 int GameState::update()
 {
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
-
+	
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
 		sf::View view(window.getView());
@@ -75,7 +77,7 @@ int GameState::update()
 		window.setView(view);
 	}
 	lastMousePos = mousePos;
-
+	
 	if (info.typeBuilding != -1)
 	{
 		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * Consts::cellSize, Building::size[info.typeBuilding].y * Consts::cellSize));
@@ -85,7 +87,7 @@ int GameState::update()
 		previewPos.y = (int(previewPos.y / Consts::cellSize) - Building::size[info.typeBuilding].y / 2) * Consts::cellSize;
 		previewPos.y = std::min(std::max(0.f, previewPos.y), Consts::fieldSize.y - preview.getSize().y);
 		preview.setPosition(previewPos);
-
+	
 		preview.setFillColor(sf::Color(20, 110, 20, 150));
 		canPosition = true;	
 		for (auto building : info.buildings)
@@ -114,30 +116,23 @@ void GameState::draw()
 			window.draw(grassSprite);
 		}
 	}
-
-	for (auto building : info.buildings)
-		building.draw(window);	
-
-	if (info.typeBuilding != -1)
-		window.draw(preview);
-
-	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-210, 1080/2-210));
-	window.draw(shop);
-}
-
-void GameState::sortBuildings()
-{
-	std::vector<Building> newOrder;
+	
 	for (int y = 0; y < 180; y++)
 	{
 		for (auto building : info.buildings)
 		{
 			if (building.pos.y == y)
-				newOrder.push_back(building);
+				building.draw(window);
 		}
 	}
-	info.buildings = newOrder;
+	
+	if (info.typeBuilding != -1)
+		window.draw(preview);
+	
+	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-210, 1080/2-210));
+	window.draw(shop);
 }
+
 void GameState::setWallsTextures()
 {
 	for (auto& building : info.buildings)
@@ -173,9 +168,9 @@ void GameState::setWallsTextures()
 					}
 				}
 			}
-
+	
 			int n = top * 8 + bot * 4 + right * 2 + left;
-			building.body.setTexture(textures->wall[n]);
+			building.setTextureNum(textures, n);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 #include "building.h"
 
-Building::Building(Texture* textures, int inType, sf::Vector2f inPos)
+Building::Building(Textures& textures, int inType, sf::Vector2f inPos)
 {
 	type = inType;
 	pos = sf::Vector2i(inPos.x / Consts::cellSize, inPos.y / Consts::cellSize);
@@ -9,12 +9,17 @@ Building::Building(Texture* textures, int inType, sf::Vector2f inPos)
 	body.setPosition(inPos.x, inPos.y - 3 * Consts::pixelSize);
 
 	hitbox.setSize(sf::Vector2f(size[type].x * Consts::cellSize, size[type].y * Consts::cellSize));
-	hitbox.setPosition(inPos);
+	hitbox.setPosition(inPos); 
 }
 
 void Building::draw(sf::RenderWindow& window)
 {
 	window.draw(body);
+}
+
+void Building::setTextureNum(Textures& textures, int num)
+{
+	body.setTexture(textures.wall[num]);
 }
 
 const sf::Vector2i Building::size[1] = {

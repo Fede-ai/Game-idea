@@ -5,7 +5,7 @@ ShopState::ShopState(sf::RenderWindow& inWindow, GameInfo& inGameInfo)
 	:
 	State(inWindow),
 	info(inGameInfo)
-{
+{	
 	sf::View view(sf::Vector2f(Consts::viewSize.x / 2, Consts::viewSize.y / 2), Consts::viewSize);
 	window.setView(view);
 	itemBg.setSize(sf::Vector2f((1920 - space * (itemPerRow + 1)) / itemPerRow, 500));
@@ -40,11 +40,25 @@ void ShopState::handleEvents()
 					itemBg.setPosition(space + (itemBg.getSize().x + space) * nLine, space + (itemBg.getSize().y + space) * y);
 					if (itemBg.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 					{
-						info.typeBuilding = i;
-						info.lastBuilding = i;
+						int item;
+						switch (i)
+						{
+						case 0:
+							item = 0;
+							break;
+						}
+						info.typeBuilding = item;
+						info.lastBuilding = item;
 						status = 2;
 					}
 				}
+			}
+		}
+		else if (event.type == sf::Event::KeyPressed)
+		{
+			if (event.key.code == sf::Keyboard::Escape)
+			{
+				status = 2;
 			}
 		}
 	}
