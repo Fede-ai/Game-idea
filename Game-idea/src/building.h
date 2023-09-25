@@ -9,7 +9,7 @@ public:
 	void setTextureNum(Textures& textures, int num);
 
 	static const sf::Vector2i size[1];
-	sf::RectangleShape hitbox;
+	sf::IntRect hitbox;
 	sf::Vector2i pos;
 	int type;
 

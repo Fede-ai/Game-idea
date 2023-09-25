@@ -42,9 +42,16 @@ private:
 	sf::Sprite grassSprite;
 	
 	sf::RectangleShape preview;
+	sf::IntRect previewHitbox;
 	bool canPosition = false;
 	sf::Sprite shop;
 	
 	GameInfo& info;
 	Textures& textures;
+
+	sf::Sprite woodSprite;
+	sf::Sprite stoneSprite;
+	sf::Sprite goldSprite;
+	sf::Sprite gemSprite;
+	const sf::Vector2i gemSize = sf::Vector2i(2, 3);
 };

@@ -8,8 +8,10 @@ Building::Building(Textures& textures, int inType, sf::Vector2f inPos)
 	body.setScale(Consts::pixelSize, Consts::pixelSize);
 	body.setPosition(inPos.x, inPos.y - 3 * Consts::pixelSize);
 
-	hitbox.setSize(sf::Vector2f(size[type].x * Consts::cellSize, size[type].y * Consts::cellSize));
-	hitbox.setPosition(inPos); 
+	hitbox.width = size[type].x;
+	hitbox.height = size[type].y;
+	hitbox.top = pos.y;
+	hitbox.left = pos.x;
 }
 
 void Building::draw(sf::RenderWindow& window)

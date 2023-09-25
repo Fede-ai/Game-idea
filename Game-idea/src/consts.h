@@ -24,7 +24,16 @@ struct Textures
 			}
 		}
 		shop.loadFromFile("texture/shop.png");
+		wood.loadFromFile("texture/wood.png");
+		stone.loadFromFile("texture/stone.png");
+		gold.loadFromFile("texture/gold.png");
+		gem.loadFromFile("texture/gem.png");
 	}
 	sf::Texture wall[16];
 	sf::Texture shop;
+
+	sf::Texture wood;
+	sf::Texture stone;
+	sf::Texture gold;
+	sf::Texture gem;
 };
