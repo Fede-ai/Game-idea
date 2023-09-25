@@ -36,6 +36,7 @@ public:
 
 private:
 	void setWallsTextures();
+	bool isSpaceEmpty(sf::IntRect space);
 	sf::Vector2f lastMousePos;
 	
 	sf::Texture grassTexture;

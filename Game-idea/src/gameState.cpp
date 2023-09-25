@@ -3,10 +3,25 @@
 
 GameInfo::GameInfo()
 {
-	wood.push_back(sf::Vector2i(1, 1));
-	stone.push_back(sf::Vector2i(11, 1));
-	gold.push_back(sf::Vector2i(21, 1));
-	gem.push_back(sf::Vector2i(31, 1));
+	for (int i = 0; i < 20; i++)
+	{
+		wood.push_back(sf::Vector2i(Consts::random(1, 319 - 6), Consts::random(1, 178 - 4)));
+	}
+	for (int i = 0; i < 15; i++)
+	{
+		stone.push_back(sf::Vector2i(Consts::random(1, 319 - 4), Consts::random(1, 178 - 4)));
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		gold.push_back(sf::Vector2i(Consts::random(1, 319 - 3), Consts::random(1, 178 - 3)));
+	}
+	for (int i = 0; i < 5; i++)
+	{
+		gem.push_back(sf::Vector2i(Consts::random(1, 319 - 2), Consts::random(1, 178 - 3)));
+	}
+
+	srand(1);
+	std::cout << rand() << ", " << rand() << ", " << rand() << ", " << rand();
 }
 
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures& inTextures)
@@ -78,8 +93,8 @@ void GameState::handleEvents()
 
 int GameState::update()
 {
+	//move view
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
-	
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
 	{
 		sf::View view(window.getView());
@@ -107,60 +122,15 @@ int GameState::update()
 		previewHitbox.left = previewPos.x / Consts::cellSize;
 		previewHitbox.top = previewPos.y / Consts::cellSize;
 	
-		preview.setFillColor(sf::Color(20, 110, 20, 150));
-		canPosition = true;	
-		for (auto building : info.buildings)
-		{			
-			if (previewHitbox.intersects(building.hitbox))
-			{
-				preview.setFillColor(sf::Color(180, 30, 30, 150));
-				canPosition = false;
-				break;
-			}				
-		}
-		for (auto wood : info.wood)
+		if (isSpaceEmpty(previewHitbox))
 		{
-			sf::Vector2i woodSize = sf::Vector2i(woodSprite.getGlobalBounds().width / Consts::cellSize, woodSprite.getGlobalBounds().height / Consts::cellSize);
-			sf::IntRect hitbox(wood, woodSize);
-			if (previewHitbox.intersects(hitbox))
-			{
-				preview.setFillColor(sf::Color(180, 30, 30, 150));
-				canPosition = false;
-				break;
-			}
+			preview.setFillColor(sf::Color(20, 110, 20, 150));
+			canPosition = true;	
 		}
-		for (auto stone : info.stone)
+		else
 		{
-			sf::Vector2i stoneSize = sf::Vector2i(stoneSprite.getGlobalBounds().width / Consts::cellSize, stoneSprite.getGlobalBounds().height / Consts::cellSize);
-			sf::IntRect hitbox(stone, stoneSize);
-			if (previewHitbox.intersects(hitbox))
-			{
-				preview.setFillColor(sf::Color(180, 30, 30, 150));
-				canPosition = false;
-				break;
-			}
-		}
-		for (auto gold : info.gold)
-		{
-			sf::Vector2i goldSize = sf::Vector2i(goldSprite.getGlobalBounds().width / Consts::cellSize, goldSprite.getGlobalBounds().height / Consts::cellSize);
-			sf::IntRect hitbox(gold, goldSize);
-			if (previewHitbox.intersects(hitbox))
-			{
-				preview.setFillColor(sf::Color(180, 30, 30, 150));
-				canPosition = false;
-				break;
-			}
-		}
-		for (auto gem : info.gem)
-		{
-			sf::Vector2i gemSize = sf::Vector2i(gemSprite.getGlobalBounds().width / Consts::cellSize, gemSprite.getGlobalBounds().height / Consts::cellSize);
-			sf::IntRect hitbox(gem, gemSize);
-			if (previewHitbox.intersects(hitbox))
-			{
-				preview.setFillColor(sf::Color(180, 30, 30, 150));
-				canPosition = false;
-				break;
-			}
+			preview.setFillColor(sf::Color(180, 30, 30, 150));
+			canPosition = false;
 		}
 	}
 	info.gameView = window.getView();
@@ -268,4 +238,42 @@ void GameState::setWallsTextures()
 			building.setTextureNum(textures, n);
 		}
 	}
+}
+
+bool GameState::isSpaceEmpty(sf::IntRect space)
+{
+	for (auto building : info.buildings)
+	{
+		if (space.intersects(building.hitbox))
+			return false;
+	}
+	for (auto wood : info.wood)
+	{
+		sf::Vector2i woodSize = sf::Vector2i(woodSprite.getGlobalBounds().width / Consts::cellSize, woodSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(wood, woodSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	for (auto stone : info.stone)
+	{
+		sf::Vector2i stoneSize = sf::Vector2i(stoneSprite.getGlobalBounds().width / Consts::cellSize, stoneSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(stone, stoneSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	for (auto gold : info.gold)
+	{
+		sf::Vector2i goldSize = sf::Vector2i(goldSprite.getGlobalBounds().width / Consts::cellSize, goldSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(gold, goldSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	for (auto gem : info.gem)
+	{
+		sf::Vector2i gemSize = sf::Vector2i(gemSprite.getGlobalBounds().width / Consts::cellSize, gemSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(gem, gemSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	return true;
 }
