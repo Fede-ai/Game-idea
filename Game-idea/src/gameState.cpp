@@ -120,8 +120,9 @@ int GameState::update()
 		}
 		for (auto wood : info.wood)
 		{
-			sf::FloatRect hitbox(wood.x, wood.y, woodSprite.getGlobalBounds().width, woodSprite.getGlobalBounds().height);
-			if (preview.getGlobalBounds().intersects(hitbox))
+			sf::Vector2i woodSize = sf::Vector2i(woodSprite.getGlobalBounds().width / Consts::cellSize, woodSprite.getGlobalBounds().height / Consts::cellSize);
+			sf::IntRect hitbox(wood, woodSize);
+			if (previewHitbox.intersects(hitbox))
 			{
 				preview.setFillColor(sf::Color(180, 30, 30, 150));
 				canPosition = false;
@@ -130,26 +131,29 @@ int GameState::update()
 		}
 		for (auto stone : info.stone)
 		{
-			sf::FloatRect hitbox(stone.x, stone.y, stoneSprite.getGlobalBounds().width, stoneSprite.getGlobalBounds().height);
-			if (preview.getGlobalBounds().intersects(hitbox))
+			sf::Vector2i stoneSize = sf::Vector2i(stoneSprite.getGlobalBounds().width / Consts::cellSize, stoneSprite.getGlobalBounds().height / Consts::cellSize);
+			sf::IntRect hitbox(stone, stoneSize);
+			if (previewHitbox.intersects(hitbox))
 			{
 				preview.setFillColor(sf::Color(180, 30, 30, 150));
 				canPosition = false;
 				break;
 			}
 		}
-		for (auto gold : info.wood)
+		for (auto gold : info.gold)
 		{
-			sf::FloatRect hitbox(gold.x, gold.y, goldSprite.getGlobalBounds().width, goldSprite.getGlobalBounds().height);
-			if (preview.getGlobalBounds().intersects(hitbox))
+			sf::Vector2i goldSize = sf::Vector2i(goldSprite.getGlobalBounds().width / Consts::cellSize, goldSprite.getGlobalBounds().height / Consts::cellSize);
+			sf::IntRect hitbox(gold, goldSize);
+			if (previewHitbox.intersects(hitbox))
 			{
 				preview.setFillColor(sf::Color(180, 30, 30, 150));
 				canPosition = false;
 				break;
 			}
 		}
-		for (auto gem : info.wood)
+		for (auto gem : info.gem)
 		{
+			sf::Vector2i gemSize = sf::Vector2i(gemSprite.getGlobalBounds().width / Consts::cellSize, gemSprite.getGlobalBounds().height / Consts::cellSize);
 			sf::IntRect hitbox(gem, gemSize);
 			if (previewHitbox.intersects(hitbox))
 			{
