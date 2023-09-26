@@ -3,22 +3,7 @@
 
 GameInfo::GameInfo()
 {
-	for (int i = 0; i < 20; i++)
-	{
-		wood.push_back(sf::Vector2i(Consts::random(1, 319 - 6), Consts::random(1, 178 - 4)));
-	}
-	for (int i = 0; i < 15; i++)
-	{
-		stone.push_back(sf::Vector2i(Consts::random(1, 319 - 4), Consts::random(1, 178 - 4)));
-	}
-	for (int i = 0; i < 10; i++)
-	{
-		gold.push_back(sf::Vector2i(Consts::random(1, 319 - 3), Consts::random(1, 178 - 3)));
-	}
-	for (int i = 0; i < 5; i++)
-	{
-		gem.push_back(sf::Vector2i(Consts::random(1, 319 - 2), Consts::random(1, 178 - 3)));
-	}
+
 }
 
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures& inTextures)
@@ -127,22 +112,95 @@ int GameState::update()
 	}
 	info.gameView = window.getView();
 
+	//load new chunks
+	int xChunk = std::floor(window.getView().getCenter().x / Consts::chunkSize.x - 0.5);
+	int yChunk = std::floor(window.getView().getCenter().y / Consts::chunkSize.y - 0.5);
+	bool newTl = true, newTr = true, newBl = true, newBr = true;
+	for (auto chunk : loadedChucks)
+	{
+		if (chunk == sf::Vector2i(xChunk, yChunk))
+			newTl = false;
+		if (chunk == sf::Vector2i(xChunk + 1, yChunk))
+			newTr = false;
+		if (chunk == sf::Vector2i(xChunk, yChunk + 1))
+			newBl = false;
+		if (chunk == sf::Vector2i(xChunk + 1, yChunk + 1))
+			newBr = false;
+	}
+	if (newTl)
+	{
+		loadedChucks.push_back(sf::Vector2i(xChunk, yChunk));
+		spawnResouces(xChunk, yChunk);
+	}
+	if (newTr)
+	{
+		loadedChucks.push_back(sf::Vector2i(xChunk + 1, yChunk));
+		spawnResouces(xChunk+1, yChunk);
+	}	
+	if (newBl)
+	{
+		loadedChucks.push_back(sf::Vector2i(xChunk, yChunk + 1));
+		spawnResouces(xChunk, yChunk+1);
+	}
+	if (newBr)
+	{
+		loadedChucks.push_back(sf::Vector2i(xChunk + 1, yChunk + 1));
+		spawnResouces(xChunk+1, yChunk+1);
+	}
+
 	return status;
 }
 
 void GameState::draw()
 {
 	//draw grass
-	//for (int x = 0; x < Consts::fieldSize.x/(Consts::cellSize * 10)+1; x++)
-	//{
-	//	for (int y = 0; y < Consts::fieldSize.y/(Consts::cellSize * 10)+1; y++)
-	//	{
-	//		grassSprite.setPosition(x * Consts::cellSize * 10, y * Consts::cellSize * 10);
-	//		window.draw(grassSprite);
-	//	}
-	//}
+	int xChunk = std::floor(window.getView().getCenter().x / Consts::chunkSize.x - 0.5);
+	int yChunk = std::floor(window.getView().getCenter().y / Consts::chunkSize.y - 0.5);
+	for (int x = 0; x < Consts::chunkSize.x/(Consts::cellSize * 8); x++)
+	{
+		for (int y = 0; y < Consts::chunkSize.y/(Consts::cellSize * 8); y++)
+		{
+			grassSprite.setPosition(xChunk * Consts::chunkSize.x + x * Consts::cellSize * 8, yChunk * Consts::chunkSize.y + y * Consts::cellSize * 8);
+			window.draw(grassSprite);
+			grassSprite.setPosition((xChunk+1) * Consts::chunkSize.x + x * Consts::cellSize * 8, yChunk * Consts::chunkSize.y + y * Consts::cellSize * 8);
+			window.draw(grassSprite);
+			grassSprite.setPosition(xChunk * Consts::chunkSize.x + x * Consts::cellSize * 8, (yChunk+1) * Consts::chunkSize.y + y * Consts::cellSize * 8);
+			window.draw(grassSprite);
+			grassSprite.setPosition((xChunk+1) * Consts::chunkSize.x + x * Consts::cellSize * 8, (yChunk+1) * Consts::chunkSize.y + y * Consts::cellSize * 8);
+			window.draw(grassSprite);
+		}
+	}
 	
-	for (int y = 0; y < 180; y++)
+	//calculate the highest and lowest structure
+	int min = 10000, max = -10000;
+	for (auto building : info.buildings)
+	{
+		min = std::min(min, building.pos.y);
+		max = std::max(max, building.pos.y);
+	}
+	for (auto wood : info.wood)
+	{
+		min = std::min(min, wood.y);
+		max = std::max(max, wood.y);
+	}
+	for (auto stone : info.stone)
+	{
+		min = std::min(min, stone.y);
+		max = std::max(max, stone.y);
+	}
+	for (auto gold : info.gold)
+	{
+		min = std::min(min, gold.y);
+		max = std::max(max, gold.y);
+	}
+	for (auto gem : info.gem)
+	{
+		min = std::min(min, gem.y);
+		max = std::max(max, gem.y);
+	}
+
+	//draw all structures/resources in order
+	for (int y = min; y < max; y++)
 	{
 		for (auto building : info.buildings)
 		{
@@ -268,4 +326,32 @@ bool GameState::isSpaceEmpty(sf::IntRect space)
 			return false;
 	}
 	return true;
+}
+
+void GameState::spawnResouces(int x, int y)
+{
+	srand(x * 2 + y + 3);
+	auto random = [](int max) {
+		return (rand() % max);
+	};
+
+	int xOff = x*Consts::chunkSize.x / Consts::cellSize;
+	int yOff = y*Consts::chunkSize.y / Consts::cellSize;
+
+	for (int i = 0; i < 12; i++)
+	{
+		info.wood.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+	}
+	for (int i = 0; i < 9; i++)
+	{
+		info.stone.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+	}
+	for (int i = 0; i < 6; i++)
+	{
+		info.gold.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		info.gem.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+	}
 }
