@@ -19,9 +19,6 @@ GameInfo::GameInfo()
 	{
 		gem.push_back(sf::Vector2i(Consts::random(1, 319 - 2), Consts::random(1, 178 - 3)));
 	}
-
-	srand(1);
-	std::cout << rand() << ", " << rand() << ", " << rand() << ", " << rand();
 }
 
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures& inTextures)
@@ -99,9 +96,6 @@ int GameState::update()
 	{
 		sf::View view(window.getView());
 		view.move(lastMousePos - mousePos);
-		float x = std::min(std::max(Consts::viewSize.x/2.f, view.getCenter().x), Consts::fieldSize.x - Consts::viewSize.x / 2.f);
-		float y = std::min(std::max(Consts::viewSize.y/2.f, view.getCenter().y), Consts::fieldSize.y - Consts::viewSize.y / 2.f);
-		view.setCenter(x, y);
 		window.setView(view);
 	}
 	lastMousePos = mousePos;
@@ -114,10 +108,8 @@ int GameState::update()
 		previewHitbox.height = Building::size[info.typeBuilding].y;
 
 		sf::Vector2f previewPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-		previewPos.x = (int(previewPos.x / Consts::cellSize) - Building::size[info.typeBuilding].x / 2) * Consts::cellSize;
-		previewPos.x = std::min(std::max(0.f, previewPos.x), Consts::fieldSize.x - preview.getSize().x);
-		previewPos.y = (int(previewPos.y / Consts::cellSize) - Building::size[info.typeBuilding].y / 2) * Consts::cellSize;
-		previewPos.y = std::min(std::max(0.f, previewPos.y), Consts::fieldSize.y - preview.getSize().y);
+		previewPos.x = (std::floor(previewPos.x / Consts::cellSize) - Building::size[info.typeBuilding].x / 2) * Consts::cellSize;
+		previewPos.y = (std::floor(previewPos.y / Consts::cellSize) - Building::size[info.typeBuilding].y / 2) * Consts::cellSize;
 		preview.setPosition(previewPos);		
 		previewHitbox.left = previewPos.x / Consts::cellSize;
 		previewHitbox.top = previewPos.y / Consts::cellSize;
@@ -141,14 +133,14 @@ int GameState::update()
 void GameState::draw()
 {
 	//draw grass
-	for (int x = 0; x < Consts::fieldSize.x/(Consts::cellSize * 10)+1; x++)
-	{
-		for (int y = 0; y < Consts::fieldSize.y/(Consts::cellSize * 10)+1; y++)
-		{
-			grassSprite.setPosition(x * Consts::cellSize * 10, y * Consts::cellSize * 10);
-			window.draw(grassSprite);
-		}
-	}
+	//for (int x = 0; x < Consts::fieldSize.x/(Consts::cellSize * 10)+1; x++)
+	//{
+	//	for (int y = 0; y < Consts::fieldSize.y/(Consts::cellSize * 10)+1; y++)
+	//	{
+	//		grassSprite.setPosition(x * Consts::cellSize * 10, y * Consts::cellSize * 10);
+	//		window.draw(grassSprite);
+	//	}
+	//}
 	
 	for (int y = 0; y < 180; y++)
 	{
