@@ -9,7 +9,9 @@ struct GameInfo
 	int typeBuilding = -1;
 	int lastBuilding = -1;
 	std::vector<Building> buildings;
-	sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*10, 1080*10));
+	sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
+	//sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
+	int seed = Consts::random(0, 1'000'000);
 
 	std::vector<sf::Vector2i> wood;
 	std::vector<sf::Vector2i> stone;

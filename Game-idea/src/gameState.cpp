@@ -330,7 +330,7 @@ bool GameState::isSpaceEmpty(sf::IntRect space)
 
 void GameState::spawnResouces(int x, int y)
 {
-	srand(x * 2 + y + 3);
+	srand(info.seed + x * 2 + y + 3);
 	auto random = [](int max) {
 		return (rand() % max);
 	};
@@ -338,20 +338,23 @@ void GameState::spawnResouces(int x, int y)
 	int xOff = x*Consts::chunkSize.x / Consts::cellSize;
 	int yOff = y*Consts::chunkSize.y / Consts::cellSize;
 
+	const int xMax = Consts::chunkSize.x / Consts::cellSize;
+	const int yMax = Consts::chunkSize.y / Consts::cellSize;
+
 	for (int i = 0; i < 12; i++)
 	{
-		info.wood.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+		info.wood.push_back(sf::Vector2i(xOff+random(xMax), yOff+random(yMax)));
 	}
 	for (int i = 0; i < 9; i++)
 	{
-		info.stone.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+		info.stone.push_back(sf::Vector2i(xOff+random(xMax), yOff+random(yMax)));
 	}
 	for (int i = 0; i < 6; i++)
 	{
-		info.gold.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+		info.gold.push_back(sf::Vector2i(xOff+random(xMax), yOff+random(yMax)));
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		info.gem.push_back(sf::Vector2i(xOff+random(240), yOff+random(135)));
+		info.gem.push_back(sf::Vector2i(xOff+random(xMax), yOff+random(yMax)));
 	}
 }
