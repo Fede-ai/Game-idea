@@ -9,8 +9,8 @@ struct GameInfo
 	int typeBuilding = -1;
 	int lastBuilding = -1;
 	std::vector<Building> buildings;
-	sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
-	//sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
+	//sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
+	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
 	int seed = Consts::random(0, 1'000'000);
 
 	std::vector<sf::Vector2i> wood;
@@ -39,9 +39,10 @@ public:
 private:
 	void setWallsTextures();
 	bool isSpaceEmpty(sf::IntRect space);
-	void spawnResouces(int x, int y);
+	void spawnResources(int x, int y);
+	void clearResources(int x, int y);
 	sf::Vector2f lastMousePos;
-	std::vector<sf::Vector2i> loadedChucks;
+	sf::Vector2i chunkTl = sf::Vector2i(-1, -1);
 	
 	sf::Texture grassTexture;
 	sf::Sprite grassSprite;
