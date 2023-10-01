@@ -46,6 +46,8 @@ int main()
 
 		switch (status)
 		{
+		case 0:
+			break;
 		case 1:
 			delete state;
 			state = new ShopState(window, gameInfo);

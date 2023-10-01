@@ -33,11 +33,14 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures&
 	
 	if (info.wood.size() == 0)
 	{
-		spawnResources(chunkTl.x, chunkTl.y);
-		spawnResources(chunkTl.x, chunkTl.y + 1);
-		spawnResources(chunkTl.x + 1, chunkTl.y);
-		spawnResources(chunkTl.x + 1, chunkTl.y + 1);
+		spawnResources(-1, -1);
+		spawnResources(-1, 0);
+		spawnResources(0, -1);
+		spawnResources(0, 0);
 	}
+	int xChunk = std::floor(window.getView().getCenter().x / Consts::chunkSize.x - 0.5);
+	int yChunk = std::floor(window.getView().getCenter().y / Consts::chunkSize.y - 0.5);
+	chunkTl = sf::Vector2i(xChunk, yChunk);
 }
 
 void GameState::handleEvents()
@@ -120,39 +123,18 @@ int GameState::update()
 	}
 	info.gameView = window.getView();
 
+	std::cout << info.wood.size() << "\n";
+
 	//load and unload new chunks
 	int xChunk = std::floor(window.getView().getCenter().x / Consts::chunkSize.x - 0.5);
 	int yChunk = std::floor(window.getView().getCenter().y / Consts::chunkSize.y - 0.5);
 	if (chunkTl != sf::Vector2i(xChunk, yChunk))
 	{
-		if (xChunk == chunkTl.x - 1)
-		{
-			spawnResources(xChunk, yChunk);
-			clearResources(xChunk + 2, yChunk);
-			spawnResources(xChunk, yChunk + 1);
-			clearResources(xChunk + 2, yChunk + 1);
-		}
-		if (xChunk == chunkTl.x + 1)
-		{
-			spawnResources(xChunk + 1, yChunk);
-			clearResources(xChunk - 1, yChunk);
-			spawnResources(xChunk + 1, yChunk + 1);
-			clearResources(xChunk - 1, yChunk + 1);
-		}
-		if (yChunk == chunkTl.y - 1)
-		{
-			spawnResources(xChunk, yChunk);
-			clearResources(xChunk, yChunk + 2);
-			spawnResources(xChunk + 1, yChunk);
-			clearResources(xChunk + 1, yChunk + 2);
-		}
-		if (yChunk == chunkTl.y + 1)
-		{
-			spawnResources(xChunk, yChunk + 1);
-			clearResources(xChunk, yChunk - 1);
-			spawnResources(xChunk + 1, yChunk + 1);
-			clearResources(xChunk + 1, yChunk - 1);
-		}
+		clearResources();
+		spawnResources(xChunk, yChunk);
+		spawnResources(xChunk, yChunk+1);
+		spawnResources(xChunk+1, yChunk);
+		spawnResources(xChunk+1, yChunk+1);
 	}
 	chunkTl = sf::Vector2i(xChunk, yChunk);
 
@@ -178,9 +160,9 @@ void GameState::draw()
 			window.draw(grassSprite);
 		}
 	}
-	
+
 	//calculate the highest and lowest structure
-	int min = 10000, max = -10000;
+	int min = info.wood[0].y, max = info.wood[0].y;
 	for (auto building : info.buildings)
 	{
 		min = std::min(min, building.pos.y);
@@ -334,6 +316,38 @@ bool GameState::isSpaceEmpty(sf::IntRect space)
 	}
 	return true;
 }
+bool GameState::canSpawnResource(sf::IntRect space)
+{
+	for (auto wood : info.wood)
+	{
+		sf::Vector2i woodSize = sf::Vector2i(woodSprite.getGlobalBounds().width / Consts::cellSize, woodSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(wood, woodSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	for (auto stone : info.stone)
+	{
+		sf::Vector2i stoneSize = sf::Vector2i(stoneSprite.getGlobalBounds().width / Consts::cellSize, stoneSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(stone, stoneSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	for (auto gold : info.gold)
+	{
+		sf::Vector2i goldSize = sf::Vector2i(goldSprite.getGlobalBounds().width / Consts::cellSize, goldSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(gold, goldSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	for (auto gem : info.gem)
+	{
+		sf::Vector2i gemSize = sf::Vector2i(gemSprite.getGlobalBounds().width / Consts::cellSize, gemSprite.getGlobalBounds().height / Consts::cellSize);
+		sf::IntRect hitbox(gem, gemSize);
+		if (space.intersects(hitbox))
+			return false;
+	}
+	return true;
+}
 void GameState::spawnResources(int x, int y)
 {
 	srand(info.seed + x * 2 + y + 3);
@@ -353,7 +367,7 @@ void GameState::spawnResources(int x, int y)
 		sf::Vector2i cellSize(size.x/Consts::cellSize+6, size.y / Consts::cellSize+6);
 		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
 
-		if (isSpaceEmpty(hitbox))
+		if (canSpawnResource(hitbox))
 			info.wood.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
 		else
 			i--;
@@ -364,7 +378,7 @@ void GameState::spawnResources(int x, int y)
 		sf::Vector2i cellSize(size.x / Consts::cellSize+6, size.y / Consts::cellSize+6);
 		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
 
-		if (isSpaceEmpty(hitbox))
+		if (canSpawnResource(hitbox))
 			info.stone.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
 		else
 			i--;
@@ -375,7 +389,7 @@ void GameState::spawnResources(int x, int y)
 		sf::Vector2i cellSize(size.x / Consts::cellSize+6, size.y / Consts::cellSize+6);
 		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
 
-		if (isSpaceEmpty(hitbox))
+		if (canSpawnResource(hitbox))
 			info.gold.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
 		else
 			i--;
@@ -386,15 +400,15 @@ void GameState::spawnResources(int x, int y)
 		sf::Vector2i cellSize(size.x / Consts::cellSize+6, size.y / Consts::cellSize+6);
 		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
 
-		if (isSpaceEmpty(hitbox))
+		if (canSpawnResource(hitbox))
 			info.gem.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
 		else
 			i--;
 	}
 }
-void GameState::clearResources(int x, int y)
+void GameState::clearResources()
 {
-	sf::IntRect chunk(x * Consts::chunkSize.x / Consts::cellSize, y * Consts::chunkSize.y / Consts::cellSize,
+	/*sf::IntRect chunk(x * Consts::chunkSize.x / Consts::cellSize, y * Consts::chunkSize.y / Consts::cellSize,
 		Consts::chunkSize.x / Consts::cellSize, Consts::chunkSize.y / Consts::cellSize);
 
 	for (int i = 0; i < info.wood.size(); i++)
@@ -428,5 +442,9 @@ void GameState::clearResources(int x, int y)
 			info.gem.erase(info.gem.begin() + i);
 			i--;
 		}
-	}
+	}*/
+	info.wood.clear();
+	info.stone.clear();
+	info.gold.clear();
+	info.gem.clear();
 }
