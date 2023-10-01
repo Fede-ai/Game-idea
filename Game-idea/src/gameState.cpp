@@ -18,20 +18,11 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures&
 	
 	shop.setTexture(textures.shop);
 	shop.setScale(Consts::pixelSize*2, Consts::pixelSize*2);
-
-	woodSprite.setTexture(textures.wood);
-	woodSprite.setScale(Consts::pixelSize, Consts::pixelSize);
-	stoneSprite.setTexture(textures.stone);
-	stoneSprite.setScale(Consts::pixelSize, Consts::pixelSize);
-	goldSprite.setTexture(textures.gold);
-	goldSprite.setScale(Consts::pixelSize, Consts::pixelSize);
-	gemSprite.setTexture(textures.gem);
-	gemSprite.setScale(Consts::pixelSize, Consts::pixelSize);
 	
 	window.setView(info.gameView);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
 	
-	if (info.wood.size() == 0)
+	if (info.resources.size() == 0)
 	{
 		spawnResources(-1, -1);
 		spawnResources(-1, 0);
@@ -65,7 +56,7 @@ void GameState::handleEvents()
 				{
 					info.buildings.push_back(Building(textures, info.typeBuilding, preview.getPosition()));	
 					if (info.typeBuilding == 0)
-						setWallsTextures();
+						updateWallsTextures();
 					info.typeBuilding = -1;
 				}
 			}
@@ -110,7 +101,7 @@ int GameState::update()
 		previewHitbox.left = previewPos.x / Consts::cellSize;
 		previewHitbox.top = previewPos.y / Consts::cellSize;
 	
-		if (isSpaceEmpty(previewHitbox))
+		if (canPlaceBuilding(previewHitbox))
 		{
 			preview.setFillColor(sf::Color(20, 110, 20, 150));
 			canPosition = true;	
@@ -123,14 +114,12 @@ int GameState::update()
 	}
 	info.gameView = window.getView();
 
-	std::cout << info.wood.size() << "\n";
-
 	//load and unload new chunks
 	int xChunk = std::floor(window.getView().getCenter().x / Consts::chunkSize.x - 0.5);
 	int yChunk = std::floor(window.getView().getCenter().y / Consts::chunkSize.y - 0.5);
 	if (chunkTl != sf::Vector2i(xChunk, yChunk))
 	{
-		clearResources();
+		info.resources.clear();
 		spawnResources(xChunk, yChunk);
 		spawnResources(xChunk, yChunk+1);
 		spawnResources(xChunk+1, yChunk);
@@ -162,31 +151,16 @@ void GameState::draw()
 	}
 
 	//calculate the highest and lowest structure
-	int min = info.wood[0].y, max = info.wood[0].y;
+	int min = info.resources[0].pos.y, max = info.resources[0].pos.y;
 	for (auto building : info.buildings)
 	{
 		min = std::min(min, building.pos.y);
 		max = std::max(max, building.pos.y);
 	}
-	for (auto wood : info.wood)
+	for (auto resource : info.resources)
 	{
-		min = std::min(min, wood.y);
-		max = std::max(max, wood.y);
-	}
-	for (auto stone : info.stone)
-	{
-		min = std::min(min, stone.y);
-		max = std::max(max, stone.y);
-	}
-	for (auto gold : info.gold)
-	{
-		min = std::min(min, gold.y);
-		max = std::max(max, gold.y);
-	}
-	for (auto gem : info.gem)
-	{
-		min = std::min(min, gem.y);
-		max = std::max(max, gem.y);
+		min = std::min(min, resource.pos.y);
+		max = std::max(max, resource.pos.y);
 	}
 
 	//draw all structures/resources in order
@@ -197,36 +171,11 @@ void GameState::draw()
 			if (building.pos.y == y)
 				building.draw(window);
 		}
-		for (auto wood : info.wood)
+		for (auto resource : info.resources)
 		{
-			if (wood.y == y)
+			if (resource.pos.y == y)
 			{
-				woodSprite.setPosition(wood.x * Consts::cellSize, wood.y * Consts::cellSize);
-				window.draw(woodSprite);
-			}
-		}
-		for (auto stone : info.stone)
-		{
-			if (stone.y == y)
-			{
-				stoneSprite.setPosition(stone.x * Consts::cellSize, stone.y * Consts::cellSize);
-				window.draw(stoneSprite);
-			}
-		}
-		for (auto gold : info.gold)
-		{
-			if (gold.y == y)
-			{
-				goldSprite.setPosition(gold.x * Consts::cellSize, gold.y * Consts::cellSize);
-				window.draw(goldSprite);
-			}
-		}
-		for (auto gem : info.gem)
-		{
-			if (gem.y == y)
-			{
-				gemSprite.setPosition(gem.x * Consts::cellSize, gem.y * Consts::cellSize);
-				window.draw(gemSprite);
+				resource.draw(window);
 			}
 		}
 	}
@@ -238,7 +187,7 @@ void GameState::draw()
 	window.draw(shop);
 }
 
-void GameState::setWallsTextures()
+void GameState::updateWallsTextures()
 {
 	for (auto& building : info.buildings)
 	{
@@ -279,75 +228,21 @@ void GameState::setWallsTextures()
 		}
 	}
 }
-bool GameState::isSpaceEmpty(sf::IntRect space)
+bool GameState::canPlaceBuilding(sf::IntRect space)
 {
 	for (auto building : info.buildings)
 	{
 		if (space.intersects(building.hitbox))
 			return false;
 	}
-	for (auto wood : info.wood)
+	for (auto resource : info.resources)
 	{
-		sf::Vector2i woodSize = sf::Vector2i(woodSprite.getGlobalBounds().width / Consts::cellSize, woodSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(wood, woodSize);
-		if (space.intersects(hitbox))
-			return false;
-	}
-	for (auto stone : info.stone)
-	{
-		sf::Vector2i stoneSize = sf::Vector2i(stoneSprite.getGlobalBounds().width / Consts::cellSize, stoneSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(stone, stoneSize);
-		if (space.intersects(hitbox))
-			return false;
-	}
-	for (auto gold : info.gold)
-	{
-		sf::Vector2i goldSize = sf::Vector2i(goldSprite.getGlobalBounds().width / Consts::cellSize, goldSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(gold, goldSize);
-		if (space.intersects(hitbox))
-			return false;
-	}
-	for (auto gem : info.gem)
-	{
-		sf::Vector2i gemSize = sf::Vector2i(gemSprite.getGlobalBounds().width / Consts::cellSize, gemSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(gem, gemSize);
-		if (space.intersects(hitbox))
+		if (space.intersects(resource.hitbox))
 			return false;
 	}
 	return true;
 }
-bool GameState::canSpawnResource(sf::IntRect space)
-{
-	for (auto wood : info.wood)
-	{
-		sf::Vector2i woodSize = sf::Vector2i(woodSprite.getGlobalBounds().width / Consts::cellSize, woodSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(wood, woodSize);
-		if (space.intersects(hitbox))
-			return false;
-	}
-	for (auto stone : info.stone)
-	{
-		sf::Vector2i stoneSize = sf::Vector2i(stoneSprite.getGlobalBounds().width / Consts::cellSize, stoneSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(stone, stoneSize);
-		if (space.intersects(hitbox))
-			return false;
-	}
-	for (auto gold : info.gold)
-	{
-		sf::Vector2i goldSize = sf::Vector2i(goldSprite.getGlobalBounds().width / Consts::cellSize, goldSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(gold, goldSize);
-		if (space.intersects(hitbox))
-			return false;
-	}
-	for (auto gem : info.gem)
-	{
-		sf::Vector2i gemSize = sf::Vector2i(gemSprite.getGlobalBounds().width / Consts::cellSize, gemSprite.getGlobalBounds().height / Consts::cellSize);
-		sf::IntRect hitbox(gem, gemSize);
-		if (space.intersects(hitbox))
-			return false;
-	}
-	return true;
-}
+
 void GameState::spawnResources(int x, int y)
 {
 	srand(info.seed + x * 2 + y + 3);
@@ -361,90 +256,36 @@ void GameState::spawnResources(int x, int y)
 	const int xMax = Consts::chunkSize.x / Consts::cellSize;
 	const int yMax = Consts::chunkSize.y / Consts::cellSize;
 
-	for (int i = 0; i < 10; i++)
-	{
-		sf::Vector2f size(woodSprite.getGlobalBounds().getSize());
-		sf::Vector2i cellSize(size.x/Consts::cellSize+6, size.y / Consts::cellSize+6);
-		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
+	const int woodPC = 10;
+	const int stonePC = 7;
+	const int goldPC = 5;
+	const int gemPC = 2;
 
-		if (canSpawnResource(hitbox))
-			info.wood.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
-		else
-			i--;
-	}
-	for (int i = 0; i < 7; i++)
+	int type = 0;
+	for (int i = 0; i < woodPC + stonePC + goldPC + gemPC; i++)
 	{
-		sf::Vector2f size(stoneSprite.getGlobalBounds().getSize());
-		sf::Vector2i cellSize(size.x / Consts::cellSize+6, size.y / Consts::cellSize+6);
-		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
+		if (i == woodPC)
+			type = 1;
+		else if (i == woodPC + stonePC)
+			type = 2;
+		else if (i == woodPC + stonePC + goldPC)
+			type = 3;
 
-		if (canSpawnResource(hitbox))
-			info.stone.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
-		else
-			i--;
-	}
-	for (int i = 0; i < 5; i++)
-	{
-		sf::Vector2f size(goldSprite.getGlobalBounds().getSize());
-		sf::Vector2i cellSize(size.x / Consts::cellSize+6, size.y / Consts::cellSize+6);
-		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
-
-		if (canSpawnResource(hitbox))
-			info.gold.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
-		else
-			i--;
-	}
-	for (int i = 0; i < 2; i++)
-	{
-		sf::Vector2f size(gemSprite.getGlobalBounds().getSize());
-		sf::Vector2i cellSize(size.x / Consts::cellSize+6, size.y / Consts::cellSize+6);
-		sf::IntRect hitbox(sf::Vector2i(xOff + random(xMax), yOff + random(yMax)), cellSize);
-
-		if (canSpawnResource(hitbox))
-			info.gem.push_back(sf::Vector2i(hitbox.left+3, hitbox.top+3));
+		sf::Vector2f pos((xOff + random(xMax)) * Consts::cellSize, (yOff + random(yMax)) * Consts::cellSize);
+		Resource resource(textures, type, pos);
+		if (canSpawnResource(resource))
+			info.resources.push_back(resource);
 		else
 			i--;
 	}
 }
-void GameState::clearResources()
+bool GameState::canSpawnResource(Resource resource)
 {
-	/*sf::IntRect chunk(x * Consts::chunkSize.x / Consts::cellSize, y * Consts::chunkSize.y / Consts::cellSize,
-		Consts::chunkSize.x / Consts::cellSize, Consts::chunkSize.y / Consts::cellSize);
+	for (auto other : info.resources)
+	{
+		if (resource.spawnHitbox.intersects(other.hitbox))
+			return false;
+	}
 
-	for (int i = 0; i < info.wood.size(); i++)
-	{
-		if (chunk.contains(info.wood[i]))
-		{
-			info.wood.erase(info.wood.begin() + i);
-			i--;
-		}
-	}
-	for (int i = 0; i < info.stone.size(); i++)
-	{
-		if (chunk.contains(info.stone[i]))
-		{
-			info.stone.erase(info.stone.begin() + i);
-			i--;
-		}
-	}
-	for (int i = 0; i < info.gold.size(); i++)
-	{
-		if (chunk.contains(info.gold[i]))
-		{
-			info.gold.erase(info.gold.begin() + i);
-			i--;
-		}
-	}
-	for (int i = 0; i < info.gem.size(); i++)
-	{
-		if (chunk.contains(info.gem[i]))
-		{
-			info.gem.erase(info.gem.begin() + i);
-			i--;
-		}
-	}*/
-	info.wood.clear();
-	info.stone.clear();
-	info.gold.clear();
-	info.gem.clear();
+	return true;
 }

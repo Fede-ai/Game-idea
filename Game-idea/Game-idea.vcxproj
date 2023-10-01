@@ -136,12 +136,14 @@
     <ClCompile Include="src\building.cpp" />
     <ClCompile Include="src\gameState.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\resource.cpp" />
     <ClCompile Include="src\shopState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\building.h" />
     <ClInclude Include="src\consts.h" />
     <ClInclude Include="src\gameState.h" />
+    <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\shopState.h" />
     <ClInclude Include="src\state.h" />
   </ItemGroup>
