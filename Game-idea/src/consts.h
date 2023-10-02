@@ -7,9 +7,9 @@ namespace Consts
 	static const sf::Vector2i windowSize = sf::Vector2i(sf::VideoMode::getDesktopMode().width*2/3, sf::VideoMode::getDesktopMode().width*3/8);
 	static const sf::Vector2f viewSize = sf::Vector2f(1920, 1080);
 	static const std::string gameName = "Game idea";	
-	static const int pixelSize = 3; 
+	static const int pixelSize = 4; 
 	static const int cellSize = pixelSize * 6; //pixel per cell = 6
-	static const sf::Vector2f chunkSize = sf::Vector2f(1920 * 3, 1080 * 3);
+	static const sf::Vector2f chunkSize = sf::Vector2f(viewSize.x * 3, viewSize.y * 3);
 	static int random(int min, int max)
 	{
 		std::random_device dev;

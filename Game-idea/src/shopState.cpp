@@ -16,10 +16,12 @@ void ShopState::handleEvents()
 	sf::Event event;
 	while (window.pollEvent(event))
 	{
+		//close window
 		if (event.type == sf::Event::Closed)
 		{
 			window.close();
 		}
+		//scroll shop
 		else if (event.type == sf::Event::MouseWheelScrolled)
 		{
 			sf::View view(window.getView());
@@ -29,6 +31,7 @@ void ShopState::handleEvents()
 			view.setCenter(Consts::viewSize.x / 2, std::max(view.getCenter().y, Consts::viewSize.y / 2));
 			window.setView(view);
 		}
+		//buy item
 		else if (event.type == sf::Event::MouseButtonReleased)
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
@@ -38,6 +41,7 @@ void ShopState::handleEvents()
 					int y = i / itemPerRow;
 					int nLine = i - y * itemPerRow;
 					itemBg.setPosition(space + (itemBg.getSize().x + space) * nLine, space + (itemBg.getSize().y + space) * y);
+					//determinate the building corrisponding to each shop item
 					if (itemBg.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 					{
 						int item;
@@ -54,6 +58,7 @@ void ShopState::handleEvents()
 				}
 			}
 		}
+		//go back to game
 		else if (event.type == sf::Event::KeyPressed)
 		{
 			if (event.key.code == sf::Keyboard::Escape)

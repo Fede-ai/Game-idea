@@ -4,6 +4,7 @@
 class Building
 {
 public:
+	//position must be "extended" (actual drawing position)
 	Building(Textures& textures, int inType, sf::Vector2f inPos);
 	void draw(sf::RenderWindow& window);
 	void setTextureNum(Textures& textures, int num);

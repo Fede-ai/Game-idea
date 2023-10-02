@@ -17,7 +17,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures&
 	grassSprite.setScale(Consts::cellSize, Consts::cellSize);
 	
 	shop.setTexture(textures.shop);
-	shop.setScale(Consts::pixelSize*2, Consts::pixelSize*2);
+	shop.setScale(Consts::pixelSize*1.5, Consts::pixelSize*1.5);
 	
 	window.setView(info.gameView);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
@@ -47,17 +47,23 @@ void GameState::handleEvents()
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
+				//open shop
 				if (shop.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 				{
 					if (info.typeBuilding == -1)
 						status = 1;
 				}
-				else if (info.typeBuilding != -1 && canPosition)
+				//place building
+				else if (info.typeBuilding != -1)
 				{
-					info.buildings.push_back(Building(textures, info.typeBuilding, preview.getPosition()));	
-					if (info.typeBuilding == 0)
-						updateWallsTextures();
-					info.typeBuilding = -1;
+					Building building(textures, info.typeBuilding, preview.getPosition());
+					if (canPlaceBuilding(building))
+					{
+						info.buildings.push_back(building);	
+						if (info.typeBuilding == 0)
+							updateWallsTextures();
+						info.typeBuilding = -1;
+					}
 				}
 			}
 		}
@@ -74,7 +80,6 @@ void GameState::handleEvents()
 		}
 	}
 }
-
 int GameState::update()
 {
 	//move view
@@ -90,27 +95,18 @@ int GameState::update()
 	//move preview and control if the space is empty
 	if (info.typeBuilding != -1)
 	{
+		//set size and position of preview square
 		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * Consts::cellSize, Building::size[info.typeBuilding].y * Consts::cellSize));
-		previewHitbox.width = Building::size[info.typeBuilding].x;
-		previewHitbox.height = Building::size[info.typeBuilding].y;
-
 		sf::Vector2f previewPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 		previewPos.x = (std::floor(previewPos.x / Consts::cellSize) - Building::size[info.typeBuilding].x / 2) * Consts::cellSize;
 		previewPos.y = (std::floor(previewPos.y / Consts::cellSize) - Building::size[info.typeBuilding].y / 2) * Consts::cellSize;
-		preview.setPosition(previewPos);		
-		previewHitbox.left = previewPos.x / Consts::cellSize;
-		previewHitbox.top = previewPos.y / Consts::cellSize;
-	
+		preview.setPosition(previewPos);
+
+		Building previewHitbox(textures, info.typeBuilding, previewPos);
 		if (canPlaceBuilding(previewHitbox))
-		{
 			preview.setFillColor(sf::Color(20, 110, 20, 150));
-			canPosition = true;	
-		}
 		else
-		{
 			preview.setFillColor(sf::Color(180, 30, 30, 150));
-			canPosition = false;
-		}
 	}
 	info.gameView = window.getView();
 
@@ -129,7 +125,6 @@ int GameState::update()
 
 	return status;
 }
-
 void GameState::draw()
 {
 	//draw grass
@@ -228,16 +223,16 @@ void GameState::updateWallsTextures()
 		}
 	}
 }
-bool GameState::canPlaceBuilding(sf::IntRect space)
+bool GameState::canPlaceBuilding(Building building)
 {
-	for (auto building : info.buildings)
+	for (auto other : info.buildings)
 	{
-		if (space.intersects(building.hitbox))
+		if (building.hitbox.intersects(other.hitbox))
 			return false;
 	}
 	for (auto resource : info.resources)
 	{
-		if (space.intersects(resource.hitbox))
+		if (building.hitbox.intersects(resource.hitbox))
 			return false;
 	}
 	return true;
@@ -256,10 +251,10 @@ void GameState::spawnResources(int x, int y)
 	const int xMax = Consts::chunkSize.x / Consts::cellSize;
 	const int yMax = Consts::chunkSize.y / Consts::cellSize;
 
-	const int woodPC = 10;
-	const int stonePC = 7;
-	const int goldPC = 5;
-	const int gemPC = 2;
+	const int woodPC = 7;
+	const int stonePC = 5;
+	const int goldPC = 3;
+	const int gemPC = 1;
 
 	int type = 0;
 	for (int i = 0; i < woodPC + stonePC + goldPC + gemPC; i++)

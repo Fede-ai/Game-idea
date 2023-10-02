@@ -11,8 +11,8 @@ struct GameInfo
 	int lastBuilding = -1;
 	std::vector<Building> buildings;
 	std::vector<Resource> resources;
-	sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
-	//sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
+	//sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
+	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
 	int seed = Consts::random(0, 1'000'000);
 
 	int nWood = 0;
@@ -35,7 +35,7 @@ public:
 
 private:
 	void updateWallsTextures();
-	bool canPlaceBuilding(sf::IntRect space);
+	bool canPlaceBuilding(Building building);
 
 	void spawnResources(int x, int y);	
 	bool canSpawnResource(Resource resource);
@@ -45,10 +45,8 @@ private:
 	
 	sf::Texture grassTexture;
 	sf::Sprite grassSprite;
-	
+
 	sf::RectangleShape preview;
-	sf::IntRect previewHitbox;
-	bool canPosition = false;
 	sf::Sprite shop;
 	
 	GameInfo& info;
