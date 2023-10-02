@@ -44,13 +44,13 @@ void ShopState::handleEvents()
 					//determinate the building corrisponding to each shop item
 					if (itemBg.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 					{
-						int item;
-						switch (i)
-						{
-						case 0:
-							item = 0;
-							break;
-						}
+						int item = i;
+						//switch (i)
+						//{
+						//case 0:
+						//	item = 0;
+						//	break;
+						//}
 						info.typeBuilding = item;
 						info.lastBuilding = item;
 						status = 2;

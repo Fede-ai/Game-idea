@@ -12,6 +12,13 @@ Building::Building(Textures& textures, int inType, sf::Vector2f inPos)
 	hitbox.height = size[type].y;
 	hitbox.top = pos.y;
 	hitbox.left = pos.x;
+
+	switch (type)
+	{
+	case 1:
+
+		break;
+	}
 }
 
 void Building::draw(sf::RenderWindow& window)
@@ -24,6 +31,10 @@ void Building::setTextureNum(Textures& textures, int num)
 	body.setTexture(textures.wall[num]);
 }
 
-const sf::Vector2i Building::size[1] = {
-	sf::Vector2i(1, 1)
+const sf::Vector2i Building::size[5] = {
+	sf::Vector2i(1, 1), //wall
+	sf::Vector2i(2, 2), //wood farm
+	sf::Vector2i(2, 2), //stone farm
+	sf::Vector2i(2, 2), //gold farm
+	sf::Vector2i(2, 2) //gem famr
 };
