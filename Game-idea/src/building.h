@@ -9,11 +9,21 @@ public:
 	void draw(sf::RenderWindow& window);
 	void setTextureNum(Textures& textures, int num);
 
-	static const sf::Vector2i size[5];
-	sf::IntRect hitbox;
 	sf::Vector2i pos;
+	sf::IntRect hitbox;
 	int type;
 
-private:
+	static const sf::Vector2i size[5];
+	static const enum types
+	{
+		none = -1,
+		wall = 0,
+		woodFarm = 1,
+		stoneFarm = 2,
+		goldFarm = 3,
+		gemFarm = 4
+	};
+
+private:	
 	sf::Sprite body;
 };

@@ -22,15 +22,32 @@ Resource::Resource(Textures& textures, int inType, sf::Vector2f inPos)
 	hitbox.top = pos.y;
 	hitbox.left = pos.x;
 
-	spawnHitbox.width = size[type].x + 2*spawnDistance;
-	spawnHitbox.height = size[type].y + 2*spawnDistance;
-	spawnHitbox.top = pos.y - spawnDistance;
+	wideFarmHitbox.width = size[type].x + 2 * farmDistance;
+	wideFarmHitbox.height = size[type].y;	
+	wideFarmHitbox.left = pos.x - farmDistance;
+	wideFarmHitbox.top = pos.y;
+
+	tallFarmHitbox.width = size[type].x;
+	tallFarmHitbox.height = size[type].y + 2 * farmDistance;	
+	tallFarmHitbox.left = pos.x;
+	tallFarmHitbox.top = pos.y - farmDistance;
+
+	spawnHitbox.width = size[type].x + 2 * spawnDistance;
+	spawnHitbox.height = size[type].y + 2 * spawnDistance;	
 	spawnHitbox.left = pos.x - spawnDistance;
+	spawnHitbox.top = pos.y - spawnDistance;
 }
 
 void Resource::draw(sf::RenderWindow& window)
 {
 	window.draw(body);
+}
+
+bool Resource::isBuildingInRange(Building building)
+{
+	if (building.hitbox.intersects(wideFarmHitbox) || building.hitbox.intersects(tallFarmHitbox))
+		return true;
+	return false;
 }
 
 const sf::Vector2i Resource::size[4] = {

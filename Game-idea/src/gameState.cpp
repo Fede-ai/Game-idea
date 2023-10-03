@@ -3,7 +3,6 @@
 
 GameInfo::GameInfo()
 {
-
 }
 
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures& inTextures)
@@ -50,19 +49,19 @@ void GameState::handleEvents()
 				//open shop
 				if (shop.getGlobalBounds().contains(window.mapPixelToCoords(sf::Mouse::getPosition(window))))
 				{
-					if (info.typeBuilding == -1)
+					if (info.typeBuilding == Building::types::none)
 						status = 1;
 				}
 				//place building
-				else if (info.typeBuilding != -1)
+				else if (info.typeBuilding != Building::types::none)
 				{
 					Building building(textures, info.typeBuilding, preview.getPosition());
 					if (canPlaceBuilding(building))
 					{
 						info.buildings.push_back(building);	
-						if (info.typeBuilding == 0)
+						if (info.typeBuilding == Building::types::wall)
 							updateWallsTextures();
-						info.typeBuilding = -1;
+						info.typeBuilding = Building::types::none;
 					}
 				}
 			}
@@ -93,7 +92,7 @@ int GameState::update()
 	lastMousePos = mousePos;
 	
 	//move preview and control if the space is empty
-	if (info.typeBuilding != -1)
+	if (info.typeBuilding != Building::types::none)
 	{
 		//set size and position of preview square
 		preview.setSize(sf::Vector2f(Building::size[info.typeBuilding].x * Consts::cellSize, Building::size[info.typeBuilding].y * Consts::cellSize));
@@ -175,7 +174,7 @@ void GameState::draw()
 		}
 	}
 	
-	if (info.typeBuilding != -1)
+	if (info.typeBuilding != Building::types::none)
 		window.draw(preview);
 	
 	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-250, 1080/2-250));
@@ -186,12 +185,12 @@ void GameState::updateWallsTextures()
 {
 	for (auto& building : info.buildings)
 	{
-		if (building.type == 0)
+		if (building.type == Building::types::wall)
 		{
 			bool top = false, bot = false, left = false, right = false;
 			for (auto other : info.buildings)
 			{
-				if (other.type == 0 && !(building.pos.x == other.pos.x && building.pos.y == other.pos.y))
+				if (other.type == Building::types::wall && !(building.pos.x == other.pos.x && building.pos.y == other.pos.y))
 				{
 					if (building.pos.x == other.pos.x)
 					{
@@ -235,6 +234,43 @@ bool GameState::canPlaceBuilding(Building building)
 		if (building.hitbox.intersects(resource.hitbox))
 			return false;
 	}
+
+	if (building.type == Building::types::woodFarm)
+	{
+		for (auto resource : info.resources)
+		{
+			if (resource.type == Resource::types::wood && resource.isBuildingInRange(building))
+				return true;
+		}
+		return false;
+	}
+	else if (building.type == Building::types::stoneFarm)
+	{
+		for (auto resource : info.resources)
+		{
+			if (resource.type == Resource::types::stone && resource.isBuildingInRange(building))
+				return true;
+		}
+		return false;
+	}
+	else if (building.type == Building::types::goldFarm)
+	{
+		for (auto resource : info.resources)
+		{
+			if (resource.type == Resource::types::gold && resource.isBuildingInRange(building))
+				return true;
+		}
+		return false;
+	}
+	else if (building.type == Building::types::gemFarm)
+	{
+		for (auto resource : info.resources)
+		{
+			if (resource.type == Resource::types::gem && resource.isBuildingInRange(building))
+				return true;
+		}
+		return false;
+	}
 	return true;
 }
 
@@ -256,15 +292,15 @@ void GameState::spawnResources(int x, int y)
 	const int goldPC = 3;
 	const int gemPC = 1;
 
-	int type = 0;
+	int type = Resource::types::wood;
 	for (int i = 0; i < woodPC + stonePC + goldPC + gemPC; i++)
 	{
 		if (i == woodPC)
-			type = 1;
+			type = Resource::types::stone;
 		else if (i == woodPC + stonePC)
-			type = 2;
+			type = Resource::types::gold;
 		else if (i == woodPC + stonePC + goldPC)
-			type = 3;
+			type = Resource::types::gem;
 
 		sf::Vector2f pos((xOff + random(xMax)) * Consts::cellSize, (yOff + random(yMax)) * Consts::cellSize);
 		Resource resource(textures, type, pos);

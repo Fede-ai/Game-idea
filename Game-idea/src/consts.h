@@ -32,10 +32,16 @@ struct Textures
 			}
 		}
 		shop.loadFromFile("texture/shop.png");
+
 		wood.loadFromFile("texture/wood.png");
 		stone.loadFromFile("texture/stone.png");
 		gold.loadFromFile("texture/gold.png");
 		gem.loadFromFile("texture/gem.png");
+
+		woodFarm.loadFromFile("texture/woodFarm.png");
+		stoneFarm.loadFromFile("texture/stoneFarm.png");
+		goldFarm.loadFromFile("texture/goldFarm.png");
+		gemFarm.loadFromFile("texture/gemFarm.png");
 	}
 	sf::Texture wall[16];
 	sf::Texture shop;
@@ -44,4 +50,9 @@ struct Textures
 	sf::Texture stone;
 	sf::Texture gold;
 	sf::Texture gem;
+
+	sf::Texture woodFarm;
+	sf::Texture stoneFarm;
+	sf::Texture goldFarm;
+	sf::Texture gemFarm;
 };

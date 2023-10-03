@@ -5,9 +5,8 @@ Building::Building(Textures& textures, int inType, sf::Vector2f inPos)
 	type = inType;
 	pos = sf::Vector2i(inPos.x / Consts::cellSize, inPos.y / Consts::cellSize);
 	
+	body.setPosition(inPos);
 	body.setScale(Consts::pixelSize, Consts::pixelSize);
-	body.setPosition(inPos.x, inPos.y - 3 * Consts::pixelSize);
-
 	hitbox.width = size[type].x;
 	hitbox.height = size[type].y;
 	hitbox.top = pos.y;
@@ -15,8 +14,20 @@ Building::Building(Textures& textures, int inType, sf::Vector2f inPos)
 
 	switch (type)
 	{
-	case 1:
-
+	case types::wall:
+		body.setPosition(body.getPosition().x, body.getPosition().y - 3 * Consts::pixelSize);
+		break;
+	case types::woodFarm:
+		body.setTexture(textures.woodFarm);
+		break;
+	case types::stoneFarm:
+		body.setTexture(textures.stoneFarm);
+		break;
+	case types::goldFarm:
+		body.setTexture(textures.goldFarm);
+		break;
+	case types::gemFarm:
+		body.setTexture(textures.gemFarm);
 		break;
 	}
 }
@@ -28,7 +39,10 @@ void Building::draw(sf::RenderWindow& window)
 
 void Building::setTextureNum(Textures& textures, int num)
 {
-	body.setTexture(textures.wall[num]);
+	if (type == types::wall)
+	{
+		body.setTexture(textures.wall[num]);
+	}
 }
 
 const sf::Vector2i Building::size[5] = {
