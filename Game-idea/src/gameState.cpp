@@ -68,13 +68,17 @@ void GameState::handleEvents()
 		}
 		else if (event.type == sf::Event::KeyPressed)
 		{
-			if (event.key.code == sf::Keyboard::B && info.typeBuilding == -1)
+			if (event.key.code == sf::Keyboard::B && info.typeBuilding == Building::types::none)
 			{
 				status = 1;
 			}
-			else if (event.key.code == sf::Keyboard::V && info.typeBuilding == -1)
+			else if (event.key.code == sf::Keyboard::V && info.typeBuilding == Building::types::none)
 			{
 				info.typeBuilding = info.lastBuilding;
+			}
+			else if (event.key.code == sf::Keyboard::Escape && info.typeBuilding != Building::types::none)
+			{
+				info.typeBuilding = Building::types::none;
 			}
 		}
 	}
