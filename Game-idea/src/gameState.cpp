@@ -11,8 +11,11 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures&
 	info(inGameInfo),
 	textures(inTextures)
 {
-	grassTexture.loadFromFile("texture/grass.png");
-	grassSprite.setTexture(grassTexture);
+	font.loadFromFile("font.ttf"); 
+	resourcesText.setCharacterSize(60);
+	resourcesText.setFont(font);
+
+	grassSprite.setTexture(textures.grass);
 	grassSprite.setScale(Consts::cellSize, Consts::cellSize);
 	
 	shop.setTexture(textures.shop);
@@ -183,6 +186,11 @@ void GameState::draw()
 	
 	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-250, 1080/2-250));
 	window.draw(shop);
+
+	resourcesText.setString("W: " + std::to_string(info.nWood) + ", S: " + std::to_string(info.nStone) +
+		", GO: " + std::to_string(info.nGold) + ", GE: " + std::to_string(info.nGem));
+	resourcesText.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2 - resourcesText.getGlobalBounds().width - 20, -1080 / 2));
+	window.draw(resourcesText);
 }
 
 void GameState::updateWallsTextures()

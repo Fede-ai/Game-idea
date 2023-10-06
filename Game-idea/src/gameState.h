@@ -11,8 +11,8 @@ struct GameInfo
 	int lastBuilding = -1;
 	std::vector<Building> buildings;
 	std::vector<Resource> resources;
-	sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
-	//sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
+	//sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
+	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
 	int seed = Consts::random(0, 1'000'000);
 
 	int nWood = 0;
@@ -20,6 +20,7 @@ struct GameInfo
 	int nGold = 0;
 	int nGem = 0;
 	int population = 0;
+	int food = 0;
 
 	int day = 0;
 	const int maxTime = 5 * 60;
@@ -45,13 +46,13 @@ private:
 
 	sf::Vector2f lastMousePos;
 	sf::Vector2i chunkTl;
-	
-	sf::Texture grassTexture;
 	sf::Sprite grassSprite;
 
 	sf::RectangleShape preview;
 	sf::Sprite shop;
+	sf::Text resourcesText;
 	
 	GameInfo& info;
 	Textures& textures;
+	sf::Font font;
 };
