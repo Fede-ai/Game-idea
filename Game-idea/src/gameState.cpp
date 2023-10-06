@@ -191,6 +191,21 @@ void GameState::draw()
 		", GO: " + std::to_string(info.nGold) + ", GE: " + std::to_string(info.nGem));
 	resourcesText.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2 - resourcesText.getGlobalBounds().width - 20, -1080 / 2));
 	window.draw(resourcesText);
+
+	sf::Sprite ok;
+	ok.setScale(Consts::pixelSize, Consts::pixelSize);
+
+	ok.setTexture(textures.woodIcon);
+	window.draw(ok);
+	ok.setTexture(textures.stoneIcon);
+	ok.setPosition(200, 0);
+	window.draw(ok);
+	ok.setTexture(textures.goldIcon);
+	ok.setPosition(400, 0);
+	window.draw(ok);
+	ok.setTexture(textures.gemIcon);
+	ok.setPosition(600, 0);
+	window.draw(ok);
 }
 
 void GameState::updateWallsTextures()
@@ -202,29 +217,29 @@ void GameState::updateWallsTextures()
 			bool top = false, bot = false, left = false, right = false;
 			for (auto other : info.buildings)
 			{
-				if (other.type == Building::types::wall && !(building.pos.x == other.pos.x && building.pos.y == other.pos.y))
+				if (other.type != Building::types::wall || building.pos == other.pos)
+					continue;
+
+				if (building.pos.x == other.pos.x)
 				{
-					if (building.pos.x == other.pos.x)
+					if (other.pos.y == building.pos.y + 1)
 					{
-						if (other.pos.y == building.pos.y + 1)
-						{
-							bot = true;
-						}
-						else if (other.pos.y == building.pos.y - 1)
-						{
-							top = true;
-						}
+						bot = true;
 					}
-					else if (building.pos.y == other.pos.y)
+					else if (other.pos.y == building.pos.y - 1)
 					{
-						if (other.pos.x == building.pos.x + 1)
-						{
-							right = true;
-						}
-						else if (other.pos.x == building.pos.x - 1)
-						{
-							left = true;
-						}
+						top = true;
+					}
+				}
+				else if (building.pos.y == other.pos.y)
+				{
+					if (other.pos.x == building.pos.x + 1)
+					{
+						right = true;
+					}
+					else if (other.pos.x == building.pos.x - 1)
+					{
+						left = true;
 					}
 				}
 			}

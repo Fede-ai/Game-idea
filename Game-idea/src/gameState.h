@@ -25,7 +25,7 @@ struct GameInfo
 	int day = 0;
 	const int maxTime = 5 * 60;
 	int time = 0; //in secs
-	size_t lastTime; //in secs
+	size_t lastTime = 0; //in secs
 	bool isDay = true;
 };
 
