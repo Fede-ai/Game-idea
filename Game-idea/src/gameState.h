@@ -44,6 +44,8 @@ private:
 	void spawnResources(int x, int y);	
 	bool canSpawnResource(Resource resource);
 
+	sf::Vector2f staticPos(float x, float y) const;
+
 	sf::Vector2f lastMousePos;
 	sf::Vector2i chunkTl;
 	sf::Sprite grassSprite;

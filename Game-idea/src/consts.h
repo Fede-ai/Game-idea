@@ -44,6 +44,7 @@ struct Textures
 		goldFarm.loadFromFile("texture/goldFarm.png");
 		gemFarm.loadFromFile("texture/gemFarm.png");
 
+		counter.loadFromFile("texture/counter.png");
 		woodIcon.loadFromFile("texture/woodIcon.png");
 		stoneIcon.loadFromFile("texture/stoneIcon.png");
 		goldIcon.loadFromFile("texture/goldIcon.png");
@@ -63,6 +64,7 @@ struct Textures
 	sf::Texture goldFarm;
 	sf::Texture gemFarm;
 
+	sf::Texture counter;
 	sf::Texture woodIcon;
 	sf::Texture stoneIcon;
 	sf::Texture goldIcon;

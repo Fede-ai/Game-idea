@@ -12,7 +12,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures&
 	textures(inTextures)
 {
 	font.loadFromFile("font.ttf"); 
-	resourcesText.setCharacterSize(60);
+	resourcesText.setCharacterSize(40);
 	resourcesText.setFont(font);
 
 	grassSprite.setTexture(textures.grass);
@@ -187,25 +187,33 @@ void GameState::draw()
 	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-250, 1080/2-250));
 	window.draw(shop);
 
-	resourcesText.setString("W: " + std::to_string(info.nWood) + ", S: " + std::to_string(info.nStone) +
-		", GO: " + std::to_string(info.nGold) + ", GE: " + std::to_string(info.nGem));
-	resourcesText.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2 - resourcesText.getGlobalBounds().width - 20, -1080 / 2));
-	window.draw(resourcesText);
+	resourcesText.setString(std::to_string(info.nWood) + "12 " + std::to_string(info.nStone) +
+		" " + std::to_string(info.nGold) + " " + std::to_string(info.nGem));
+	resourcesText.setPosition(staticPos(1100, 30));
+	
+	sf::Sprite c;
+	c.setScale(Consts::pixelSize, Consts::pixelSize);
+	c.setTexture(textures.counter);
+	c.setPosition(staticPos(10, 1070 - c.getGlobalBounds().height));
+	window.draw(c);
 
 	sf::Sprite ok;
 	ok.setScale(Consts::pixelSize, Consts::pixelSize);
 
 	ok.setTexture(textures.woodIcon);
+	ok.setPosition(staticPos(26, 702));
 	window.draw(ok);
-	ok.setTexture(textures.stoneIcon);
-	ok.setPosition(200, 0);
+	ok.setTexture(textures.stoneIcon);	
+	ok.setPosition(staticPos(26, 798));
 	window.draw(ok);
 	ok.setTexture(textures.goldIcon);
-	ok.setPosition(400, 0);
+	ok.setPosition(staticPos(26, 894));
 	window.draw(ok);
 	ok.setTexture(textures.gemIcon);
-	ok.setPosition(600, 0);
+	ok.setPosition(staticPos(26, 990));
 	window.draw(ok);
+
+	window.draw(resourcesText);
 }
 
 void GameState::updateWallsTextures()
@@ -346,4 +354,10 @@ bool GameState::canSpawnResource(Resource resource)
 	}
 
 	return true;
+}
+
+sf::Vector2f GameState::staticPos(float x, float y) const
+{
+	sf::Vector2f newPos (window.getView().getCenter() - sf::Vector2f(1920 / 2 - x, 1080 / 2 - y));
+	return newPos;
 }
