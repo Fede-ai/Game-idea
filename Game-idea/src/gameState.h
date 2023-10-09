@@ -13,7 +13,7 @@ struct GameInfo
 	std::vector<Resource> resources;
 	//sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
 	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
-	int seed = Consts::random(0, 1'000'000);
+	long int seed = Consts::random(0, 1'000'000);
 
 	int nWood = 0;
 	int nStone = 0;
@@ -23,7 +23,8 @@ struct GameInfo
 	int food = 0;
 
 	int day = 0;
-	const int maxTime = 5 * 60;
+	const int dayTime = 5 * 60;
+	const int nightTime = 3 * 60;
 	int time = 0; //in secs
 	size_t lastTime = 0; //in secs
 	bool isDay = true;
@@ -57,4 +58,10 @@ private:
 	GameInfo& info;
 	Textures& textures;
 	sf::Font font;
+
+	sf::Sprite counter;
+	sf::Sprite woodIcon;
+	sf::Sprite stoneIcon;
+	sf::Sprite goldIcon;
+	sf::Sprite gemIcon;
 };

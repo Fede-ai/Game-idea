@@ -12,12 +12,24 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures&
 	textures(inTextures)
 {
 	font.loadFromFile("font.ttf"); 
-	resourcesText.setCharacterSize(40);
+	resourcesText.setCharacterSize(50);
 	resourcesText.setFont(font);
+	resourcesText.setLetterSpacing(1.5);
+
+	counter.setTexture(textures.counter);
+	counter.setScale(Consts::pixelSize, Consts::pixelSize);
+	woodIcon.setTexture(textures.woodIcon);
+	woodIcon.setScale(Consts::pixelSize, Consts::pixelSize);
+	stoneIcon.setTexture(textures.stoneIcon);
+	stoneIcon.setScale(Consts::pixelSize, Consts::pixelSize);
+	goldIcon.setTexture(textures.goldIcon);
+	goldIcon.setScale(Consts::pixelSize, Consts::pixelSize);
+	gemIcon.setTexture(textures.gemIcon);
+	gemIcon.setScale(Consts::pixelSize, Consts::pixelSize);
+
 
 	grassSprite.setTexture(textures.grass);
 	grassSprite.setScale(Consts::cellSize, Consts::cellSize);
-	
 	shop.setTexture(textures.shop);
 	shop.setScale(Consts::pixelSize*1.5, Consts::pixelSize*1.5);
 	
@@ -183,37 +195,31 @@ void GameState::draw()
 	
 	if (info.typeBuilding != Building::types::none)
 		window.draw(preview);
-	
+
 	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-250, 1080/2-250));
 	window.draw(shop);
 
-	resourcesText.setString(std::to_string(info.nWood) + "12 " + std::to_string(info.nStone) +
-		" " + std::to_string(info.nGold) + " " + std::to_string(info.nGem));
-	resourcesText.setPosition(staticPos(1100, 30));
-	
-	sf::Sprite c;
-	c.setScale(Consts::pixelSize, Consts::pixelSize);
-	c.setTexture(textures.counter);
-	c.setPosition(staticPos(10, 1070 - c.getGlobalBounds().height));
-	window.draw(c);
+	counter.setPosition(staticPos(10, 1070 - counter.getGlobalBounds().height));
+	window.draw(counter);
 
-	sf::Sprite ok;
-	ok.setScale(Consts::pixelSize, Consts::pixelSize);
-
-	ok.setTexture(textures.woodIcon);
-	ok.setPosition(staticPos(26, 702));
-	window.draw(ok);
-	ok.setTexture(textures.stoneIcon);	
-	ok.setPosition(staticPos(26, 798));
-	window.draw(ok);
-	ok.setTexture(textures.goldIcon);
-	ok.setPosition(staticPos(26, 894));
-	window.draw(ok);
-	ok.setTexture(textures.gemIcon);
-	ok.setPosition(staticPos(26, 990));
-	window.draw(ok);
-
+	resourcesText.setString("000");
+	resourcesText.setPosition(staticPos(115, 730));
 	window.draw(resourcesText);
+	resourcesText.setPosition(staticPos(115, 816));
+	window.draw(resourcesText);
+	resourcesText.setPosition(staticPos(115, 906));
+	window.draw(resourcesText);
+	resourcesText.setPosition(staticPos(115, 994));
+	window.draw(resourcesText);
+	
+	woodIcon.setPosition(staticPos(26, 726));
+	window.draw(woodIcon);
+	stoneIcon.setPosition(staticPos(26, 814));
+	window.draw(stoneIcon);
+	goldIcon.setPosition(staticPos(26, 902));
+	window.draw(goldIcon);
+	gemIcon.setPosition(staticPos(26, 990));
+	window.draw(gemIcon);
 }
 
 void GameState::updateWallsTextures()
@@ -311,7 +317,18 @@ bool GameState::canPlaceBuilding(Building building)
 
 void GameState::spawnResources(int x, int y)
 {
-	srand(info.seed + x * 2 + y + 3);
+	long long chunkSeed = 1;
+	if (x >= 0)
+		chunkSeed *= std::pow(2, x);
+	else
+		chunkSeed *= std::pow(3, -x);
+
+	if (y >= 0)
+		chunkSeed *= std::pow(5, y);
+	else
+		chunkSeed *= std::pow(7, -y);
+
+	srand(chunkSeed);
 	auto random = [](int max) {
 		return (rand() % max);
 	};
