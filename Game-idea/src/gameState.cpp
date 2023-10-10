@@ -18,20 +18,17 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Textures&
 
 	counter.setTexture(textures.counter);
 	counter.setScale(Consts::pixelSize, Consts::pixelSize);
-	woodIcon.setTexture(textures.woodIcon);
-	woodIcon.setScale(Consts::pixelSize, Consts::pixelSize);
-	stoneIcon.setTexture(textures.stoneIcon);
-	stoneIcon.setScale(Consts::pixelSize, Consts::pixelSize);
-	goldIcon.setTexture(textures.goldIcon);
-	goldIcon.setScale(Consts::pixelSize, Consts::pixelSize);
-	gemIcon.setTexture(textures.gemIcon);
-	gemIcon.setScale(Consts::pixelSize, Consts::pixelSize);
-
+	progress.setFillColor(sf::Color::Green);
+	for (int i = 0; i < 4; i++)
+	{
+		resourcesIcon[i].setTexture(textures.resourcesIcon[i]);
+		resourcesIcon[i].setScale(Consts::pixelSize, Consts::pixelSize);
+	}
 
 	grassSprite.setTexture(textures.grass);
 	grassSprite.setScale(Consts::cellSize, Consts::cellSize);
 	shop.setTexture(textures.shop);
-	shop.setScale(Consts::pixelSize*1.5, Consts::pixelSize*1.5);
+	shop.setScale(Consts::pixelSize, Consts::pixelSize);
 	
 	window.setView(info.gameView);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window)) - window.getView().getCenter();
@@ -141,6 +138,19 @@ int GameState::update()
 	}
 	chunkTl = sf::Vector2i(xChunk, yChunk);
 
+	//extract resources
+	for (auto building : info.buildings)
+	{
+		if (building.type == Building::types::woodFarm)
+			info.nResources[0] += 0.0004;
+		else if (building.type == Building::types::stoneFarm)
+			info.nResources[1] += 0.0001;
+		else if (building.type == Building::types::goldFarm)
+			info.nResources[2] += 0.00004;
+		else if (building.type == Building::types::gemFarm)
+			info.nResources[3] += 0.00001;
+	}
+
 	return status;
 }
 void GameState::draw()
@@ -193,36 +203,16 @@ void GameState::draw()
 		}
 	}
 	
+	//draw building preview
 	if (info.typeBuilding != Building::types::none)
 		window.draw(preview);
 
-	shop.setPosition(staticPos(1920-230, 1080-230));
+	//draw shop button
+	shop.setPosition(staticPos(1920-250, 1080-250));
 	window.draw(shop);
 
-	counter.setPosition(staticPos(20, 1060 - counter.getGlobalBounds().height));
-	window.draw(counter);
-
-	resourcesText.setString(std::to_string(info.nWood));
-	resourcesText.setPosition(staticPos(149, 696));
-	window.draw(resourcesText);
-	resourcesText.setString(std::to_string(info.nStone));
-	resourcesText.setPosition(staticPos(149, 782));
-	window.draw(resourcesText);
-	resourcesText.setString(std::to_string(info.nGold));
-	resourcesText.setPosition(staticPos(149, 872));
-	window.draw(resourcesText);
-	resourcesText.setString(std::to_string(info.nGem));
-	resourcesText.setPosition(staticPos(149, 960));
-	window.draw(resourcesText);
-	
-	woodIcon.setPosition(staticPos(60, 692));
-	window.draw(woodIcon);
-	stoneIcon.setPosition(staticPos(60, 780));
-	window.draw(stoneIcon);
-	goldIcon.setPosition(staticPos(60, 868));
-	window.draw(goldIcon);
-	gemIcon.setPosition(staticPos(60, 956));
-	window.draw(gemIcon);
+	//draw resources counter
+	drawCounter();
 }
 
 void GameState::updateWallsTextures()
@@ -374,6 +364,37 @@ bool GameState::canSpawnResource(Resource resource)
 	}
 
 	return true;
+}
+
+void GameState::drawCounter()
+{
+	counter.setPosition(staticPos(20, 1060 - counter.getGlobalBounds().height));
+	window.draw(counter);
+
+	auto toStr = [](int num)
+	{
+		std::string str = std::to_string(num);
+		if (num < 100)
+			str = "0" + str;
+		if (num < 10)
+			str = "0" + str;
+		return str;
+	};
+
+	for (int i = 0; i < 4; i++)
+	{
+		resourcesText.setString(toStr(info.nResources[i]));
+		resourcesText.setPosition(staticPos(150, 690 + i * 88));
+		window.draw(resourcesText);
+
+		float prop = info.nResources[i] - (int)info.nResources[i];
+		progress.setSize(sf::Vector2f(prop * 39 * Consts::pixelSize, 3 * Consts::pixelSize));
+		progress.setPosition(staticPos(152, 748 + i * 88));
+		window.draw(progress);
+
+		resourcesIcon[i].setPosition(staticPos(60, 692 + i * 88));
+		window.draw(resourcesIcon[i]);
+	}
 }
 
 sf::Vector2f GameState::staticPos(float x, float y) const

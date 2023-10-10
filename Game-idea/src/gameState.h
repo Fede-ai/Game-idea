@@ -10,15 +10,13 @@ struct GameInfo
 	int typeBuilding = -1;
 	int lastBuilding = -1;
 	std::vector<Building> buildings;
-	std::vector<Resource> resources;
+	std::vector<Resource> resources;	
+
 	//sf::View gameView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920*9, 1080*9));
 	sf::View gameView = sf::View(sf::Vector2f(0, 0), Consts::viewSize);
 	long int seed = Consts::random(0, 1'000'000);
 
-	int nWood = 0;
-	int nStone = 0;
-	int nGold = 0;
-	int nGem = 0;
+	float nResources[4] = {20, 5, 0, 0};
 	int population = 0;
 	int food = 0;
 
@@ -45,6 +43,8 @@ private:
 	void spawnResources(int x, int y);	
 	bool canSpawnResource(Resource resource);
 
+	void drawCounter();
+
 	sf::Vector2f staticPos(float x, float y) const;
 
 	sf::Vector2f lastMousePos;
@@ -60,8 +60,6 @@ private:
 	sf::Font font;
 
 	sf::Sprite counter;
-	sf::Sprite woodIcon;
-	sf::Sprite stoneIcon;
-	sf::Sprite goldIcon;
-	sf::Sprite gemIcon;
+	sf::RectangleShape progress;
+	sf::Sprite resourcesIcon[4];
 };
