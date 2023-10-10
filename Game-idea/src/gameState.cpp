@@ -196,29 +196,32 @@ void GameState::draw()
 	if (info.typeBuilding != Building::types::none)
 		window.draw(preview);
 
-	shop.setPosition(window.getView().getCenter() + sf::Vector2f(1920/2-250, 1080/2-250));
+	shop.setPosition(staticPos(1920-230, 1080-230));
 	window.draw(shop);
 
-	counter.setPosition(staticPos(10, 1070 - counter.getGlobalBounds().height));
+	counter.setPosition(staticPos(20, 1060 - counter.getGlobalBounds().height));
 	window.draw(counter);
 
-	resourcesText.setString("000");
-	resourcesText.setPosition(staticPos(115, 730));
+	resourcesText.setString(std::to_string(info.nWood));
+	resourcesText.setPosition(staticPos(149, 696));
 	window.draw(resourcesText);
-	resourcesText.setPosition(staticPos(115, 816));
+	resourcesText.setString(std::to_string(info.nStone));
+	resourcesText.setPosition(staticPos(149, 782));
 	window.draw(resourcesText);
-	resourcesText.setPosition(staticPos(115, 906));
+	resourcesText.setString(std::to_string(info.nGold));
+	resourcesText.setPosition(staticPos(149, 872));
 	window.draw(resourcesText);
-	resourcesText.setPosition(staticPos(115, 994));
+	resourcesText.setString(std::to_string(info.nGem));
+	resourcesText.setPosition(staticPos(149, 960));
 	window.draw(resourcesText);
 	
-	woodIcon.setPosition(staticPos(26, 726));
+	woodIcon.setPosition(staticPos(60, 692));
 	window.draw(woodIcon);
-	stoneIcon.setPosition(staticPos(26, 814));
+	stoneIcon.setPosition(staticPos(60, 780));
 	window.draw(stoneIcon);
-	goldIcon.setPosition(staticPos(26, 902));
+	goldIcon.setPosition(staticPos(60, 868));
 	window.draw(goldIcon);
-	gemIcon.setPosition(staticPos(26, 990));
+	gemIcon.setPosition(staticPos(60, 956));
 	window.draw(gemIcon);
 }
 
