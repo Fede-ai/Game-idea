@@ -368,7 +368,8 @@ bool GameState::canSpawnResource(Resource resource)
 
 void GameState::drawCounter()
 {
-	counter.setPosition(staticPos(20, 1060 - counter.getGlobalBounds().height));
+	int x = 0, y = 1080 - counter.getGlobalBounds().height;
+	counter.setPosition(staticPos(x, y));
 	window.draw(counter);
 
 	auto toStr = [](int num)
@@ -384,15 +385,15 @@ void GameState::drawCounter()
 	for (int i = 0; i < 4; i++)
 	{
 		resourcesText.setString(toStr(info.nResources[i]));
-		resourcesText.setPosition(staticPos(150, 690 + i * 88));
+		resourcesText.setPosition(staticPos(x+106, y+38 + i * 88));
 		window.draw(resourcesText);
 
 		float prop = info.nResources[i] - (int)info.nResources[i];
 		progress.setSize(sf::Vector2f(prop * 39 * Consts::pixelSize, 3 * Consts::pixelSize));
-		progress.setPosition(staticPos(152, 748 + i * 88));
+		progress.setPosition(staticPos(x+108, y+96 + i * 88));
 		window.draw(progress);
 
-		resourcesIcon[i].setPosition(staticPos(60, 692 + i * 88));
+		resourcesIcon[i].setPosition(staticPos(x+16, y+40 + i * 88));
 		window.draw(resourcesIcon[i]);
 	}
 }
