@@ -11,5 +11,10 @@ private:
 	void draw();
 
 	sf::RenderWindow* window;
+
+	sf::Texture grassTexture;
+	sf::Sprite grassSprite;
+
+	sf::Vector2f lastMousePos;
 };
 
