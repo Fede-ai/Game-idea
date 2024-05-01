@@ -8,7 +8,20 @@ public:
 private:
 	int update(std::vector<sf::Event> events);
 	void draw();
+	int handleClick(int buttonId);
 
 	sf::RenderWindow& window;
 
+	sf::RectangleShape buttons[6];
+	sf::Text buttonsText[6];
+	sf::Font font;
+	sf::Text title;
+
+	sf::Texture textureBg;
+	sf::Sprite spriteBg;
+
+	enum actions { 
+		none = 0, 
+		exit_program = 1
+	};
 };

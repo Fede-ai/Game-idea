@@ -20,12 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gamestate.cpp" />
+    <ClCompile Include="homestate.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="consts.hpp" />
     <ClInclude Include="gameinfo.hpp" />
     <ClInclude Include="gamestate.hpp" />
+    <ClInclude Include="homestate.hpp" />
     <ClInclude Include="settings.hpp" />
     <ClInclude Include="state.hpp" />
   </ItemGroup>

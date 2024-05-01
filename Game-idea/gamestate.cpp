@@ -14,7 +14,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	resourcesTexture.loadFromFile("textures/resources.png");
 	resourcesSprite.setTexture(resourcesTexture);
 	resourcesSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
-	resourcesSprite.setOrigin(resourcesSprite.getGlobalBounds().width / Consts::PIXEL_SIZE, 0);
+	resourcesSprite.setOrigin(resourcesSprite.getLocalBounds().width, 0);
 	
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 }

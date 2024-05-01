@@ -1,4 +1,5 @@
 #include "gamestate.hpp"
+#include "homestate.hpp"
 
 int main() {
 	Settings settings;
@@ -12,7 +13,7 @@ int main() {
 	window.setVerticalSyncEnabled(true);
 	window.setKeyRepeatEnabled(false);
 	
-	State* state = new GameState(window, gameInfo, settings);
+	State* state = new HomeState(window); //new GameState(window, gameInfo, settings);
 
 	while (window.isOpen()) {
 		sf::Event e;
@@ -34,6 +35,11 @@ int main() {
 		}
 
 		int whatHappened = state->processFrame(events);
+
+		if (whatHappened == 1) {
+			delete state;
+			state = new GameState(window, gameInfo, settings);
+		}
 	}
 
 	return 0;
