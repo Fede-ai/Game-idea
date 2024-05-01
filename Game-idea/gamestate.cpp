@@ -1,35 +1,36 @@
 #include "gamestate.hpp"
 #include <iostream>
 
-GameState::GameState(sf::RenderWindow& inWindow)
+GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings)
 	:
-	window(inWindow)
+	window(inWindow),
+	gameInfo(inGameInfo),
+	settings(inSettings)
 {
 	grassTexture.loadFromFile("textures/grass.png");
 	grassSprite.setTexture(grassTexture);
+	grassSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 
-	lastMousePos = sf::Vector2f(sf::Mouse::getPosition(window));
-	lastMousePos.x *= window.getView().getSize().x / window.getSize().x;
-	lastMousePos.y *= window.getView().getSize().y / window.getSize().y;
+	resourcesTexture.loadFromFile("textures/resources.png");
+	resourcesSprite.setTexture(resourcesTexture);
+	resourcesSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	resourcesSprite.setOrigin(resourcesSprite.getGlobalBounds().width / Consts::PIXEL_SIZE, 0);
+	
+	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 }
 
 int GameState::update(std::vector<sf::Event> events)
 {
-	sf::Vector2f mousePos = sf::Vector2f(sf::Mouse::getPosition(window));
-	mousePos.x *= window.getView().getSize().x / window.getSize().x;
-	mousePos.y *= window.getView().getSize().y / window.getSize().y;
-	auto mouseCoords = [mousePos, this]() {
-		sf::Vector2f coords = mousePos + window.getView().getCenter();
-		coords.x -= window.getView().getSize().x / 2;
-		coords.y -= window.getView().getSize().y / 2;
-		return coords;
-	};
+	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
 	//move view with right click
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
 		sf::View view = window.getView();
 		view.move(lastMousePos - mousePos);
+		view.setCenter(sf::Vector2f(round(view.getCenter().x), round(view.getCenter().y)));
 		window.setView(view);
+
+		mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 	}
 
 	//handle events
@@ -46,19 +47,30 @@ void GameState::draw()
 {
 	window.clear(sf::Color::Black);
 
-	for (int x = -1; x < 2; x++) {
-		for (int y = -1; y < 2; y++) {
-			float xPos = (std::floor(window.getView().getCenter().x / 1120) + x) * 1120;
-			float yPos = (std::floor(window.getView().getCenter().y / 630) + y) * 630;
-			grassSprite.setPosition(xPos, yPos);
+	const sf::Vector2f center = window.getView().getCenter();
+	const sf::FloatRect chunk = grassSprite.getGlobalBounds();
+	//draw chunks
+	for (int x = 0; x < 2; x++) {	
+		float xChunk = std::floor(center.x / chunk.width) * chunk.width;
+		if (int(center.x) % int(chunk.width) > chunk.width / 2 * center.x / abs(center.x))
+			xChunk += chunk.width * x;
+		else 
+			xChunk -= chunk.width * x;
+		
+		for (int y = 0; y < 2; y++) {
+			float yChunk = std::floor(center.y / chunk.height) * chunk.height;
+			if (int(center.y) % int(chunk.height) > chunk.height / 2 * center.y / abs(center.y))
+				yChunk += chunk.height * y;
+			else
+				yChunk -= chunk.height * y;
+
+			grassSprite.setPosition(xChunk, yChunk);
 			window.draw(grassSprite);
 		}
 	}
 
-	sf::CircleShape center(5);
-	center.setOrigin(5, 5);
-	center.setPosition(window.getView().getCenter());
-	window.draw(center);
+	resourcesSprite.setPosition(center + sf::Vector2f(window.getView().getSize().x / 2, -window.getView().getSize().y / 2));
+	window.draw(resourcesSprite);
 
 	window.display();
 }

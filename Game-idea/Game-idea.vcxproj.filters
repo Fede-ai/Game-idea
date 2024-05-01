@@ -35,5 +35,8 @@
     <ClInclude Include="state.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="consts.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

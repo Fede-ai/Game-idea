@@ -23,6 +23,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="consts.hpp" />
     <ClInclude Include="gameinfo.hpp" />
     <ClInclude Include="gamestate.hpp" />
     <ClInclude Include="settings.hpp" />

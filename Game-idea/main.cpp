@@ -6,14 +6,13 @@ int main() {
 
 	sf::ContextSettings OpenGLSettings;
 	OpenGLSettings.antialiasingLevel = 8;
-	//sf::RenderWindow window(sf::VideoMode::getFullscreenModes()[0], "Game-idea", sf::Style::Fullscreen, OpenGLSettings);
 	auto width = sf::VideoMode::getDesktopMode().width;
-	sf::RenderWindow window(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), "Game-idea", sf::Style::Default, OpenGLSettings);
+	sf::RenderWindow window(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), Consts::GAME_NAME, sf::Style::Default, OpenGLSettings);
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920, 1080)));
 	window.setVerticalSyncEnabled(true);
 	window.setKeyRepeatEnabled(false);
 	
-	State* state = new GameState(window);
+	State* state = new GameState(window, gameInfo, settings);
 
 	while (window.isOpen()) {
 		sf::Event e;
@@ -23,9 +22,9 @@ int main() {
 			if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Enter && e.key.alt) {
 				sf::View view = window.getView();
 				if (window.getSize().x == sf::VideoMode::getFullscreenModes()[0].width)
-					window.create(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), "Game-idea", sf::Style::Default, OpenGLSettings);
+					window.create(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), Consts::GAME_NAME, sf::Style::Default, OpenGLSettings);
 				else
-					window.create(sf::VideoMode::getFullscreenModes()[0], "Game-idea", sf::Style::Fullscreen, OpenGLSettings);
+					window.create(sf::VideoMode::getDesktopMode(), Consts::GAME_NAME, sf::Style::Fullscreen, OpenGLSettings);
 				window.setView(view);
 				window.setVerticalSyncEnabled(true);
 				window.setKeyRepeatEnabled(false);
