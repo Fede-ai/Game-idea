@@ -30,10 +30,18 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	title.setOrigin(title.getLocalBounds().width/2, 0);
 	title.setPosition(0, -350);
 
+	//home bg texture
 	textureBg.loadFromFile("textures/home_bg.png");
 	spriteBg.setTexture(textureBg);
 	spriteBg.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteBg.setOrigin(spriteBg.getLocalBounds().width / 2, spriteBg.getLocalBounds().height / 2);
+
+	// settings icon
+	textureSettings.loadFromFile("textures/settings.png");
+	spriteSettings.setTexture(textureSettings);
+	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
+	spriteSettings.setPosition(sf::Vector2f(Consts::VIEW_SIZE_X/2 - spriteSettings.getLocalBounds().width - 35, - Consts::VIEW_SIZE_Y/2 + spriteSettings.getLocalBounds().height + 35));
 
 	for (int i = 0; i < 6; i++) {
 		buttons[i].setSize(sf::Vector2f(500, 100));
@@ -114,11 +122,11 @@ int HomeState::update(std::vector<sf::Event> events)
 		}
 		else if (e.type == sf::Event::MouseButtonReleased && e.key.code == sf::Mouse::Left) {
 			for (int i = 0; i < 6; i++) {
+				if (buttons[i].getGlobalBounds().contains(mousePos) && buttons[i].getFillColor() == sf::Color(245, 245, 221))
+					whatHappened = handleClick(i);
+
 				if (i != 5)
 					buttons[i].setFillColor(sf::Color::White);
-
-				if (buttons[i].getGlobalBounds().contains(mousePos))
-					whatHappened = handleClick(i);
 			}
 			
 		}
@@ -128,9 +136,15 @@ int HomeState::update(std::vector<sf::Event> events)
 			else
 				buttonsText[5].setFillColor(sf::Color(62, 39, 35));
 
-			
 		}
 	}
+
+	//if (spriteSettings.getGlobalBounds().contains(mousePos)) {
+	//	window.setMouseCursor(handCursor);
+	//	spriteSettings.rotate(-.7);
+	//} else 
+	//	window.setMouseCursor(cursor);
+
 
 	return whatHappened;
 }
@@ -139,6 +153,7 @@ void HomeState::draw()
 {
 	window.clear(sf::Color(102, 57, 49));
 	window.draw(spriteBg);
+	window.draw(spriteSettings);
 
 	window.draw(title);
 
@@ -146,7 +161,6 @@ void HomeState::draw()
 		window.draw(buttons[i]);
 		window.draw(buttonsText[i]);
 	}
-
 
 	window.display();
 }

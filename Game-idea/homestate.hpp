@@ -20,6 +20,9 @@ private:
 	sf::Texture textureBg;
 	sf::Sprite spriteBg;
 
+	sf::Texture textureSettings;
+	sf::Sprite spriteSettings;
+
 	enum actions { 
 		none = 0, 
 		exit_program = 1

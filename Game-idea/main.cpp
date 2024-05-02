@@ -5,6 +5,21 @@ int main() {
 	Settings settings;
 	GameInfo gameInfo;
 
+	sf::Image cursorImage, scaledCursor;
+	cursorImage.loadFromFile("textures/cursor.png");
+	scaledCursor.create(cursorImage.getSize().x * Consts::PIXEL_SIZE, cursorImage.getSize().y * Consts::PIXEL_SIZE);
+	for (int x = 0; x < cursorImage.getSize().x; x++) {
+		for (int y = 0; y < cursorImage.getSize().y; y++) {
+			for (int a = 0 ; a < Consts::PIXEL_SIZE; a++) {
+				for (int b = 0; b < Consts::PIXEL_SIZE; b++) {
+					scaledCursor.setPixel(x * Consts::PIXEL_SIZE + a, y * Consts::PIXEL_SIZE + b, cursorImage.getPixel(x, y));
+				}
+			}
+		}
+	}
+	sf::Cursor cursor;
+	cursor.loadFromPixels(scaledCursor.getPixelsPtr(), scaledCursor.getSize(), sf::Vector2u(0, 0));
+
 	sf::ContextSettings OpenGLSettings;
 	OpenGLSettings.antialiasingLevel = 8;
 	auto width = sf::VideoMode::getDesktopMode().width;
@@ -12,6 +27,7 @@ int main() {
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920, 1080)));
 	window.setVerticalSyncEnabled(true);
 	window.setKeyRepeatEnabled(false);
+	window.setMouseCursor(cursor);
 	
 	State* state = new HomeState(window); //new GameState(window, gameInfo, settings);
 
