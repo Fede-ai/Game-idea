@@ -13,7 +13,7 @@ int main() {
 	window.setVerticalSyncEnabled(true);
 	window.setKeyRepeatEnabled(false);
 	
-	State* state = new HomeState(window); //new GameState(window, gameInfo, settings);
+	State* state = new GameState(window, gameInfo, settings);
 
 	while (window.isOpen()) {
 		sf::Event e;
