@@ -29,7 +29,7 @@ int main() {
 	window.setKeyRepeatEnabled(false);
 	window.setMouseCursor(cursor);
 	
-	State* state = new HomeState(window); //new GameState(window, gameInfo, settings);
+	State* state = new GameState(window, gameInfo, settings);
 
 	while (window.isOpen()) {
 		sf::Event e;
