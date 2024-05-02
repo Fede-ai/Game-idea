@@ -24,16 +24,24 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 
 	title.setFont(font);
 	title.setStyle(sf::Text::Bold);
-	title.setFillColor(sf::Color(245,245,221));
+	title.setFillColor(sf::Color(62, 39, 35));
 	title.setString(Consts::GAME_NAME);
 	title.setCharacterSize(60);
 	title.setOrigin(title.getLocalBounds().width/2, 0);
-	title.setPosition(0, -400);
+	title.setPosition(0, -350);
 
+	//home bg texture
 	textureBg.loadFromFile("textures/home_bg.png");
 	spriteBg.setTexture(textureBg);
 	spriteBg.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteBg.setOrigin(spriteBg.getLocalBounds().width / 2, spriteBg.getLocalBounds().height / 2);
+
+	// settings icon
+	textureSettings.loadFromFile("textures/settings.png");
+	spriteSettings.setTexture(textureSettings);
+	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
+	spriteSettings.setPosition(sf::Vector2f(Consts::VIEW_SIZE_X/2 - spriteSettings.getLocalBounds().width - 35, - Consts::VIEW_SIZE_Y/2 + spriteSettings.getLocalBounds().height + 35));
 
 	for (int i = 0; i < 6; i++) {
 		buttons[i].setSize(sf::Vector2f(500, 100));
@@ -62,7 +70,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 				buttonsText[i].setString("SETTINGS");
 				break;
 			case 5:
-				buttonsText[i].setString("EXIT");
+				buttonsText[i].setString("x");
 				break;
 		}
 
@@ -70,13 +78,26 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 		buttonsText[i].setOrigin(buttonsText[i].getLocalBounds().width / 2, 0);
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
 
-		if (i % 2 == 0) {
-			buttonsText[i].setPosition(-350, -160 + 200.f * (i / 2));
-			buttons[i].setPosition(-350, -200 + 200.f * (i / 2));
-		} 
-		else {
-			buttonsText[i].setPosition(350, -160 + 200.f * (i / 2));
-			buttons[i].setPosition(350, -200 + 200.f * (i / 2));
+		if (i == 5) {
+			buttonsText[i].setCharacterSize(35);
+			buttonsText[i].setFillColor(sf::Color(62, 39, 35));
+			buttonsText[i].setPosition(575, 310);
+
+			buttons[i].setSize(sf::Vector2f(50, 50));
+			buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
+			buttons[i].setPosition(575 + 3, 310);
+			buttons[i].setFillColor(sf::Color(199,173,127));
+		//} else if (i == 4) {
+
+		} else {
+			if (i % 2 == 0) {
+				buttonsText[i].setPosition(-350, -160 + 200.f * (i / 2));
+				buttons[i].setPosition(-350, -200 + 200.f * (i / 2));
+			}
+			else {
+				buttonsText[i].setPosition(350, -160 + 200.f * (i / 2));
+				buttons[i].setPosition(350, -200 + 200.f * (i / 2));
+			}
 		}
 	}
 }
@@ -89,20 +110,41 @@ int HomeState::update(std::vector<sf::Event> events)
 
 	for (const auto& e : events) {
 		if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left){
-			for (auto& b : buttons) {
-				if (b.getGlobalBounds().contains(mousePos))
-					b.setFillColor(sf::Color(245, 245, 221));
+			for (int i = 0; i < 6; i++) {
+				if (i == 5) continue;
+				if (buttons[i].getGlobalBounds().contains(mousePos)) {
+					/*if (i == 5)
+						buttonsText[5].setFillColor(sf::Color(100,0,0));
+					else*/ 
+						buttons[i].setFillColor(sf::Color(245, 245, 221));
+				}
 			}
 		}
 		else if (e.type == sf::Event::MouseButtonReleased && e.key.code == sf::Mouse::Left) {
 			for (int i = 0; i < 6; i++) {
-				buttons[i].setFillColor(sf::Color::White);
-				if (buttons[i].getGlobalBounds().contains(mousePos))
+				if (buttons[i].getGlobalBounds().contains(mousePos) && buttons[i].getFillColor() == sf::Color(245, 245, 221))
 					whatHappened = handleClick(i);
+
+				if (i != 5)
+					buttons[i].setFillColor(sf::Color::White);
 			}
 			
 		}
+		else if (e.type == sf::Event::MouseMoved) {
+			if (buttons[5].getGlobalBounds().contains(mousePos))  // exit btn 
+				buttonsText[5].setFillColor(sf::Color::Red);
+			else
+				buttonsText[5].setFillColor(sf::Color(62, 39, 35));
+
+		}
 	}
+
+	//if (spriteSettings.getGlobalBounds().contains(mousePos)) {
+	//	window.setMouseCursor(handCursor);
+	//	spriteSettings.rotate(-.7);
+	//} else 
+	//	window.setMouseCursor(cursor);
+
 
 	return whatHappened;
 }
@@ -111,6 +153,7 @@ void HomeState::draw()
 {
 	window.clear(sf::Color(102, 57, 49));
 	window.draw(spriteBg);
+	window.draw(spriteSettings);
 
 	window.draw(title);
 
@@ -118,7 +161,6 @@ void HomeState::draw()
 		window.draw(buttons[i]);
 		window.draw(buttonsText[i]);
 	}
-
 
 	window.display();
 }
