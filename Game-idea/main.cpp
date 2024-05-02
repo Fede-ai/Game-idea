@@ -1,5 +1,6 @@
 #include "gamestate.hpp"
 #include "homestate.hpp"
+#include <chrono>
 
 int main() {
 	Settings settings;
@@ -29,7 +30,8 @@ int main() {
 	window.setKeyRepeatEnabled(false);
 	window.setMouseCursor(cursor);
 	
-	State* state = new GameState(window, gameInfo, settings);
+	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	State* state = new HomeState(window);
 
 	while (window.isOpen()) {
 		sf::Event e;
@@ -50,7 +52,9 @@ int main() {
 			events.push_back(e);
 		}
 
-		int whatHappened = state->processFrame(events);
+		auto time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		int whatHappened = state->processFrame(events, int(std::max(time - lastTime, long long(1))) / 1000.f);
+		lastTime = time;
 
 		if (whatHappened == 1) {
 			delete state;

@@ -6,20 +6,31 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	window(inWindow),
 	gameInfo(inGameInfo),
 	settings(inSettings)
-{
+{	
+	resourcesTexture[0].loadFromFile("textures/wood.png");
+	resourcesTexture[1].loadFromFile("textures/stone.png");
+	resourcesTexture[2].loadFromFile("textures/people.png");
+	resourcesTexture[3].loadFromFile("textures/gold.png");
+	resourcesTexture[4].loadFromFile("textures/food.png");
+	resourcesTexture[5].loadFromFile("textures/water.png");
+	for (int i = 0; i < 6; i++) {
+		resourcesSprite[i].setTexture(resourcesTexture[i]);
+		resourcesSprite[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	}
+
 	grassTexture.loadFromFile("textures/grass.png");
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 
-	resourcesTexture.loadFromFile("textures/resources.png");
-	resourcesSprite.setTexture(resourcesTexture);
-	resourcesSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
-	resourcesSprite.setOrigin(resourcesSprite.getLocalBounds().width, 0);
+	resourcesBgTexture.loadFromFile("textures/resources.png");
+	resourcesBgSprite.setTexture(resourcesBgTexture);
+	resourcesBgSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	resourcesBgSprite.setOrigin(resourcesBgSprite.getLocalBounds().width, 0);
 	
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 }
 
-int GameState::update(std::vector<sf::Event> events)
+int GameState::update(std::vector<sf::Event> events, float dTime)
 {
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
@@ -69,8 +80,16 @@ void GameState::draw()
 		}
 	}
 
-	resourcesSprite.setPosition(center + sf::Vector2f(window.getView().getSize().x / 2, -window.getView().getSize().y / 2));
-	window.draw(resourcesSprite);
+	resourcesBgSprite.setPosition(center + sf::Vector2f(window.getView().getSize().x / 2, -window.getView().getSize().y / 2));
+	window.draw(resourcesBgSprite);
+
+	//draw resources icons
+	for (int i = 0; i < 3; i++) {
+		resourcesSprite[2 * i].setPosition(center + sf::Vector2f(270 + 215 * i, -510));
+		window.draw(resourcesSprite[2 * i]);
+		resourcesSprite[2 * i + 1].setPosition(center + sf::Vector2f(270 + 215 * i, -440));
+		window.draw(resourcesSprite[2 * i + 1]);
+	}
 
 	window.display();
 }

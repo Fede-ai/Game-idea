@@ -8,7 +8,7 @@ public:
 	GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings);
 
 private:
-	int update(std::vector<sf::Event> events);
+	int update(std::vector<sf::Event> events, float dTime);
 	void draw();
 
 	sf::RenderWindow& window;
@@ -19,7 +19,10 @@ private:
 
 	sf::Texture grassTexture;
 	sf::Sprite grassSprite;
-	sf::Texture resourcesTexture;
-	sf::Sprite resourcesSprite;
+	sf::Texture resourcesBgTexture;
+	sf::Sprite resourcesBgSprite;
+
+	sf::Texture resourcesTexture[6];
+	sf::Sprite resourcesSprite[6];
 };
 

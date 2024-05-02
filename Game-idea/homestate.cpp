@@ -3,24 +3,13 @@
 #include <iostream>
 #include <vector>
 
-/* 
-	Todo:
-	- titolo
-	- new game btn
-	- load btn
-	- join session
-	- create session btn
-	- settings btn (window.close)
-	- exit btn
-*/
-
 HomeState::HomeState(sf::RenderWindow& inWindow)
 	:
 	window(inWindow)
 {
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
 
-	font.loadFromFile("fonts/Roboto-Regular.ttf");
+	font.loadFromFile("fonts/PublicPixel.ttf");
 
 	title.setFont(font);
 	title.setStyle(sf::Text::Bold);
@@ -36,14 +25,20 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	spriteBg.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteBg.setOrigin(spriteBg.getLocalBounds().width / 2, spriteBg.getLocalBounds().height / 2);
 
-	// settings icon
+	//settings icon
 	textureSettings.loadFromFile("textures/settings.png");
 	spriteSettings.setTexture(textureSettings);
 	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
-	spriteSettings.setPosition(sf::Vector2f(Consts::VIEW_SIZE_X/2 - spriteSettings.getLocalBounds().width - 35, - Consts::VIEW_SIZE_Y/2 + spriteSettings.getLocalBounds().height + 35));
+	spriteSettings.setPosition(sf::Vector2f(Consts::VIEW_SIZE_X/2 - spriteSettings.getGlobalBounds().width/1.5, - Consts::VIEW_SIZE_Y/2 + spriteSettings.getGlobalBounds().height/1.5));
+	//close icon
+	textureClose.loadFromFile("textures/close.png");
+	spriteClose.setTexture(textureClose);
+	spriteClose.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteClose.setOrigin(spriteClose.getLocalBounds().width / 2, spriteClose.getLocalBounds().height / 2);
+	spriteClose.setPosition(575, 310);
 
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 4; i++) {
 		buttons[i].setSize(sf::Vector2f(500, 100));
 		buttons[i].setFillColor(sf::Color::White);
 
@@ -66,85 +61,64 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 			case 3:
 				buttonsText[i].setString("CREATE SESSION");
 				break;
-			case 4:
-				buttonsText[i].setString("SETTINGS");
-				break;
-			case 5:
-				buttonsText[i].setString("x");
-				break;
 		}
-
 
 		buttonsText[i].setOrigin(buttonsText[i].getLocalBounds().width / 2, 0);
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
 
-		if (i == 5) {
-			buttonsText[i].setCharacterSize(35);
-			buttonsText[i].setFillColor(sf::Color(62, 39, 35));
-			buttonsText[i].setPosition(575, 310);
-
-			buttons[i].setSize(sf::Vector2f(50, 50));
-			buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
-			buttons[i].setPosition(575 + 3, 310);
-			buttons[i].setFillColor(sf::Color(199,173,127));
-		//} else if (i == 4) {
-
-		} else {
-			if (i % 2 == 0) {
-				buttonsText[i].setPosition(-350, -160 + 200.f * (i / 2));
-				buttons[i].setPosition(-350, -200 + 200.f * (i / 2));
-			}
-			else {
-				buttonsText[i].setPosition(350, -160 + 200.f * (i / 2));
-				buttons[i].setPosition(350, -200 + 200.f * (i / 2));
-			}
+		if (i % 2 == 0) {
+			buttonsText[i].setPosition(-350, -160 + 200.f * (i / 2));
+			buttons[i].setPosition(-350, -200 + 200.f * (i / 2));
+		}
+		else {
+			buttonsText[i].setPosition(350, -160 + 200.f * (i / 2));
+			buttons[i].setPosition(350, -200 + 200.f * (i / 2));
 		}
 	}
 }
 
-int HomeState::update(std::vector<sf::Event> events)
+int HomeState::update(std::vector<sf::Event> events, float dTime)
 {
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
 	int whatHappened = 0;
 
 	for (const auto& e : events) {
-		if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left){
-			for (int i = 0; i < 6; i++) {
-				if (i == 5) continue;
-				if (buttons[i].getGlobalBounds().contains(mousePos)) {
-					/*if (i == 5)
-						buttonsText[5].setFillColor(sf::Color(100,0,0));
-					else*/ 
-						buttons[i].setFillColor(sf::Color(245, 245, 221));
-				}
-			}
+		if (e.type == sf::Event::Closed) {
+			window.close();
 		}
+		//handle left pressed
+		else if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left) {
+			for (int i = 0; i < 4; i++) {
+				if (buttons[i].getGlobalBounds().contains(mousePos)) {
+					buttons[i].setFillColor(sf::Color(245, 245, 221));
+					buttonPressed = i;
+				}		
+			}
+			if (spriteSettings.getGlobalBounds().contains(mousePos))
+				buttonPressed = 4;
+			else if (spriteClose.getGlobalBounds().contains(mousePos))
+				buttonPressed = 5;
+		}
+		//handle left released
 		else if (e.type == sf::Event::MouseButtonReleased && e.key.code == sf::Mouse::Left) {
-			for (int i = 0; i < 6; i++) {
-				if (buttons[i].getGlobalBounds().contains(mousePos) && buttons[i].getFillColor() == sf::Color(245, 245, 221))
+			for (int i = 0; i < 4; i++) {
+				if (buttons[i].getGlobalBounds().contains(mousePos) && buttonPressed == i)
 					whatHappened = handleClick(i);
 
-				if (i != 5)
-					buttons[i].setFillColor(sf::Color::White);
+				buttons[i].setFillColor(sf::Color::White);
 			}
-			
-		}
-		else if (e.type == sf::Event::MouseMoved) {
-			if (buttons[5].getGlobalBounds().contains(mousePos))  // exit btn 
-				buttonsText[5].setFillColor(sf::Color::Red);
-			else
-				buttonsText[5].setFillColor(sf::Color(62, 39, 35));
+			if (spriteSettings.getGlobalBounds().contains(mousePos) && buttonPressed == 4)
+				whatHappened = handleClick(4);
+			else if (spriteClose.getGlobalBounds().contains(mousePos) && buttonPressed == 5)
+				whatHappened = handleClick(5);
 
+			buttonPressed = -1;
 		}
 	}
 
-	//if (spriteSettings.getGlobalBounds().contains(mousePos)) {
-	//	window.setMouseCursor(handCursor);
-	//	spriteSettings.rotate(-.7);
-	//} else 
-	//	window.setMouseCursor(cursor);
-
+	if (spriteSettings.getGlobalBounds().contains(mousePos))
+		spriteSettings.rotate(-.1 * dTime);
 
 	return whatHappened;
 }
@@ -153,14 +127,15 @@ void HomeState::draw()
 {
 	window.clear(sf::Color(102, 57, 49));
 	window.draw(spriteBg);
-	window.draw(spriteSettings);
-
-	window.draw(title);
-
-	for (int i = 0; i < 6; i++) {
+	
+	for (int i = 0; i < 4; i++) {
 		window.draw(buttons[i]);
 		window.draw(buttonsText[i]);
 	}
+
+	window.draw(title);
+	window.draw(spriteSettings);
+	window.draw(spriteClose);
 
 	window.display();
 }
@@ -168,18 +143,18 @@ void HomeState::draw()
 int HomeState::handleClick(int buttonId)
 {
 	switch (buttonId) {
-		case 0:
+		case 0: //new game
 			return 1;
 			break;
-		case 1:
+		case 1: //load game
 			break;
-		case 2:
+		case 2: //join session
 			break;
-		case 3:
+		case 3: //create session
 			break;
-		case 4:
+		case 4: //setting
 			break;
-		case 5:
+		case 5: //close
 			window.close();
 			break;
 	}
