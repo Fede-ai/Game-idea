@@ -47,6 +47,7 @@ int main() {
 				window.setView(view);
 				window.setVerticalSyncEnabled(true);
 				window.setKeyRepeatEnabled(false);
+				window.setMouseCursor(cursor);
 			}
 
 			events.push_back(e);

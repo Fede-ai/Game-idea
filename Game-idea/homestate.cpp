@@ -17,7 +17,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	title.setString(Consts::GAME_NAME);
 	title.setCharacterSize(60);
 	title.setOrigin(title.getLocalBounds().width/2, 0);
-	title.setPosition(0, -350);
+	title.setPosition(0, -320);
 
 	//home bg texture
 	textureBg.loadFromFile("textures/home_bg.png");
@@ -30,20 +30,26 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	spriteSettings.setTexture(textureSettings);
 	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
-	spriteSettings.setPosition(sf::Vector2f(Consts::VIEW_SIZE_X/2 - spriteSettings.getGlobalBounds().width/1.5, - Consts::VIEW_SIZE_Y/2 + spriteSettings.getGlobalBounds().height/1.5));
+	spriteSettings.setPosition(sf::Vector2f(- Consts::VIEW_SIZE_X/2 + spriteSettings.getGlobalBounds().width/1.5, + Consts::VIEW_SIZE_Y/2 - spriteSettings.getGlobalBounds().height/1.5));
 	//close icon
 	textureClose.loadFromFile("textures/close.png");
 	spriteClose.setTexture(textureClose);
 	spriteClose.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteClose.setOrigin(spriteClose.getLocalBounds().width / 2, spriteClose.getLocalBounds().height / 2);
-	spriteClose.setPosition(575, 310);
+	spriteClose.setPosition(sf::Vector2f(Consts::VIEW_SIZE_X / 2 - spriteClose.getGlobalBounds().width / 1.5, +Consts::VIEW_SIZE_Y / 2 - spriteClose.getGlobalBounds().height / 1.5));
 
+	//button bg 
+	textureBtn.loadFromFile("textures/button.png");
+	textureBtnPressed.loadFromFile("textures/button_pressed.png");
 	for (int i = 0; i < 4; i++) {
-		buttons[i].setSize(sf::Vector2f(500, 100));
-		buttons[i].setFillColor(sf::Color::White);
+		buttons[i].setTexture(textureBtn);
+		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, buttons[i].getLocalBounds().height / 2);
+		buttons[i].setPosition(sf::Vector2f(Consts::VIEW_SIZE_X / 2 - buttons[i].getGlobalBounds().width / 1.5, +Consts::VIEW_SIZE_Y / 2 - buttons[i].getGlobalBounds().height / 1.5));
+		buttons[i].setTexture(textureBtnPressed);
 
 		buttonsText[i].setFont(font);
-		buttonsText[i].setFillColor(sf::Color(139,68, 17));
+		buttonsText[i].setFillColor(sf::Color(66,32, 26));
 		buttonsText[i].setStyle(sf::Text::Bold);
 		buttonsText[i].setCharacterSize(25);
 		buttonsText[i].setString(Consts::GAME_NAME);
@@ -91,7 +97,9 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		else if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left) {
 			for (int i = 0; i < 4; i++) {
 				if (buttons[i].getGlobalBounds().contains(mousePos)) {
-					buttons[i].setFillColor(sf::Color(245, 245, 221));
+					//buttons[i].setFillColor(sf::Color(245, 245, 221));
+					buttons[i].setTexture(textureBtn);
+					buttonsText[i].setPosition(buttonsText[i].getPosition().x, buttonsText[i].getPosition().y-10);
 					buttonPressed = i;
 				}		
 			}
@@ -106,8 +114,12 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 				if (buttons[i].getGlobalBounds().contains(mousePos) && buttonPressed == i)
 					whatHappened = handleClick(i);
 
-				buttons[i].setFillColor(sf::Color::White);
+				//buttons[i].setFillColor(sf::Color::White);
+					
+				buttons[i].setTexture(textureBtnPressed);
 			}
+			if (buttonPressed > -1 && buttonPressed < 4)
+				buttonsText[buttonPressed].setPosition(buttonsText[buttonPressed].getPosition().x, buttonsText[buttonPressed].getPosition().y + 10);
 			if (spriteSettings.getGlobalBounds().contains(mousePos) && buttonPressed == 4)
 				whatHappened = handleClick(4);
 			else if (spriteClose.getGlobalBounds().contains(mousePos) && buttonPressed == 5)

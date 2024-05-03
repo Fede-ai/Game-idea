@@ -12,7 +12,9 @@ private:
 
 	sf::RenderWindow& window;
 
-	sf::RectangleShape buttons[4];
+	sf::Texture textureBtn;
+	sf::Texture textureBtnPressed;
+	sf::Sprite buttons[4];
 	sf::Text buttonsText[4];
 	sf::Font font;
 	sf::Text title;
@@ -25,4 +27,6 @@ private:
 	sf::Sprite spriteSettings;
 	sf::Texture textureClose;
 	sf::Sprite spriteClose;
+
+
 };
