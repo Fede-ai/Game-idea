@@ -7,13 +7,8 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	gameInfo(inGameInfo),
 	settings(inSettings)
 {	
-	resourcesTexture[0].loadFromFile("textures/wood.png");
-	resourcesTexture[1].loadFromFile("textures/stone.png");
-	resourcesTexture[2].loadFromFile("textures/people.png");
-	resourcesTexture[3].loadFromFile("textures/gold.png");
-	resourcesTexture[4].loadFromFile("textures/food.png");
-	resourcesTexture[5].loadFromFile("textures/water.png");
 	for (int i = 0; i < 6; i++) {
+		resourcesTexture[i].loadFromFile("textures/resources.png", sf::IntRect(sf::Vector2i(12 * i, 0), sf::Vector2i(12, 12)));
 		resourcesSprite[i].setTexture(resourcesTexture[i]);
 		resourcesSprite[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	}
@@ -22,11 +17,15 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 
-	resourcesBgTexture.loadFromFile("textures/resources.png");
+	resourcesBgTexture.loadFromFile("textures/resourcesBg.png");
 	resourcesBgSprite.setTexture(resourcesBgTexture);
 	resourcesBgSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	resourcesBgSprite.setOrigin(resourcesBgSprite.getLocalBounds().width, 0);
 	
+	font.loadFromFile("fonts/PublicPixel.ttf");
+	resourcesText.setFillColor(sf::Color(230, 230, 230));
+	resourcesText.setFont(font);
+	resourcesText.setCharacterSize(30);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 }
 
@@ -83,12 +82,37 @@ void GameState::draw()
 	resourcesBgSprite.setPosition(center + sf::Vector2f(window.getView().getSize().x / 2, -window.getView().getSize().y / 2));
 	window.draw(resourcesBgSprite);
 
+	gameInfo.resources[0] += 9;
+
+	auto valueToString = [] (int num, bool isCap = false) {
+		if (num < 1'000) {
+			std::string str = std::to_string(num);
+			while (str.size() < 3 && !isCap)
+				str = '0' + str;
+
+			return str;
+		}
+		else if (num < 10'000)
+			return std::to_string(num / 100) + "h";
+		else if (num < 100'000)
+			return std::to_string(num / 1000) + "k";
+		else
+			return std::string("err");
+	};
+	int d = 15;
 	//draw resources icons
-	for (int i = 0; i < 3; i++) {
-		resourcesSprite[2 * i].setPosition(center + sf::Vector2f(270 + 215 * i, -510));
-		window.draw(resourcesSprite[2 * i]);
-		resourcesSprite[2 * i + 1].setPosition(center + sf::Vector2f(270 + 215 * i, -440));
-		window.draw(resourcesSprite[2 * i + 1]);
+	for (int i = 0; i < 6; i++) {
+		resourcesSprite[i].setPosition(center + sf::Vector2f(270+d + 215 * int(i / 2), -510 + 70 * (i % 2)));
+		window.draw(resourcesSprite[i]);
+
+		resourcesText.setCharacterSize(30);
+		resourcesText.setString(valueToString(gameInfo.resources[i]));
+		resourcesText.setPosition(center + sf::Vector2f(370+d + 215 * int(i / 2), -505 + 70 * (i % 2)));
+		window.draw(resourcesText);
+		resourcesText.setCharacterSize(15);
+		resourcesText.setString("/" + valueToString(gameInfo.capacities[i], true));
+		resourcesText.setPosition(center + sf::Vector2f(370+d + 215 * int(i / 2), -470 + 70 * (i % 2)));
+		window.draw(resourcesText);
 	}
 
 	window.display();
