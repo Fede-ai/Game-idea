@@ -14,6 +14,7 @@ private:
 	sf::RenderWindow& window;
 	GameInfo& gameInfo;
 	const Settings settings;
+	sf::Font font;
 
 	sf::Vector2f lastMousePos;
 
@@ -24,5 +25,6 @@ private:
 
 	sf::Texture resourcesTexture[6];
 	sf::Sprite resourcesSprite[6];
+	sf::Text resourcesText;
 };
 

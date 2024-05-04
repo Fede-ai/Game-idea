@@ -1,7 +1,7 @@
 #pragma once
 
 struct GameInfo {
-	int wood = 0, stone = 0;
-	int water = 0, food = 0;
-	int people = 0, gold = 0;
+	//wood, stone, people, gold, food, water
+	double resources[6] = { 0, 0, 0, 0, 0, 0 };
+	int capacities[6] = { 10, 10, 10, 10, 10, 10 };
 };
