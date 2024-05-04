@@ -8,7 +8,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	settings(inSettings)
 {	
 	for (int i = 0; i < 6; i++) {
-		resourcesTexture[i].loadFromFile("textures/resources.png", sf::IntRect(sf::Vector2i(12 * i, 0), sf::Vector2i(12, 12)));
+		resourcesTexture[i].loadFromFile("textures/resources.png", sf::IntRect(sf::Vector2i(10 * i, 0), sf::Vector2i(10, 10)));
 		resourcesSprite[i].setTexture(resourcesTexture[i]);
 		resourcesSprite[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	}
@@ -82,8 +82,6 @@ void GameState::draw()
 	resourcesBgSprite.setPosition(center + sf::Vector2f(window.getView().getSize().x / 2, -window.getView().getSize().y / 2));
 	window.draw(resourcesBgSprite);
 
-	gameInfo.resources[0] += 9;
-
 	auto valueToString = [] (int num, bool isCap = false) {
 		if (num < 1'000) {
 			std::string str = std::to_string(num);
@@ -99,19 +97,19 @@ void GameState::draw()
 		else
 			return std::string("err");
 	};
-	int d = 15;
+	int x = 70, y = -25;
 	//draw resources icons
 	for (int i = 0; i < 6; i++) {
-		resourcesSprite[i].setPosition(center + sf::Vector2f(270+d + 215 * int(i / 2), -510 + 70 * (i % 2)));
+		resourcesSprite[i].setPosition(center + sf::Vector2f(290 + x + 205 * int(i / 2), y - 505 + 70 * (i % 2)));
 		window.draw(resourcesSprite[i]);
 
 		resourcesText.setCharacterSize(30);
 		resourcesText.setString(valueToString(gameInfo.resources[i]));
-		resourcesText.setPosition(center + sf::Vector2f(370+d + 215 * int(i / 2), -505 + 70 * (i % 2)));
+		resourcesText.setPosition(center + sf::Vector2f(375 + x + 205 * int(i / 2), y - 507 + 70 * (i % 2)));
 		window.draw(resourcesText);
 		resourcesText.setCharacterSize(15);
 		resourcesText.setString("/" + valueToString(gameInfo.capacities[i], true));
-		resourcesText.setPosition(center + sf::Vector2f(370+d + 215 * int(i / 2), -470 + 70 * (i % 2)));
+		resourcesText.setPosition(center + sf::Vector2f(375 + x + 205 * int(i / 2), y - 472 + 70 * (i % 2)));
 		window.draw(resourcesText);
 	}
 
