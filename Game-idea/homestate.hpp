@@ -10,8 +10,6 @@ private:
 	void draw();
 	int handleClick(int buttonId);
 
-	sf::RenderWindow& window;
-
 	sf::Texture textureBtn;
 	sf::Texture textureBtnPressed;
 	sf::Sprite buttons[4];
@@ -27,6 +25,4 @@ private:
 	sf::Sprite spriteSettings;
 	sf::Texture textureClose;
 	sf::Sprite spriteClose;
-
-
 };

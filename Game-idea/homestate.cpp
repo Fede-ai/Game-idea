@@ -5,10 +5,9 @@
 
 HomeState::HomeState(sf::RenderWindow& inWindow)
 	:
-	window(inWindow)
+	State(inWindow)
 {
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
-
 	font.loadFromFile("fonts/PublicPixel.ttf");
 
 	title.setFont(font);
@@ -30,13 +29,13 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	spriteSettings.setTexture(textureSettings);
 	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
-	spriteSettings.setPosition(sf::Vector2f(- Consts::VIEW_SIZE_X/2 + spriteSettings.getGlobalBounds().width/1.5, + Consts::VIEW_SIZE_Y/2 - spriteSettings.getGlobalBounds().height/1.5));
+	spriteSettings.setPosition(sf::Vector2f(float(- Consts::VIEW_SIZE_X / 2 + 60), float(Consts::VIEW_SIZE_Y / 2 - 60)));
 	//close icon
 	textureClose.loadFromFile("textures/close.png");
 	spriteClose.setTexture(textureClose);
 	spriteClose.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteClose.setOrigin(spriteClose.getLocalBounds().width / 2, spriteClose.getLocalBounds().height / 2);
-	spriteClose.setPosition(sf::Vector2f(Consts::VIEW_SIZE_X / 2 - spriteClose.getGlobalBounds().width / 1.5, +Consts::VIEW_SIZE_Y / 2 - spriteClose.getGlobalBounds().height / 1.5));
+	spriteClose.setPosition(sf::Vector2f(float(Consts::VIEW_SIZE_X / 2 - 60), float(Consts::VIEW_SIZE_Y / 2 - 60)));
 
 	//button bg 
 	textureBtn.loadFromFile("textures/button.png");
@@ -45,7 +44,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 		buttons[i].setTexture(textureBtn);
 		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, buttons[i].getLocalBounds().height / 2);
-		buttons[i].setPosition(sf::Vector2f(Consts::VIEW_SIZE_X / 2 - buttons[i].getGlobalBounds().width / 1.5, +Consts::VIEW_SIZE_Y / 2 - buttons[i].getGlobalBounds().height / 1.5));
+		buttons[i].setPosition(sf::Vector2f(float(Consts::VIEW_SIZE_X / 2 - 60), float(Consts::VIEW_SIZE_Y / 2 - 60)));
 		buttons[i].setTexture(textureBtnPressed);
 
 		buttonsText[i].setFont(font);
@@ -86,7 +85,6 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 int HomeState::update(std::vector<sf::Event> events, float dTime)
 {
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-
 	int whatHappened = 0;
 
 	for (const auto& e : events) {
@@ -123,10 +121,10 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 
 			buttonPressed = -1;
 		}
-	}
+	}	
 
 	if (spriteSettings.getGlobalBounds().contains(mousePos))
-		spriteSettings.rotate(-.1 * dTime);
+		spriteSettings.rotate(float(-0.1 * dTime));
 
 	return whatHappened;
 }
@@ -145,7 +143,7 @@ void HomeState::draw()
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
 
-	window.display();
+	//DO NOT CALL window.display()
 }
 
 int HomeState::handleClick(int buttonId)

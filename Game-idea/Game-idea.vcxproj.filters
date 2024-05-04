@@ -13,16 +13,31 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\states">
+      <UniqueIdentifier>{82fac9a3-fa41-4672-8462-7160a97114cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\states">
+      <UniqueIdentifier>{897d9722-acee-4565-b0aa-fe3a6769becd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gamestate.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
     </ClCompile>
     <ClCompile Include="homestate.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\states</Filter>
+    </ClCompile>
+    <ClCompile Include="settingsstate.cpp">
+      <Filter>Source Files\states</Filter>
+    </ClCompile>
+    <ClCompile Include="shopstate.cpp">
+      <Filter>Source Files\states</Filter>
+    </ClCompile>
+    <ClCompile Include="pausestate.cpp">
+      <Filter>Source Files\states</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,9 +47,6 @@
     <ClInclude Include="gameinfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gamestate.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="state.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,7 +54,19 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="homestate.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="gamestate.hpp">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="shopstate.hpp">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="pausestate.hpp">
+      <Filter>Header Files\states</Filter>
+    </ClInclude>
+    <ClInclude Include="settingsstate.hpp">
+      <Filter>Header Files\states</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

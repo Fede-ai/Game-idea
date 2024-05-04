@@ -3,10 +3,10 @@
 
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings)
 	:
-	window(inWindow),
+	State(inWindow),
 	gameInfo(inGameInfo),
 	settings(inSettings)
-{	
+{
 	for (int i = 0; i < 6; i++) {
 		resourcesTexture[i].loadFromFile("textures/resources.png", sf::IntRect(sf::Vector2i(10 * i, 0), sf::Vector2i(10, 10)));
 		resourcesSprite[i].setTexture(resourcesTexture[i]);
@@ -27,6 +27,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	resourcesText.setFont(font);
 	resourcesText.setCharacterSize(30);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+	window.setView(gameInfo.view);
 }
 
 int GameState::update(std::vector<sf::Event> events, float dTime)
@@ -97,21 +98,20 @@ void GameState::draw()
 		else
 			return std::string("err");
 	};
-	int x = 70, y = -25;
 	//draw resources icons
 	for (int i = 0; i < 6; i++) {
-		resourcesSprite[i].setPosition(center + sf::Vector2f(290 + x + 205 * int(i / 2), y - 505 + 70 * (i % 2)));
+		resourcesSprite[i].setPosition(center + sf::Vector2f(float(360 + 205 * int(i / 2)), float(70 * (i % 2) - 530)));
 		window.draw(resourcesSprite[i]);
 
 		resourcesText.setCharacterSize(30);
-		resourcesText.setString(valueToString(gameInfo.resources[i]));
-		resourcesText.setPosition(center + sf::Vector2f(375 + x + 205 * int(i / 2), y - 507 + 70 * (i % 2)));
+		resourcesText.setString(valueToString(int(gameInfo.resources[i])));
+		resourcesText.setPosition(center + sf::Vector2f(float(445 + 205 * int(i / 2)), float(70 * (i % 2) - 532)));
 		window.draw(resourcesText);
 		resourcesText.setCharacterSize(15);
 		resourcesText.setString("/" + valueToString(gameInfo.capacities[i], true));
-		resourcesText.setPosition(center + sf::Vector2f(375 + x + 205 * int(i / 2), y - 472 + 70 * (i % 2)));
+		resourcesText.setPosition(center + sf::Vector2f(float(445 + 205 * int(i / 2)), float(70 * (i % 2) - 497)));
 		window.draw(resourcesText);
 	}
 
-	window.display();
+	//DO NOT CALL window.display()
 }
