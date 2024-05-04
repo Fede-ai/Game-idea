@@ -23,7 +23,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	resourcesBgSprite.setOrigin(resourcesBgSprite.getLocalBounds().width, 0);
 	
 	font.loadFromFile("fonts/PublicPixel.ttf");
-	resourcesText.setFillColor(sf::Color(230, 230, 230));
+	resourcesText.setFillColor(sf::Color::White);
 	resourcesText.setFont(font);
 	resourcesText.setCharacterSize(30);
 	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));

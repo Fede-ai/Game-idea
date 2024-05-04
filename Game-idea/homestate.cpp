@@ -15,9 +15,9 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	title.setStyle(sf::Text::Bold);
 	title.setFillColor(sf::Color(62, 39, 35));
 	title.setString(Consts::GAME_NAME);
-	title.setCharacterSize(60);
+	title.setCharacterSize(70);
 	title.setOrigin(title.getLocalBounds().width/2, 0);
-	title.setPosition(0, -320);
+	title.setPosition(0, -300);
 
 	//home bg texture
 	textureBg.loadFromFile("textures/home_bg.png");
@@ -62,10 +62,10 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 				buttonsText[i].setString("LOAD GAME");
 				break;
 			case 2:
-				buttonsText[i].setString("JOIN SESSION");
+				buttonsText[i].setString("NEW SESSION");
 				break;
 			case 3:
-				buttonsText[i].setString("CREATE SESSION");
+				buttonsText[i].setString("JOIN SESSION");
 				break;
 		}
 
@@ -73,12 +73,12 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
 
 		if (i % 2 == 0) {
-			buttonsText[i].setPosition(-350, -160 + 200.f * (i / 2));
-			buttons[i].setPosition(-350, -200 + 200.f * (i / 2));
+			buttonsText[i].setPosition(-350, -90 + 200.f * (i / 2));
+			buttons[i].setPosition(-350, -120 + 200.f * (i / 2));
 		}
 		else {
-			buttonsText[i].setPosition(350, -160 + 200.f * (i / 2));
-			buttons[i].setPosition(350, -200 + 200.f * (i / 2));
+			buttonsText[i].setPosition(350, -90 + 200.f * (i / 2));
+			buttons[i].setPosition(350, -120 + 200.f * (i / 2));
 		}
 	}
 }
@@ -97,9 +97,8 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		else if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left) {
 			for (int i = 0; i < 4; i++) {
 				if (buttons[i].getGlobalBounds().contains(mousePos)) {
-					//buttons[i].setFillColor(sf::Color(245, 245, 221));
 					buttons[i].setTexture(textureBtn);
-					buttonsText[i].setPosition(buttonsText[i].getPosition().x, buttonsText[i].getPosition().y-10);
+					buttonsText[i].setPosition(buttonsText[i].getPosition().x - 10, buttonsText[i].getPosition().y + 10);
 					buttonPressed = i;
 				}		
 			}
@@ -112,14 +111,11 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		else if (e.type == sf::Event::MouseButtonReleased && e.key.code == sf::Mouse::Left) {
 			for (int i = 0; i < 4; i++) {
 				if (buttons[i].getGlobalBounds().contains(mousePos) && buttonPressed == i)
-					whatHappened = handleClick(i);
-
-				//buttons[i].setFillColor(sf::Color::White);
-					
+					whatHappened = handleClick(i);					
 				buttons[i].setTexture(textureBtnPressed);
 			}
 			if (buttonPressed > -1 && buttonPressed < 4)
-				buttonsText[buttonPressed].setPosition(buttonsText[buttonPressed].getPosition().x, buttonsText[buttonPressed].getPosition().y + 10);
+				buttonsText[buttonPressed].setPosition(buttonsText[buttonPressed].getPosition().x + 10, buttonsText[buttonPressed].getPosition().y - 10);
 			if (spriteSettings.getGlobalBounds().contains(mousePos) && buttonPressed == 4)
 				whatHappened = handleClick(4);
 			else if (spriteClose.getGlobalBounds().contains(mousePos) && buttonPressed == 5)
@@ -160,9 +156,9 @@ int HomeState::handleClick(int buttonId)
 			break;
 		case 1: //load game
 			break;
-		case 2: //join session
+		case 2: //new session
 			break;
-		case 3: //create session
+		case 3: //join session
 			break;
 		case 4: //setting
 			break;
