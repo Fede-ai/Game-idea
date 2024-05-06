@@ -22,13 +22,19 @@
     <ClCompile Include="gamestate.cpp" />
     <ClCompile Include="homestate.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pausestate.cpp" />
+    <ClCompile Include="settingsstate.cpp" />
+    <ClCompile Include="shopstate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="consts.hpp" />
     <ClInclude Include="gameinfo.hpp" />
     <ClInclude Include="gamestate.hpp" />
     <ClInclude Include="homestate.hpp" />
+    <ClInclude Include="pausestate.hpp" />
     <ClInclude Include="settings.hpp" />
+    <ClInclude Include="settingsstate.hpp" />
+    <ClInclude Include="shopstate.hpp" />
     <ClInclude Include="state.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
