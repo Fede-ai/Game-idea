@@ -9,10 +9,10 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 {
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
 
-	// load font
+	//load font
 	font.loadFromFile("fonts/PublicPixel.ttf");
 
-	// set title settings
+	//set title settings
 	title.setFont(font);
 	title.setStyle(sf::Text::Bold);
 	title.setFillColor(sf::Color(62, 39, 35));
@@ -44,7 +44,11 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	textureBtn.loadFromFile("textures/button.png");
 	textureBtnPressed.loadFromFile("textures/button_pressed.png");
 
-	// home buttons
+	//home buttons
+	buttonsText[1].setString("NEW GAME");
+	buttonsText[2].setString("LOAD GAME");
+	buttonsText[3].setString("NEW SESSION");
+	buttonsText[4].setString("JOIN SESSION");
 	for (int i = 0; i < 4; i++) {
 		//set buttons scale and texture
 		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
@@ -57,33 +61,14 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 		buttonsText[i].setCharacterSize(25);
 		buttonsText[i].setString(Consts::GAME_NAME);
 
-		// buttons text
-		if (i == 0)
-			buttonsText[i].setString("NEW GAME");
-		else if (i == 1)
-			buttonsText[i].setString("LOAD GAME");
-		else if (i == 2)
-			buttonsText[i].setString("NEW SESSION");
-		else if (i == 3)
-			buttonsText[i].setString("JOIN SESSION");
-
 		// set buttons origin
 		buttonsText[i].setOrigin(buttonsText[i].getLocalBounds().width / 2, 0);
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
 
 		// set buttons position
-		int x = 300, 
-			y = -90, 
-			yOffSet = -30, 
-			dist = 200.f * (i / 2);
-		if (i % 2 == 0) {
-			buttonsText[i].setPosition(-x, y + dist);
-			buttons[i].setPosition(-x, y + yOffSet + dist);
-		}
-		else {
-			buttonsText[i].setPosition(x, y + dist);
-			buttons[i].setPosition(x, y + yOffSet + dist);
-		}
+		int x = 300 * ((i % 2) * 2 - 1), y = -90, dist = 200 * int(i / 2);
+		buttonsText[i].setPosition(x, y + dist);
+		buttons[i].setPosition(x, y + dist - 30);
 	}
 }
 
