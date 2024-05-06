@@ -10,7 +10,8 @@ public:
 private:
 	int update(std::vector<sf::Event> events, float dTime);
 	void draw();
-
+	
+	IngameState* inGameState = NULL;
 	GameInfo& gameInfo;
 	const Settings settings;
 	sf::Font font;
@@ -18,11 +19,5 @@ private:
 
 	sf::Texture grassTexture;
 	sf::Sprite grassSprite;
-	sf::Texture resourcesBgTexture;
-	sf::Sprite resourcesBgSprite;
-
-	sf::Texture resourcesTexture[6];
-	sf::Sprite resourcesSprite[6];
-	sf::Text resourcesText;
 };
 

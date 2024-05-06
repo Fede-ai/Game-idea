@@ -45,10 +45,10 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	textureBtnPressed.loadFromFile("textures/button_pressed.png");
 
 	//home buttons
-	buttonsText[0].setString("NEW GAME");
-	buttonsText[1].setString("LOAD GAME");
-	buttonsText[2].setString("NEW SESSION");
-	buttonsText[3].setString("JOIN SESSION");
+	buttonsText[0].setString("PLAY");
+	buttonsText[1].setString("JOIN");
+	buttonsText[2].setString("PRIVATE");
+	buttonsText[3].setString("SHOP");
 	for (int i = 0; i < 4; i++) {
 		//set buttons scale and texture
 		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
@@ -65,7 +65,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
 
 		//set buttons position
-		int x = 300 * ((i % 2) * 2 - 1), y = -90, dist = 200 * int(i / 2);
+		float x = 300.f * ((i % 2) * 2 - 1), y = -90, dist = 200.f * int(i / 2.f);
 		buttonsText[i].setPosition(x, y + dist);
 		buttons[i].setPosition(x, y + dist - 30);
 	}
@@ -77,7 +77,7 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 	int whatHappened = 0;
 
 	for (const auto& e : events) {
-		// when X is clicked
+		//when X is clicked
 		if (e.type == sf::Event::Closed) 
 			window.close();
 		
@@ -144,7 +144,7 @@ void HomeState::draw()
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
 
-	//DO NOT CALL window.display()
+	window.display();
 }
 
 
