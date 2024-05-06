@@ -45,10 +45,10 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	textureBtnPressed.loadFromFile("textures/button_pressed.png");
 
 	//home buttons
-	buttonsText[1].setString("NEW GAME");
-	buttonsText[2].setString("LOAD GAME");
-	buttonsText[3].setString("NEW SESSION");
-	buttonsText[4].setString("JOIN SESSION");
+	buttonsText[0].setString("NEW GAME");
+	buttonsText[1].setString("LOAD GAME");
+	buttonsText[2].setString("NEW SESSION");
+	buttonsText[3].setString("JOIN SESSION");
 	for (int i = 0; i < 4; i++) {
 		//set buttons scale and texture
 		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
@@ -59,7 +59,6 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 		buttonsText[i].setFillColor(sf::Color(66,32, 26));
 		buttonsText[i].setStyle(sf::Text::Bold);
 		buttonsText[i].setCharacterSize(25);
-		buttonsText[i].setString(Consts::GAME_NAME);
 
 		// set buttons origin
 		buttonsText[i].setOrigin(buttonsText[i].getLocalBounds().width / 2, 0);
