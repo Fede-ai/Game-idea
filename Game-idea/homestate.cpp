@@ -8,8 +8,11 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	State(inWindow)
 {
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
+
+	//load font
 	font.loadFromFile("fonts/PublicPixel.ttf");
 
+	//set title settings
 	title.setFont(font);
 	title.setStyle(sf::Text::Bold);
 	title.setFillColor(sf::Color(62, 39, 35));
@@ -40,45 +43,31 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	//button bg 
 	textureBtn.loadFromFile("textures/button.png");
 	textureBtnPressed.loadFromFile("textures/button_pressed.png");
-	for (int i = 0; i < 4; i++) {
-		buttons[i].setTexture(textureBtn);
-		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
-		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, buttons[i].getLocalBounds().height / 2);
-		buttons[i].setPosition(sf::Vector2f(float(Consts::VIEW_SIZE_X / 2 - 60), float(Consts::VIEW_SIZE_Y / 2 - 60)));
-		buttons[i].setTexture(textureBtnPressed);
 
+	//home buttons
+	buttonsText[0].setString("NEW GAME");
+	buttonsText[1].setString("LOAD GAME");
+	buttonsText[2].setString("NEW SESSION");
+	buttonsText[3].setString("JOIN SESSION");
+	for (int i = 0; i < 4; i++) {
+		//set buttons scale and texture
+		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+		buttons[i].setTexture(textureBtn);
+
+		//buttons' text, font and style
 		buttonsText[i].setFont(font);
 		buttonsText[i].setFillColor(sf::Color(66,32, 26));
 		buttonsText[i].setStyle(sf::Text::Bold);
 		buttonsText[i].setCharacterSize(25);
-		buttonsText[i].setString(Consts::GAME_NAME);
 
-		switch (i) {
-			case 0:
-				buttonsText[i].setString("NEW GAME");
-				break;
-			case 1:
-				buttonsText[i].setString("LOAD GAME");
-				break;
-			case 2:
-				buttonsText[i].setString("NEW SESSION");
-				break;
-			case 3:
-				buttonsText[i].setString("JOIN SESSION");
-				break;
-		}
-
+		//set buttons origin
 		buttonsText[i].setOrigin(buttonsText[i].getLocalBounds().width / 2, 0);
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
 
-		if (i % 2 == 0) {
-			buttonsText[i].setPosition(-350, -90 + 200.f * (i / 2));
-			buttons[i].setPosition(-350, -120 + 200.f * (i / 2));
-		}
-		else {
-			buttonsText[i].setPosition(350, -90 + 200.f * (i / 2));
-			buttons[i].setPosition(350, -120 + 200.f * (i / 2));
-		}
+		//set buttons position
+		int x = 300 * ((i % 2) * 2 - 1), y = -90, dist = 200 * int(i / 2);
+		buttonsText[i].setPosition(x, y + dist);
+		buttons[i].setPosition(x, y + dist - 30);
 	}
 }
 
@@ -88,18 +77,21 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 	int whatHappened = 0;
 
 	for (const auto& e : events) {
-		if (e.type == sf::Event::Closed) {
+		// when X is clicked
+		if (e.type == sf::Event::Closed) 
 			window.close();
-		}
+		
 		//handle left pressed
 		else if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left) {
 			for (int i = 0; i < 4; i++) {
+				//button pressed animation
 				if (buttons[i].getGlobalBounds().contains(mousePos)) {
-					buttons[i].setTexture(textureBtn);
+					buttons[i].setTexture(textureBtnPressed);
 					buttonsText[i].setPosition(buttonsText[i].getPosition().x - 10, buttonsText[i].getPosition().y + 10);
 					buttonPressed = i;
 				}		
 			}
+			//settings and Exit icon pressed
 			if (spriteSettings.getGlobalBounds().contains(mousePos))
 				buttonPressed = 4;
 			else if (spriteClose.getGlobalBounds().contains(mousePos))
@@ -108,12 +100,18 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		//handle left released
 		else if (e.type == sf::Event::MouseButtonReleased && e.key.code == sf::Mouse::Left) {
 			for (int i = 0; i < 4; i++) {
+				//clicked button action
 				if (buttons[i].getGlobalBounds().contains(mousePos) && buttonPressed == i)
-					whatHappened = handleClick(i);					
-				buttons[i].setTexture(textureBtnPressed);
+					whatHappened = handleClick(i);	
+				//finish button click animation
+				buttons[i].setTexture(textureBtn);
 			}
-			if (buttonPressed > -1 && buttonPressed < 4)
+
+			//finish text clicked animation
+			if (buttonPressed > -1 && buttonPressed < 4) 
 				buttonsText[buttonPressed].setPosition(buttonsText[buttonPressed].getPosition().x + 10, buttonsText[buttonPressed].getPosition().y - 10);
+
+			//clicked button action for Settings and Exit
 			if (spriteSettings.getGlobalBounds().contains(mousePos) && buttonPressed == 4)
 				whatHappened = handleClick(4);
 			else if (spriteClose.getGlobalBounds().contains(mousePos) && buttonPressed == 5)
@@ -123,6 +121,7 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}	
 
+	//on mouse hover rotates settings icon
 	if (spriteSettings.getGlobalBounds().contains(mousePos))
 		spriteSettings.rotate(float(-0.1 * dTime));
 
@@ -133,18 +132,21 @@ void HomeState::draw()
 {
 	window.clear(sf::Color(102, 57, 49));
 	window.draw(spriteBg);
-	
+
+	//draw 4 action buttons 
 	for (int i = 0; i < 4; i++) {
 		window.draw(buttons[i]);
 		window.draw(buttonsText[i]);
 	}
 
+	//draw title, settings and Exit
 	window.draw(title);
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
 
 	//DO NOT CALL window.display()
 }
+
 
 int HomeState::handleClick(int buttonId)
 {
