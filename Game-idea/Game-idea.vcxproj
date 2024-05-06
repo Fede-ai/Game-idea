@@ -22,6 +22,7 @@
     <ClCompile Include="gamestate.cpp" />
     <ClCompile Include="homestate.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="pausestate.cpp" />
     <ClCompile Include="statesmanager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -29,6 +30,7 @@
     <ClInclude Include="gameinfo.hpp" />
     <ClInclude Include="gamestate.hpp" />
     <ClInclude Include="homestate.hpp" />
+    <ClInclude Include="pausestate.hpp" />
     <ClInclude Include="settings.hpp" />
     <ClInclude Include="state.hpp" />
     <ClInclude Include="statesmanager.hpp" />

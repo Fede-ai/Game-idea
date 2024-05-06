@@ -18,12 +18,26 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 
 int GameState::update(std::vector<sf::Event> events, float dTime)
 {
+
+	if (ingameState != NULL) {
+		int whatHappened = ingameState->update(events, dTime);
+
+		if (whatHappened == 1) {
+			delete ingameState;
+			ingameState = NULL;
+		}
+
+		return 0;
+	}
+
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
 	//handle events
 	for (const auto& e : events) {
 		if (e.type == sf::Event::Closed)
 			window.close();
+		else if (e.type == sf::Event::KeyReleased && e.key.code == sf::Keyboard::Escape)	
+			ingameState = new PauseState(window);
 	}
 
 	lastMousePos = mousePos;
@@ -56,5 +70,6 @@ void GameState::draw()
 		}
 	}
 
-	window.display();
+	if (ingameState != NULL)
+		ingameState->draw();
 }

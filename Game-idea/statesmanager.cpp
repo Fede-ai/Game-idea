@@ -52,9 +52,10 @@ int StatesManager::run()
 
 		auto time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 		int whatHappened = state->update(events, int(std::max(time - lastTime, long long(1))) / 1000.f);
-		state->draw();
-
 		lastTime = time;
+		state->draw();
+		window.display();
+
 
 		if (whatHappened == 1) {
 			delete state;

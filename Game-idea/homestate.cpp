@@ -143,8 +143,6 @@ void HomeState::draw()
 	window.draw(title);
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
-
-	window.display();
 }
 
 
