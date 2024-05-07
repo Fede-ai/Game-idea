@@ -1,8 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 class State {
 public:
+	virtual ~State() {};
 	virtual int update(std::vector<sf::Event> events, float dTime) = 0;
 	virtual void draw() = 0;
 
@@ -14,6 +16,7 @@ protected:
 
 class IngameState {
 public:
+	virtual ~IngameState() {};
 	virtual int update(std::vector<sf::Event> events, float dTime) = 0;
 	virtual void draw() = 0;
 

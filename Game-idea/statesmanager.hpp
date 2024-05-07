@@ -14,5 +14,6 @@ private:
 	sf::RenderWindow window;
 	State* state = NULL;
 	sf::Cursor cursor;
+	bool isTransitioning = false;
 };
 

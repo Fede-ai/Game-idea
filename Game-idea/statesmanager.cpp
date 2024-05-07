@@ -51,14 +51,16 @@ int StatesManager::run()
 		}
 
 		auto time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		int whatHappened = state->update(events, int(std::max(time - lastTime, long long(1))) / 1000.f);
+		int whatHappened = 0;
+		if (!isTransitioning)
+			whatHappened = state->update(events, int(std::max(time - lastTime, long long(1))) / 1000.f);
 		lastTime = time;
 
 		if (whatHappened == 0) {
 			state->draw();
 			window.display();
 		}
-		if (whatHappened == 1) {
+		if (whatHappened == 1) {	
 			delete state;
 			state = new GameState(window, gameInfo, settings);
 		}

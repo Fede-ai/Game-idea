@@ -59,9 +59,9 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 
 	//home buttons
 	buttonsText[0].setString("PLAY");
-	buttonsText[1].setString("JOIN");
+	buttonsText[1].setString("SHOP");
 	buttonsText[2].setString("PRIVATE");
-	buttonsText[3].setString("SHOP");
+	buttonsText[3].setString("JOIN");
 	for (int i = 0; i < 4; i++) {
 		//set buttons scale and texture
 		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);

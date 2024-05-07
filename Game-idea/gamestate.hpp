@@ -7,6 +7,7 @@
 class GameState : public State {
 public:
 	GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings);
+	~GameState();
 
 private:
 	int update(std::vector<sf::Event> events, float dTime);
@@ -16,7 +17,6 @@ private:
 	GameInfo& gameInfo;
 	const Settings settings;
 	sf::Font font;
-	sf::Vector2f lastMousePos;
 
 	sf::Texture grassTexture;
 	sf::Sprite grassSprite;
