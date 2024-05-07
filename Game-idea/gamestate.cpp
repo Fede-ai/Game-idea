@@ -12,13 +12,19 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	grassSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	
 	font.loadFromFile("fonts/PublicPixel.ttf");
-	lastMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 	window.setView(gameInfo.view);
+}
+
+GameState::~GameState()
+{
+	if (ingameState != NULL)
+		delete ingameState;
+
+	ingameState = NULL;
 }
 
 int GameState::update(std::vector<sf::Event> events, float dTime)
 {
-
 	if (ingameState != NULL) {
 		int whatHappened = ingameState->update(events, dTime);
 
@@ -41,17 +47,17 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		return 0;
 	}
 
-	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-
 	//handle events
 	for (const auto& e : events) {
 		if (e.type == sf::Event::Closed)
 			window.close();
-		else if (e.type == sf::Event::KeyReleased && e.key.code == sf::Keyboard::Escape)	
+		else if (e.type == sf::Event::KeyReleased && e.key.code == sf::Keyboard::Escape) {
+			if (ingameState != NULL)
+				delete ingameState;
 			ingameState = new PauseState(window);
+		}
 	}
 
-	lastMousePos = mousePos;
 	return 0;
 }
 

@@ -4,6 +4,7 @@
 class HomeState : public State {
 public:
 	HomeState(sf::RenderWindow& inWindow);
+	~HomeState() {}
 
 private:
 	int update(std::vector<sf::Event> events, float dTime);

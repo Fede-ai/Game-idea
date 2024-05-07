@@ -1,13 +1,15 @@
 #pragma once
 #include "state.hpp"
+#include <iostream>
 
 class PauseState : public IngameState {
 public:
 	PauseState(sf::RenderWindow& inWindow);
+	~PauseState() {}
 
 	int update(std::vector<sf::Event> events, float dTime);
 	void draw();
-	int setState();
+
 private:
 	int handleClick(int buttonId);
 
