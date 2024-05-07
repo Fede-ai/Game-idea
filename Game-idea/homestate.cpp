@@ -21,24 +21,37 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	title.setOrigin(title.getLocalBounds().width/2, 0);
 	title.setPosition(0, -300);
 
+	//bg texture
+	bgTexture.loadFromFile("textures/background.png");
+	bgSprite.setTexture(bgTexture);
+	bgSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	bgSprite.setOrigin(bgSprite.getLocalBounds().width / 2, bgSprite.getLocalBounds().height / 2);
+
 	//home bg texture
-	textureBg.loadFromFile("textures/home_bg.png");
-	spriteBg.setTexture(textureBg);
-	spriteBg.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
-	spriteBg.setOrigin(spriteBg.getLocalBounds().width / 2, spriteBg.getLocalBounds().height / 2);
+	textureMenu.loadFromFile("textures/home_bg.png");
+	spriteMenu.setTexture(textureMenu);
+	spriteMenu.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteMenu.setOrigin(spriteMenu.getLocalBounds().width / 2, spriteMenu.getLocalBounds().height / 2);
 
 	//settings icon
 	textureSettings.loadFromFile("textures/settings.png");
 	spriteSettings.setTexture(textureSettings);
 	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
-	spriteSettings.setPosition(sf::Vector2f(float(- Consts::VIEW_SIZE_X / 2 + 60), float(Consts::VIEW_SIZE_Y / 2 - 60)));
+	spriteSettings.setPosition(sf::Vector2f(float(- Consts::VIEW_SIZE_X / 2 + 70), float(Consts::VIEW_SIZE_Y / 2 - 70)));
+
+	textureSettingsBG.loadFromFile("textures/settings_bg.png");
+	spriteSettingsBG.setTexture(textureSettingsBG);
+	spriteSettingsBG.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteSettingsBG.setOrigin(spriteSettingsBG.getLocalBounds().width / 2, spriteSettingsBG.getLocalBounds().height / 2);
+	spriteSettingsBG.setPosition(sf::Vector2f(spriteSettings.getPosition().x, spriteSettings.getPosition().y));
+
 	//close icon
 	textureClose.loadFromFile("textures/close.png");
 	spriteClose.setTexture(textureClose);
 	spriteClose.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteClose.setOrigin(spriteClose.getLocalBounds().width / 2, spriteClose.getLocalBounds().height / 2);
-	spriteClose.setPosition(sf::Vector2f(float(Consts::VIEW_SIZE_X / 2 - 60), float(Consts::VIEW_SIZE_Y / 2 - 60)));
+	spriteClose.setPosition(sf::Vector2f(float(Consts::VIEW_SIZE_X / 2 - 70), float(Consts::VIEW_SIZE_Y / 2 - 70)));
 
 	//button bg 
 	textureBtn.loadFromFile("textures/button.png");
@@ -130,8 +143,9 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 
 void HomeState::draw()
 {
-	window.clear(sf::Color(102, 57, 49));
-	window.draw(spriteBg);
+	window.clear();
+	window.draw(bgSprite);
+	window.draw(spriteMenu);
 
 	//draw 4 action buttons 
 	for (int i = 0; i < 4; i++) {
@@ -141,6 +155,7 @@ void HomeState::draw()
 
 	//draw title, settings and Exit
 	window.draw(title);
+	window.draw(spriteSettingsBG);
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
 }

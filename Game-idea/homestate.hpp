@@ -10,6 +10,9 @@ private:
 	void draw();
 	int handleClick(int buttonId);
 
+	sf::Texture bgTexture;
+	sf::Sprite bgSprite;
+
 	sf::Texture textureBtn;
 	sf::Texture textureBtnPressed;
 	sf::Sprite buttons[4];
@@ -18,8 +21,11 @@ private:
 	sf::Text title;
 	int buttonPressed = -1;
 
-	sf::Texture textureBg;
-	sf::Sprite spriteBg;
+	sf::Texture textureMenu;
+	sf::Sprite spriteMenu;
+
+	sf::Texture textureSettingsBG;
+	sf::Sprite spriteSettingsBG;
 
 	sf::Texture textureSettings;
 	sf::Sprite spriteSettings;
