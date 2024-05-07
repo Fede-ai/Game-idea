@@ -15,7 +15,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	//set title settings
 	title.setFont(font);
 	title.setStyle(sf::Text::Bold);
-	title.setFillColor(sf::Color(62, 39, 35));
+	title.setFillColor(sf::Color(66, 32, 26));
 	title.setString(Consts::GAME_NAME);
 	title.setCharacterSize(70);
 	title.setOrigin(title.getLocalBounds().width/2, 0);
@@ -39,7 +39,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
 	spriteSettings.setPosition(sf::Vector2f(float(- Consts::VIEW_SIZE_X / 2 + 70), float(Consts::VIEW_SIZE_Y / 2 - 70)));
-
+	//settings bg
 	textureSettingsBG.loadFromFile("textures/settings_bg.png");
 	spriteSettingsBG.setTexture(textureSettingsBG);
 	spriteSettingsBG.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
@@ -69,7 +69,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow)
 
 		//buttons' text, font and style
 		buttonsText[i].setFont(font);
-		buttonsText[i].setFillColor(sf::Color(66,32, 26));
+		buttonsText[i].setFillColor(sf::Color(66, 32, 26));
 		buttonsText[i].setStyle(sf::Text::Bold);
 		buttonsText[i].setCharacterSize(25);
 
