@@ -26,7 +26,18 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 			delete ingameState;
 			ingameState = NULL;
 		}
-
+		else if (whatHappened == 2) {
+			delete ingameState;
+			ingameState = NULL;
+			return 2;
+		}
+		else if (whatHappened == 3) {
+			delete ingameState;
+			ingameState = NULL;
+			// handle saving
+			window.close();
+			return 3;
+		}
 		return 0;
 	}
 

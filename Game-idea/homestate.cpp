@@ -149,20 +149,20 @@ void HomeState::draw()
 int HomeState::handleClick(int buttonId)
 {
 	switch (buttonId) {
-		case 0: //new game
-			return 1;
-			break;
-		case 1: //load game
-			break;
-		case 2: //new session
-			break;
-		case 3: //join session
-			break;
-		case 4: //setting
-			break;
-		case 5: //close
-			window.close();
-			break;
+	case 0: //new game
+		return 1;
+		break;
+	case 1: //load game
+		break;
+	case 2: //new session
+		break;
+	case 3: //join session
+		break;
+	case 4: //setting
+		break;
+	case 5: //close
+		window.close();
+		break;
 	}
 	return 0;
 }
