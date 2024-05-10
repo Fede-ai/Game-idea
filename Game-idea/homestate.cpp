@@ -158,6 +158,8 @@ void HomeState::draw()
 	window.draw(spriteSettingsBG);
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
+
+	//do NOT call window.display()
 }
 
 

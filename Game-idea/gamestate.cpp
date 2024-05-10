@@ -89,4 +89,6 @@ void GameState::draw()
 
 	if (ingameState != NULL)
 		ingameState->draw();
+
+	//do NOT call window.display()
 }

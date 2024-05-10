@@ -102,6 +102,8 @@ void PauseState::draw()
 		window.draw(buttons[i]);
 		window.draw(buttonsText[i]);
 	}
+
+	//do NOT call window.display()
 }
 
 int PauseState::handleClick(int buttonId)
