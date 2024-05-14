@@ -1,15 +1,18 @@
 #pragma once
 #include "state.hpp"
+#include "socketsmanager.hpp"
 
 class HomeState : public State {
 public:
-	HomeState(sf::RenderWindow& inWindow);
+	HomeState(sf::RenderWindow& inWindow, SocketsManager& inSocketsManager);
 	~HomeState() {}
 
 private:
 	int update(std::vector<sf::Event> events, float dTime);
 	void draw();
 	int handleClick(int buttonId);
+
+	SocketsManager& socketsManager;
 
 	sf::Texture bgTexture;
 	sf::Sprite bgSprite;

@@ -1,6 +1,7 @@
 #pragma once
 #include "gamestate.hpp"
 #include "homestate.hpp"
+#include "socketsmanager.hpp"
 
 class StatesManager {
 public:
@@ -8,18 +9,15 @@ public:
 	int run();
 
 private:
-	void handleUpdate(int code);
-	void connectServer();
-
 	Settings settings;
 	GameInfo gameInfo;
+	SocketsManager socketsManager;
+
 	sf::RenderWindow window;
 	State* state = NULL;
+
 	sf::Cursor cursor;
 	bool isTransitioning = false;
-
-	sf::TcpSocket server;
-	bool isConnected = false;
 };
 
 //1 = connection approved

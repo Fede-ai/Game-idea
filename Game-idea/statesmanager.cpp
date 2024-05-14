@@ -18,8 +18,8 @@ StatesManager::StatesManager()
 	}
 	cursor.loadFromPixels(scaledCursor.getPixelsPtr(), scaledCursor.getSize(), sf::Vector2u(0, 0));
 
-	std::thread connectServerThread(&StatesManager::connectServer, this);
-	connectServerThread.detach();
+	std::thread connectServer(&SocketsManager::connect, &socketsManager);
+	connectServer.detach();
 }
 
 int StatesManager::run()
@@ -33,7 +33,7 @@ int StatesManager::run()
 	window.setKeyRepeatEnabled(false);
 	window.setMouseCursor(cursor);
 
-	state = new HomeState(window);
+	state = new HomeState(window, socketsManager);
 	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 	while (window.isOpen()) {
@@ -67,43 +67,15 @@ int StatesManager::run()
 			window.display();
 		}
 		//manage the code if something happened
-		else {
-			handleUpdate(whatHappened);
+		if (whatHappened == 1) {
+			delete state;
+			state = new GameState(window, gameInfo, settings, socketsManager);
+		}
+		else if (whatHappened == 2) {
+			delete state;
+			state = new HomeState(window, socketsManager);
 		}
 	}
 
 	return 0;
-}
-
-void StatesManager::handleUpdate(int code)
-{
-	if (code == 1) {
-		delete state;
-		state = new GameState(window, gameInfo, settings);
-	}
-	else if (code == 2) {
-		delete state;
-		state = new HomeState(window);
-	}
-}
-
-void StatesManager::connectServer()
-{
-	sf::Uint8 res = 0;
-	while (res != 1 && res != 2) {
-		while (server.connect(Consts::SERVER_IP, Consts::SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
-			sf::sleep(sf::seconds(2));
-
-		sf::Packet p;
-		p << sf::Uint8(1) << std::string("dev");
-		server.send(p);
-		server.receive(p);
-		p >> res;
-	}
-
-	if (res == 1)
-		isConnected = true;
-	else if (res == 2) {
-		//handle incompatible versions
-	}
 }

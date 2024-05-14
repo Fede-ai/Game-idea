@@ -1,8 +1,9 @@
 #include "gamestate.hpp"
 #include <iostream>
 
-GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings)
+GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, SocketsManager& inSocketsManager)
 	:
+	socketsManager(inSocketsManager),
 	State(inWindow),
 	gameInfo(inGameInfo),
 	settings(inSettings)
