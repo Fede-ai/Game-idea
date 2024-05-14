@@ -66,14 +66,20 @@ int StatesManager::run()
 			state->draw();
 			window.display();
 		}
-		//manage the code if something happened
-		if (whatHappened == 1) {
+		// Homestate: Play button
+		else if (whatHappened == 1) {
 			delete state;
 			state = new GameState(window, gameInfo, settings, socketsManager);
 		}
+		// Gamestate: Home button
 		else if (whatHappened == 2) {
 			delete state;
 			state = new HomeState(window, socketsManager);
+		}
+		// Homestate: Shop button
+		else if (whatHappened == 3) {
+			delete state;
+			state = new ShopState(window);
 		}
 	}
 

@@ -10,5 +10,5 @@ namespace Consts {
 
 	constexpr int TCP_SERVER_PORT = 5000;
 	constexpr int UDP_SERVER_PORT = 6000;
-	constexpr char SERVER_IP[] = "IP";
+	constexpr char SERVER_IP[] = "IP"; // if your want Fede's ip contact me in DM ;)
 }

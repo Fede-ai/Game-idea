@@ -1,8 +1,9 @@
 #pragma once
 #include "state.hpp"
 #include <iostream>
+#include "consts.hpp"
 
-class ShopState : public IngameState {
+class ShopState : public State {
 public:
 	ShopState(sf::RenderWindow& inWindow);
 	~ShopState() {}

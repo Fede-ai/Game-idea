@@ -216,7 +216,8 @@ int HomeState::handleClick(int buttonId)
 		if (socketsManager.isConnected())
 			return 1;
 		break;
-	case 1: //load game
+	case 1: //shop
+		return 3;
 		break;
 	case 2: //new session
 		break;
