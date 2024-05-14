@@ -8,7 +8,6 @@ public:
 	int run();
 
 private:
-	void handleUpdate(int code);
 	void connectServer();
 
 	Settings settings;

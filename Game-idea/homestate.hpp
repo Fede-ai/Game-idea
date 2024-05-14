@@ -32,4 +32,9 @@ private:
 	sf::Sprite spriteSettings;
 	sf::Texture textureClose;
 	sf::Sprite spriteClose;
+
+	sf::Texture textureNotification;
+	sf::Sprite spriteNotification;
+	sf::Text notificationText;
+	sf::RectangleShape shadow;
 };

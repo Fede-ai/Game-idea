@@ -67,24 +67,17 @@ int StatesManager::run()
 			window.display();
 		}
 		//manage the code if something happened
-		else {
-			handleUpdate(whatHappened);
+		if (whatHappened == 1) {
+			delete state;
+			state = new GameState(window, gameInfo, settings);
+		}
+		else if (whatHappened == 2) {
+			delete state;
+			state = new HomeState(window);
 		}
 	}
 
 	return 0;
-}
-
-void StatesManager::handleUpdate(int code)
-{
-	if (code == 1) {
-		delete state;
-		state = new GameState(window, gameInfo, settings);
-	}
-	else if (code == 2) {
-		delete state;
-		state = new HomeState(window);
-	}
 }
 
 void StatesManager::connectServer()
