@@ -18,8 +18,8 @@ StatesManager::StatesManager()
 	}
 	cursor.loadFromPixels(scaledCursor.getPixelsPtr(), scaledCursor.getSize(), sf::Vector2u(0, 0));
 
-	std::thread connectServerThread(&StatesManager::connectServer, this);
-	connectServerThread.detach();
+	std::thread connectServer(&SocketsManager::connect, &socketsManager);
+	connectServer.detach();
 }
 
 int StatesManager::run()
@@ -33,7 +33,7 @@ int StatesManager::run()
 	window.setKeyRepeatEnabled(false);
 	window.setMouseCursor(cursor);
 
-	state = new HomeState(window);
+	state = new HomeState(window, socketsManager);
 	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 	while (window.isOpen()) {
@@ -69,15 +69,16 @@ int StatesManager::run()
 		//manage the code if something happened
 		if (whatHappened == 1) {
 			delete state;
-			state = new GameState(window, gameInfo, settings);
+			state = new GameState(window, gameInfo, settings, socketsManager);
 		}
 		else if (whatHappened == 2) {
 			delete state;
-			state = new HomeState(window);
+			state = new HomeState(window, socketsManager);
 		}
 	}
 
 	return 0;
+  
 }
 
 void StatesManager::connectServer()

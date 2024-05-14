@@ -3,8 +3,9 @@
 #include <iostream>
 #include <vector>
 
-HomeState::HomeState(sf::RenderWindow& inWindow)
+HomeState::HomeState(sf::RenderWindow& inWindow, SocketsManager& inSocketsManager)
 	:
+	socketsManager(inSocketsManager),
 	State(inWindow)
 {
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
