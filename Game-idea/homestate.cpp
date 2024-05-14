@@ -58,11 +58,29 @@ HomeState::HomeState(sf::RenderWindow& inWindow, SocketsManager& inSocketsManage
 	textureBtn.loadFromFile("textures/button.png");
 	textureBtnPressed.loadFromFile("textures/button_pressed.png");
 
+	//texture notification
+	textureNotification.loadFromFile("textures/notification.png");
+	spriteNotification.setTexture(textureNotification);
+	spriteNotification.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteNotification.setOrigin(spriteNotification.getLocalBounds().width / 2, spriteNotification.getLocalBounds().height / 2);
+
+	shadow.setSize(sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y));
+	shadow.setFillColor(sf::Color(0, 0, 0, 150));
+	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(Consts::VIEW_SIZE_X / 2, Consts::VIEW_SIZE_Y / 2));
+
+	notificationText.setFont(font);
+	notificationText.setFillColor(sf::Color(66, 32, 26));
+	notificationText.setStyle(sf::Text::Bold);
+	notificationText.setCharacterSize(25);
+	notificationText.setString("Please update the game :(");
+	notificationText.setOrigin(notificationText.getLocalBounds().width / 2, 20);
+
 	//home buttons
 	buttonsText[0].setString("PLAY");
 	buttonsText[1].setString("SHOP");
 	buttonsText[2].setString("PRIVATE");
 	buttonsText[3].setString("JOIN");
+
 	for (int i = 0; i < 4; i++) {
 		//set buttons scale and texture
 		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
@@ -159,6 +177,9 @@ void HomeState::draw()
 	window.draw(spriteSettingsBG);
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
+	window.draw(shadow);
+	window.draw(spriteNotification);
+	window.draw(notificationText);
 
 	//do NOT call window.display()
 }
