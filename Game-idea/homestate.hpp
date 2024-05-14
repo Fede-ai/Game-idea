@@ -40,4 +40,6 @@ private:
 	sf::Sprite spriteNotification;
 	sf::Text notificationText;
 	sf::RectangleShape shadow;
+
+	sf::RectangleShape connectionStatus;
 };

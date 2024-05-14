@@ -53,12 +53,6 @@ void Server::acceptClients()
 		p << sf::Uint8(1);
 		newClient->send(p);
 
-		sf::IpAddress ip;
-		unsigned short port;
-		udp.receive(p, ip, port);
-		sf::Uint16 remPort;
-		p >> remPort;
-
 		clients.push_back(newClient);
 	}
 }

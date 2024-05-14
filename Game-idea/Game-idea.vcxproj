@@ -23,6 +23,7 @@
     <ClCompile Include="homestate.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pausestate.cpp" />
+    <ClCompile Include="shopstate.cpp" />
     <ClCompile Include="socketsmanager.cpp" />
     <ClCompile Include="statesmanager.cpp" />
   </ItemGroup>
@@ -33,6 +34,7 @@
     <ClInclude Include="homestate.hpp" />
     <ClInclude Include="pausestate.hpp" />
     <ClInclude Include="settings.hpp" />
+    <ClInclude Include="shopstate.hpp" />
     <ClInclude Include="socketsmanager.hpp" />
     <ClInclude Include="state.hpp" />
     <ClInclude Include="statesmanager.hpp" />

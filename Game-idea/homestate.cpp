@@ -75,6 +75,10 @@ HomeState::HomeState(sf::RenderWindow& inWindow, SocketsManager& inSocketsManage
 	notificationText.setString("Please update the game :(");
 	notificationText.setOrigin(notificationText.getLocalBounds().width / 2, 20);
 
+	//Connection status connectionStatus
+	connectionStatus.setSize(sf::Vector2f(20, 20));
+	connectionStatus.setPosition(sf::Vector2f(-Consts::VIEW_SIZE_X / 2 + 50, -Consts::VIEW_SIZE_Y / 2 + 50));
+
 	//home buttons
 	buttonsText[0].setString("PLAY");
 	buttonsText[1].setString("SHOP");
@@ -107,6 +111,20 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 {
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 	int whatHappened = 0;
+
+	if (!socketsManager.isVersionCompatible()) {
+		for (const auto& e : events) {
+			if (e.type == sf::Event::Closed)
+				window.close(); //when X is clicked
+		}
+
+		return whatHappened;
+	}
+
+	if (socketsManager.isConnected())
+		connectionStatus.setFillColor(sf::Color::Green);
+	else
+		connectionStatus.setFillColor(sf::Color::Red);
 
 	for (const auto& e : events) {
 		//when X is clicked
@@ -177,9 +195,14 @@ void HomeState::draw()
 	window.draw(spriteSettingsBG);
 	window.draw(spriteSettings);
 	window.draw(spriteClose);
-	window.draw(shadow);
-	window.draw(spriteNotification);
-	window.draw(notificationText);
+	window.draw(connectionStatus);
+
+	if (!socketsManager.isVersionCompatible()) {
+		window.draw(shadow);
+		window.draw(spriteNotification);
+		window.draw(notificationText);
+	}
+
 
 	//do NOT call window.display()
 }
@@ -187,9 +210,11 @@ void HomeState::draw()
 
 int HomeState::handleClick(int buttonId)
 {
+
 	switch (buttonId) {
 	case 0: //new game
-		return 1;
+		if (socketsManager.isConnected())
+			return 1;
 		break;
 	case 1: //load game
 		break;

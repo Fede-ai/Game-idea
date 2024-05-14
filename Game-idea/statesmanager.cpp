@@ -80,24 +80,3 @@ int StatesManager::run()
 	return 0;
   
 }
-
-void StatesManager::connectServer()
-{
-	sf::Uint8 res = 0;
-	while (res != 1 && res != 2) {
-		while (server.connect(Consts::SERVER_IP, Consts::SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
-			sf::sleep(sf::seconds(2));
-
-		sf::Packet p;
-		p << sf::Uint8(1) << std::string("dev");
-		server.send(p);
-		server.receive(p);
-		p >> res;
-	}
-
-	if (res == 1)
-		isConnected = true;
-	else if (res == 2) {
-		//handle incompatible versions
-	}
-}

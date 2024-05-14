@@ -1,5 +1,6 @@
 #include "socketsmanager.hpp"
 #include <thread>
+#include <iostream>
 
 void SocketsManager::connect()
 {
