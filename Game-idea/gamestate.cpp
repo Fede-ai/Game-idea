@@ -11,6 +11,11 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	grassTexture.loadFromFile("textures/grass.png");
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+
+	bodyTexture.loadFromFile("textures/player.png");
+	bodySprite.setTexture(bodyTexture);
+	bodySprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	bodySprite.setOrigin(bodySprite.getLocalBounds().width / 2, bodySprite.getLocalBounds().height / 2);
 	
 	font.loadFromFile("fonts/PublicPixel.ttf");
 }
@@ -58,6 +63,23 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}
 
+	sf::Vector2f movement;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		movement.y -= GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		movement.y += GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		movement.x -= GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		movement.x += GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+	if (movement.x != 0 && movement.y != 0) {
+		movement.x /= sqrt(2);
+		movement.y /= sqrt(2);
+	}
+	gameInfo.player.pos += movement;
+
+	window.setView(sf::View(sf::Vector2f(gameInfo.player.pos), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
+
 	return 0;
 }
 
@@ -85,6 +107,14 @@ void GameState::draw()
 			grassSprite.setPosition(xChunk, yChunk);
 			window.draw(grassSprite);
 		}
+	}
+
+	//draw players
+	bodySprite.setPosition(sf::Vector2f(gameInfo.player.pos));
+	window.draw(bodySprite);
+	for (const auto& p : gameInfo.otherPlayers) {
+		bodySprite.setPosition(sf::Vector2f(p.second.pos));
+		window.draw(bodySprite);
 	}
 
 	if (ingameState != NULL)

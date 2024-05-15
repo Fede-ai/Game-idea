@@ -22,11 +22,11 @@ bool SocketsManager::pollTcpPacket(sf::Packet& p)
 	p.clear();
 
 	mutex.lock();
-	if (tcpPackets.size() > 0) {
+	bool areThereOthers = tcpPackets.size() > 0;
+	if (areThereOthers > 0) {
 		p = tcpPackets.top();
 		tcpPackets.pop();
 	}
-	bool areThereOthers = tcpPackets.size() > 0;
 	mutex.unlock();
 
 	return areThereOthers;
@@ -36,11 +36,11 @@ bool SocketsManager::pollUdpPacket(sf::Packet& p)
 	p.clear();
 
 	mutex.lock();
-	if (udpPackets.size() > 0) {
+	bool areThereOthers = udpPackets.size() > 0;
+	if (areThereOthers > 0) {
 		p = udpPackets.top();
 		udpPackets.pop();
 	}
-	bool areThereOthers = udpPackets.size() > 0;
 	mutex.unlock();
 
 	return areThereOthers;
@@ -131,7 +131,7 @@ void SocketsManager::receiveUdp()
 
 		if (ip == Consts::SERVER_IP && port == Consts::UDP_SERVER_PORT) {
 			mutex.lock();
-			tcpPackets.push(p);
+			udpPackets.push(p);
 			mutex.unlock();
 		}
 	}

@@ -161,6 +161,18 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}	
 
+	sf::Packet p;
+	while (socketsManager.pollTcpPacket(p)) {
+		sf::Uint8 code;
+		p >> code;
+		if (code == sf::Uint8(3)) {
+			sf::Vector2<sf::Int16> pos;
+			p >> pos.x >> pos.y;
+			gameInfo.player.pos = sf::Vector2f(pos);
+			whatHappened = 1;
+		}
+	}
+
 	if (socketsManager.isConnected())
 		connectionStatus.setFillColor(sf::Color::Green);
 	else

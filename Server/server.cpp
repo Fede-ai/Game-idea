@@ -35,10 +35,14 @@ int Server::run()
 		for (int i = 0; i < uninitialized.size(); i++) {
 			if (!selector.isReady(*uninitialized[i]))
 				continue;
+			indexesToRemove.push(i);
 
 			sf::Packet p;
-			uninitialized[i]->receive(p);
-			indexesToRemove.push(i);
+			if (uninitialized[i]->receive(p) == sf::Socket::Disconnected) {
+				selector.remove(*uninitialized[i]);
+				delete uninitialized[i];
+				continue;
+			}
 
 			sf::Uint8 code;
 			std::string version = "";
@@ -67,6 +71,7 @@ int Server::run()
 
 			Client newClient;
 			newClient.port = inPort;
+			newClient.ip = uninitialized[i]->getRemoteAddress();
 			newClient.tcp = uninitialized[i];
 			clients.insert(std::pair<int, Client>(currentId++, newClient));
 		}
@@ -90,16 +95,21 @@ int Server::run()
 				continue;
 
 			sf::Packet p;
-			c.second.tcp->receive(p);
+			if (c.second.tcp->receive(p) == sf::Socket::Disconnected) {
+				idsToRemove.push(c.first);
+				continue;
+			}
 			sf::Uint8 code;
 			p >> code;
 			
 			//client thinks it is not connected
-			if (code == 1)
+			if (code == sf::Uint8(1))
 				idsToRemove.push(c.first);
 			//join public lobby
-			else if (code == 2) {
-				
+			else if (code == sf::Uint8(2)) {
+				p.clear();
+				p << sf::Uint8(3) << sf::Int16(100) << sf::Int16(100);
+				c.second.tcp->send(p);
 			}
 		}
 		while (!idsToRemove.empty()) {

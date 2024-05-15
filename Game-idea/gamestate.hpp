@@ -22,5 +22,7 @@ private:
 
 	sf::Texture grassTexture;
 	sf::Sprite grassSprite;
+	sf::Texture bodyTexture;
+	sf::Sprite bodySprite;
 };
 

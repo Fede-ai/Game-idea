@@ -4,4 +4,5 @@
 struct Client {
 	sf::TcpSocket* tcp = NULL;
 	sf::Uint16 port = 0;
+	sf::IpAddress ip = "";
 };
