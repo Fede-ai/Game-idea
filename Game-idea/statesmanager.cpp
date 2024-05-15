@@ -17,9 +17,6 @@ StatesManager::StatesManager()
 		}
 	}
 	cursor.loadFromPixels(scaledCursor.getPixelsPtr(), scaledCursor.getSize(), sf::Vector2u(0, 0));
-
-	std::thread connectServer(&SocketsManager::connect, &socketsManager);
-	connectServer.detach();
 }
 
 int StatesManager::run()
@@ -33,7 +30,7 @@ int StatesManager::run()
 	window.setKeyRepeatEnabled(false);
 	window.setMouseCursor(cursor);
 
-	state = new HomeState(window, socketsManager);
+	state = new HomeState(window, gameInfo, socketsManager);
 	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 	while (window.isOpen()) {
@@ -73,7 +70,7 @@ int StatesManager::run()
 		}
 		else if (whatHappened == 2) {
 			delete state;
-			state = new HomeState(window, socketsManager);
+			state = new HomeState(window, gameInfo, socketsManager);
 		}
 	}
 

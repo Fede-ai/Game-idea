@@ -1,10 +1,11 @@
 #pragma once
 #include "state.hpp"
 #include "socketsmanager.hpp"
+#include "gameinfo.hpp"
 
 class HomeState : public State {
 public:
-	HomeState(sf::RenderWindow& inWindow, SocketsManager& inSocketsManager);
+	HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsManager& inSocketsManager);
 	~HomeState() {}
 
 private:
@@ -13,6 +14,7 @@ private:
 	int handleClick(int buttonId);
 
 	SocketsManager& socketsManager;
+	GameInfo& gameInfo;
 
 	sf::Texture bgTexture;
 	sf::Sprite bgSprite;

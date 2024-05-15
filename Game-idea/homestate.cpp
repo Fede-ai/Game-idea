@@ -3,8 +3,9 @@
 #include <iostream>
 #include <vector>
 
-HomeState::HomeState(sf::RenderWindow& inWindow, SocketsManager& inSocketsManager)
+HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsManager& inSocketsManager)
 	:
+	gameInfo(inGameInfo),
 	socketsManager(inSocketsManager),
 	State(inWindow)
 {
@@ -112,24 +113,13 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 	sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 	int whatHappened = 0;
 
-	if (!socketsManager.isVersionCompatible()) {
-		for (const auto& e : events) {
-			if (e.type == sf::Event::Closed)
-				window.close(); //when X is clicked
-		}
-
-		return whatHappened;
-	}
-
-	if (socketsManager.isConnected())
-		connectionStatus.setFillColor(sf::Color::Green);
-	else
-		connectionStatus.setFillColor(sf::Color::Red);
-
 	for (const auto& e : events) {
 		//when X is clicked
 		if (e.type == sf::Event::Closed) 
 			window.close();
+
+		if (!socketsManager.isVersionCompatible())
+			continue;
 		
 		//handle left pressed
 		else if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left) {
@@ -171,6 +161,14 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}	
 
+	if (socketsManager.isConnected())
+		connectionStatus.setFillColor(sf::Color::Green);
+	else
+		connectionStatus.setFillColor(sf::Color::Red);
+
+	if (!socketsManager.isVersionCompatible())
+		return whatHappened;
+
 	//on mouse hover rotates settings icon
 	if (spriteSettings.getGlobalBounds().contains(mousePos))
 		spriteSettings.rotate(float(-0.1 * dTime));
@@ -203,27 +201,31 @@ void HomeState::draw()
 		window.draw(notificationText);
 	}
 
-
 	//do NOT call window.display()
 }
 
 
 int HomeState::handleClick(int buttonId)
 {
-
+	sf::Packet p;
 	switch (buttonId) {
 	case 0: //new game
-		if (socketsManager.isConnected())
-			return 1;
+		p << sf::Uint8(2);
+		socketsManager.sendTcpPacket(p);
 		break;
-	case 1: //load game
+
+	case 1: //shop
 		break;
-	case 2: //new session
+
+	case 2: //private
 		break;
-	case 3: //join session
+
+	case 3: //join
 		break;
+
 	case 4: //setting
 		break;
+
 	case 5: //close
 		window.close();
 		break;

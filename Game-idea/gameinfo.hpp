@@ -3,6 +3,8 @@
 #include <SFML/Graphics.hpp>
 
 struct GameInfo {
-
-	sf::View view = sf::View(sf::Vector2f(0, 0), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y));
+	//-32'000 -> 32'000
+	sf::Vector2<sf::Int16> chunk;
+	//-32'000 -> 32'000
+	sf::Vector2<sf::Int16> pos;
 };

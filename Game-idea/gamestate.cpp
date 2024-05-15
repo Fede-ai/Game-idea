@@ -13,7 +13,6 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	grassSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
 	
 	font.loadFromFile("fonts/PublicPixel.ttf");
-	window.setView(gameInfo.view);
 }
 
 GameState::~GameState()

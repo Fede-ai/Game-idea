@@ -5,8 +5,7 @@
 
 class SocketsManager : sf::NonCopyable {
 public:
-	//should be called in a separate thread
-	void connect();
+	SocketsManager();
 
 	bool isVersionCompatible();
 	bool isConnected();
@@ -17,7 +16,10 @@ public:
 	void sendTcpPacket(sf::Packet p);
 	void sendUdpPacket(sf::Packet p);
 
-private:
+private:	
+	//should be called in a separate thread
+	void connect();
+
 	void receiveTcp();
 	void receiveUdp();
 

@@ -2,42 +2,10 @@
 #include <thread>
 #include <iostream>
 
-void SocketsManager::connect()
+SocketsManager::SocketsManager()
 {
-	if (udpServer.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
-		//handle failed binding
-		std::exit(-2);
-		return;
-	}
-
-	sf::Uint8 res = 0;
-	while (res != 1 && res != 2) {
-		while (tcpServer.connect(Consts::SERVER_IP, Consts::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
-			sf::sleep(sf::seconds(2));
-
-		sf::Packet p;
-		p << sf::Uint8(1) << std::string("dev") << sf::Uint16(udpServer.getLocalPort());
-		tcpServer.send(p);
-
-		p.clear();
-		if (tcpServer.receive(p) == sf::Socket::Done)
-			p >> res;
-	}
-
-	if (res == 2)
-		version = false;
-	else if (res == 1) {
-		connected = true;
-
-		std::thread tcpThread(&SocketsManager::receiveTcp, this);
-		tcpThread.detach();
-
-		if (!isUdpRunning) {
-			std::thread udpThread(&SocketsManager::receiveUdp, this);
-			udpThread.detach();
-			isUdpRunning = true;
-		}
-	}
+	std::thread connectThread(&SocketsManager::connect, this);
+	connectThread.detach();
 }
 
 bool SocketsManager::isVersionCompatible()
@@ -96,10 +64,48 @@ void SocketsManager::sendUdpPacket(sf::Packet p)
 	auto s = udpServer.send(p, Consts::SERVER_IP, Consts::UDP_SERVER_PORT);
 }
 
+void SocketsManager::connect()
+{
+	if (!isUdpRunning) {
+		if (udpServer.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
+			//handle failed binding
+			std::exit(-2);
+			return;
+		}
+	}
+
+	sf::Uint8 res = 0;
+	while (res != 1 && res != 2) {
+		while (tcpServer.connect(Consts::SERVER_IP, Consts::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
+			sf::sleep(sf::seconds(2));
+
+		sf::Packet p;
+		p << sf::Uint8(1) << std::string("dev") << sf::Uint16(udpServer.getLocalPort());
+		tcpServer.send(p);
+
+		p.clear();
+		if (tcpServer.receive(p) == sf::Socket::Done)
+			p >> res;
+	}
+
+	if (res == 1) {
+		connected = true;
+		std::thread tcpThread(&SocketsManager::receiveTcp, this);
+		tcpThread.detach();
+
+		if (!isUdpRunning) {
+			std::thread udpThread(&SocketsManager::receiveUdp, this);
+			udpThread.detach();
+			isUdpRunning = true;
+		}
+	}
+	else if (res == 2)
+		version = false;
+}
+
 void SocketsManager::receiveTcp()
 {
-	sf::Socket::Status status = sf::Socket::Status::Done;
-	while (status != sf::Socket::Status::Disconnected || !isConnected()) {
+	while (connected) {
 		sf::Packet p;
 		auto s = tcpServer.receive(p);
 
@@ -111,6 +117,8 @@ void SocketsManager::receiveTcp()
 		else if (s == sf::Socket::Status::Disconnected)
 			connected = false;
 	}
+
+	connect();
 }
 void SocketsManager::receiveUdp()
 {
