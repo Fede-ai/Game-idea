@@ -169,15 +169,25 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 			sf::Vector2<sf::Int16> pos;
 			p >> pos.x >> pos.y;
 			gameInfo.player.pos = sf::Vector2f(pos);
+	
+			while (!p.endOfPacket()) {
+				Player other;
+				sf::Int32 otherId;
+				sf::Vector2<sf::Int16> otherPos;
+				p >> otherId >> otherPos.x >> otherPos.y;
+				other.pos = sf::Vector2f(otherPos);
+				gameInfo.otherPlayers.insert(std::pair<int, Player>(otherId, other));
+			}
+	
 			whatHappened = 1;
 		}
 	}
-
+	
 	if (socketsManager.isConnected())
 		connectionStatus.setFillColor(sf::Color::Green);
 	else
 		connectionStatus.setFillColor(sf::Color::Red);
-
+	
 	if (!socketsManager.isVersionCompatible())
 		return whatHappened;
 
@@ -215,7 +225,6 @@ void HomeState::draw()
 
 	//do NOT call window.display()
 }
-
 
 int HomeState::handleClick(int buttonId)
 {

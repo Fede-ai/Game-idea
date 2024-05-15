@@ -24,5 +24,7 @@ private:
 	sf::Sprite grassSprite;
 	sf::Texture bodyTexture;
 	sf::Sprite bodySprite;
+
+	size_t lastServerUpdate = 0;
 };
 

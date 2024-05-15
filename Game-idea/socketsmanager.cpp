@@ -61,26 +61,31 @@ void SocketsManager::sendUdpPacket(sf::Packet p)
 	if (!connected)
 		return;
 
-	auto s = udpServer.send(p, Consts::SERVER_IP, Consts::UDP_SERVER_PORT);
+	sf::Packet newP;
+	newP << id;
+	newP.append(p.getData(), p.getDataSize());
+
+	auto s = udpServer.send(newP, Consts::SERVER_IP, Consts::UDP_SERVER_PORT);
 }
 
 void SocketsManager::connect()
 {
-	if (!isUdpRunning) {
+	if (!isUdpBinded) {
 		if (udpServer.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
 			//handle failed binding
 			std::exit(-2);
-			return;
 		}
+		isUdpBinded = true;
 	}
 
+	sf::Packet p;
 	sf::Uint8 res = 0;
 	while (res != 1 && res != 2) {
 		while (tcpServer.connect(Consts::SERVER_IP, Consts::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
 			sf::sleep(sf::seconds(2));
 
-		sf::Packet p;
-		p << sf::Uint8(1) << std::string("dev") << sf::Uint16(udpServer.getLocalPort());
+		p.clear();
+		p << sf::Uint8(1) << std::string("dev");
 		tcpServer.send(p);
 
 		p.clear();
@@ -89,6 +94,7 @@ void SocketsManager::connect()
 	}
 
 	if (res == 1) {
+		p >> id;
 		connected = true;
 		std::thread tcpThread(&SocketsManager::receiveTcp, this);
 		tcpThread.detach();

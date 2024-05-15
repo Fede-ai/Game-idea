@@ -26,7 +26,9 @@ private:
 	sf::Mutex mutex;
 
 	sf::TcpSocket tcpServer;
+	sf::Int32 id = -1;
 	bool isUdpRunning = false;
+	bool isUdpBinded = false;
 	sf::UdpSocket udpServer;
 
 	bool version = true;

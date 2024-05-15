@@ -1,5 +1,6 @@
 #include "gamestate.hpp"
 #include <iostream>
+#include <chrono>
 
 GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, SocketsManager& inSocketsManager)
 	:
@@ -18,6 +19,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	bodySprite.setOrigin(bodySprite.getLocalBounds().width / 2, bodySprite.getLocalBounds().height / 2);
 	
 	font.loadFromFile("fonts/PublicPixel.ttf");
+	lastServerUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 GameState::~GameState()
@@ -30,6 +32,54 @@ GameState::~GameState()
 
 int GameState::update(std::vector<sf::Event> events, float dTime)
 {
+	if (!socketsManager.isConnected())
+		std::exit(100);
+
+	size_t time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	if (time - lastServerUpdate > 70) {
+		sf::Packet p;
+		p << sf::Uint8(1) << sf::Int16(gameInfo.player.pos.x) << sf::Int16(gameInfo.player.pos.y);
+		socketsManager.sendUdpPacket(p);	
+		lastServerUpdate = time;
+	}
+
+	sf::Packet p;
+	while (socketsManager.pollTcpPacket(p)) {
+		sf::Uint8 code;
+		p >> code;
+		//a client has connected
+		if (code == sf::Uint8(4)) {
+			Player other;
+			sf::Int32 otherId;
+			sf::Vector2<sf::Int16> otherPos;
+			p >> otherId >> otherPos.x >> otherPos.y;
+			other.pos = sf::Vector2f(otherPos);
+			gameInfo.otherPlayers.insert(std::pair<int, Player>(otherId, other));
+		}
+		//a client has disconnected
+		else if (code == sf::Uint8(5)) {
+			sf::Int32 otherId;
+			p >> otherId;
+			if (gameInfo.otherPlayers.count(otherId))
+				gameInfo.otherPlayers.erase(otherId);
+		}
+	}
+
+	while (socketsManager.pollUdpPacket(p)) {
+		sf::Uint8 code;
+		p >> code;
+
+		if (code == sf::Uint8(1)) {
+			sf::Int32 otherId;
+			sf::Vector2<sf::Int16> otherPos;
+			p >> otherId >> otherPos.x >> otherPos.y;
+		
+			if (gameInfo.otherPlayers.count(otherId)) {
+				gameInfo.otherPlayers[otherId].pos = sf::Vector2f(otherPos);
+			}
+		}
+	}
+
 	if (ingameState != NULL) {
 		int whatHappened = ingameState->update(events, dTime);
 
