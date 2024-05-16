@@ -6,20 +6,17 @@ StatesManager::StatesManager()
 {
 	sf::Image cursorImage, scaledCursor;
 	cursorImage.loadFromFile("textures/cursor.png");
-	scaledCursor.create(cursorImage.getSize().x * Consts::PIXEL_SIZE, cursorImage.getSize().y * Consts::PIXEL_SIZE);
+	scaledCursor.create(cursorImage.getSize().x * CON::PIXEL_SIZE, cursorImage.getSize().y * CON::PIXEL_SIZE);
 	for (unsigned int x = 0; x < cursorImage.getSize().x; x++) {
 		for (unsigned int y = 0; y < cursorImage.getSize().y; y++) {
-			for (int a = 0; a < Consts::PIXEL_SIZE; a++) {
-				for (int b = 0; b < Consts::PIXEL_SIZE; b++) {
-					scaledCursor.setPixel(x * Consts::PIXEL_SIZE + a, y * Consts::PIXEL_SIZE + b, cursorImage.getPixel(x, y));
+			for (int a = 0; a < CON::PIXEL_SIZE; a++) {
+				for (int b = 0; b < CON::PIXEL_SIZE; b++) {
+					scaledCursor.setPixel(x * CON::PIXEL_SIZE + a, y * CON::PIXEL_SIZE + b, cursorImage.getPixel(x, y));
 				}
 			}
 		}
 	}
 	cursor.loadFromPixels(scaledCursor.getPixelsPtr(), scaledCursor.getSize(), sf::Vector2u(0, 0));
-
-	std::thread connectServer(&SocketsManager::connect, &socketsManager);
-	connectServer.detach();
 }
 
 int StatesManager::run()
@@ -27,13 +24,13 @@ int StatesManager::run()
 	sf::ContextSettings openGLSettings;
 	openGLSettings.antialiasingLevel = 8;
 	auto width = sf::VideoMode::getDesktopMode().width;
-	sf::RenderWindow window(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), Consts::GAME_NAME, sf::Style::Default, openGLSettings);
+	sf::RenderWindow window(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), CON::GAME_NAME, sf::Style::Default, openGLSettings);
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(1920, 1080)));
 	window.setVerticalSyncEnabled(true);
 	window.setKeyRepeatEnabled(false);
 	window.setMouseCursor(cursor);
 
-	state = new HomeState(window, socketsManager);
+	state = new HomeState(window, gameInfo, socketsManager);
 	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 	while (window.isOpen()) {
@@ -44,9 +41,9 @@ int StatesManager::run()
 			if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Enter && e.key.alt) {
 				sf::View view = window.getView();
 				if (window.getSize().x == sf::VideoMode::getFullscreenModes()[0].width)
-					window.create(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), Consts::GAME_NAME, sf::Style::Default, openGLSettings);
+					window.create(sf::VideoMode(int(width * 2 / 3.f), int(width * 3 / 8.f)), CON::GAME_NAME, sf::Style::Default, openGLSettings);
 				else
-					window.create(sf::VideoMode::getDesktopMode(), Consts::GAME_NAME, sf::Style::Fullscreen, openGLSettings);
+					window.create(sf::VideoMode::getDesktopMode(), CON::GAME_NAME, sf::Style::Fullscreen, openGLSettings);
 				window.setView(view);
 				window.setVerticalSyncEnabled(true);
 				window.setKeyRepeatEnabled(false);
@@ -66,17 +63,21 @@ int StatesManager::run()
 			state->draw();
 			window.display();
 		}
-		// Homestate: Play button
+		//from homestate go gamestate
 		else if (whatHappened == 1) {
 			delete state;
 			state = new GameState(window, gameInfo, settings, socketsManager);
 		}
-		// Gamestate: Home button
+		//from gamestate (pausestate) to homestate
 		else if (whatHappened == 2) {
+			sf::Packet p;
+			p << sf::Uint8(3);
+			socketsManager.sendTcpPacket(p);
+
 			delete state;
-			state = new HomeState(window, socketsManager);
+			state = new HomeState(window, gameInfo, socketsManager);
 		}
-		// Homestate: Shop button
+		//from homestate to shop
 		else if (whatHappened == 3) {
 			delete state;
 			state = new ShopState(window);

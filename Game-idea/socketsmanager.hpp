@@ -1,12 +1,11 @@
 #pragma once
 #include <SFML/Network.hpp>
-#include <stack>
+#include <queue>
 #include "consts.hpp"
 
 class SocketsManager : sf::NonCopyable {
 public:
-	//should be called in a separate thread
-	void connect();
+	SocketsManager();
 
 	bool isVersionCompatible();
 	bool isConnected();
@@ -17,20 +16,25 @@ public:
 	void sendTcpPacket(sf::Packet p);
 	void sendUdpPacket(sf::Packet p);
 
-private:
+private:	
+	//should be called in a separate thread
+	void connect();
+
 	void receiveTcp();
 	void receiveUdp();
 
 	sf::Mutex mutex;
 
 	sf::TcpSocket tcpServer;
+	sf::Uint16 id = 0;
 	bool isUdpRunning = false;
+	bool isUdpBinded = false;
 	sf::UdpSocket udpServer;
 
 	bool version = true;
 	bool connected = false;
 
-	std::stack<sf::Packet> tcpPackets;
-	std::stack<sf::Packet> udpPackets;
+	std::queue<sf::Packet> tcpPackets;
+	std::queue<sf::Packet> udpPackets;
 };
 

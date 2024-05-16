@@ -9,13 +9,14 @@ PauseState::PauseState(sf::RenderWindow& inWindow)
 	//menu texture
 	menuTexture.loadFromFile("textures/home_bg.png");
 	menuSprite.setTexture(menuTexture);
-	menuSprite.setScale(sf::Vector2f(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE));
+	menuSprite.setScale(sf::Vector2f(CON::PIXEL_SIZE, CON::PIXEL_SIZE));
 	menuSprite.setOrigin(menuSprite.getLocalBounds().width / 2, menuSprite.getLocalBounds().height / 2);
+	menuSprite.setPosition(window.getView().getCenter());
 
 	//shadow
-	shadow.setSize(sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y));
+	shadow.setSize(sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y));
 	shadow.setFillColor(sf::Color(0, 0, 0, 70));
-	shadow.setPosition(window.getView().getCenter()-sf::Vector2f(Consts::VIEW_SIZE_X / 2, Consts::VIEW_SIZE_Y / 2));
+	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(CON::VIEW_SIZE_X / 2, CON::VIEW_SIZE_Y / 2));
 
 	//load font
 	font.loadFromFile("fonts/PublicPixel.ttf");
@@ -33,7 +34,7 @@ PauseState::PauseState(sf::RenderWindow& inWindow)
 	buttonsText[5].setString("EXIT");
 	for (int i = 0; i < 6; i++) {
 		//set buttons scale and texture
-		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+		buttons[i].setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 		buttons[i].setTexture(textureBtn);
 
 		//buttons' text, font and style
@@ -46,10 +47,11 @@ PauseState::PauseState(sf::RenderWindow& inWindow)
 		buttonsText[i].setOrigin(buttonsText[i].getLocalBounds().width / 2, 0);
 		buttons[i].setOrigin(buttons[i].getLocalBounds().width / 2, 0);
 
+		auto c = window.getView().getCenter();
 		//set buttons position
 		float x = 300.f * ((i % 2) * 2 - 1), y = -250, dist = 200.f * int(i / 2.f);
-		buttonsText[i].setPosition(x, y + dist);
-		buttons[i].setPosition(x, y + dist - 30);
+		buttonsText[i].setPosition(c.x + x, c.y + y + dist);
+		buttons[i].setPosition(c.x + x, c.y + y + dist - 30);
 	}
 }
 
