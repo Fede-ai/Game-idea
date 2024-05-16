@@ -220,8 +220,9 @@ int HomeState::handleClick(int buttonId)
 		p << sf::Uint8(2);
 		socketsManager.sendTcpPacket(p);
 		break;
-
+      
 	case 1: //shop
+		return 3;
 		break;
 
 	case 2: //private

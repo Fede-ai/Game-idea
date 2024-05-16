@@ -1,6 +1,7 @@
 #pragma once
 #include "gamestate.hpp"
 #include "homestate.hpp"
+#include "shopstate.hpp"
 #include "socketsmanager.hpp"
 
 class StatesManager {

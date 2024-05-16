@@ -64,7 +64,7 @@ int StatesManager::run()
 			window.display();
 		}
 		//from homestate go gamestate
-		if (whatHappened == 1) {
+		else if (whatHappened == 1) {
 			delete state;
 			state = new GameState(window, gameInfo, settings, socketsManager);
 		}
@@ -76,6 +76,11 @@ int StatesManager::run()
 
 			delete state;
 			state = new HomeState(window, gameInfo, socketsManager);
+		}
+		//from homestate to shop
+		else if (whatHappened == 3) {
+			delete state;
+			state = new ShopState(window);
 		}
 	}
 
