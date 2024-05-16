@@ -1,7 +1,7 @@
 #pragma	once
 #include "SFML/System.hpp"
 
-namespace Consts {
+namespace CON {
 	constexpr char GAME_NAME[] = "Game-idea";
 	constexpr int PIXEL_SIZE = 5;
 
@@ -10,5 +10,5 @@ namespace Consts {
 
 	constexpr int TCP_SERVER_PORT = 5000;
 	constexpr int UDP_SERVER_PORT = 6000;
-	constexpr char SERVER_IP[] = "2.235.241.210";
+	constexpr char SERVER_IP[] = "10.0.1.172";
 }

@@ -3,12 +3,21 @@
 #include <SFML/Graphics.hpp>
 
 struct Player {
-	sf::Vector2f pos;
+	sf::Vector2<sf::Int64> pos;
 };
 
-struct GameInfo {
+//reset every time you join a lobby
+struct LobbyInfo {
+	sf::Uint16 wood = 0;
+	sf::Uint16 stone = 0;
+
 	Player player;
-	std::map<int, Player> otherPlayers;
+	std::map<sf::Uint16, Player> otherPlayers;
+};
+
+//stored on the server
+struct GameInfo {
+	sf::Uint16 gold = 0;
 
 	sf::Uint8 speed = 0;
 	static constexpr sf::Uint8 speeds[] = { 4, 5, 6, 7 };

@@ -1,0 +1,6 @@
+Fede-ai
+-fix udp id
+-send relative position (udp)
+-run proper simulation on server
+
+Olix

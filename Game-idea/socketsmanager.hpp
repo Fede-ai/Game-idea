@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Network.hpp>
-#include <stack>
+#include <queue>
 #include "consts.hpp"
 
 class SocketsManager : sf::NonCopyable {
@@ -26,7 +26,7 @@ private:
 	sf::Mutex mutex;
 
 	sf::TcpSocket tcpServer;
-	sf::Int32 id = -1;
+	sf::Uint16 id = 0;
 	bool isUdpRunning = false;
 	bool isUdpBinded = false;
 	sf::UdpSocket udpServer;
@@ -34,7 +34,7 @@ private:
 	bool version = true;
 	bool connected = false;
 
-	std::stack<sf::Packet> tcpPackets;
-	std::stack<sf::Packet> udpPackets;
+	std::queue<sf::Packet> tcpPackets;
+	std::queue<sf::Packet> udpPackets;
 };
 

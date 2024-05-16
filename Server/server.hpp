@@ -15,11 +15,11 @@ private:
 	sf::SocketSelector selector;
 	sf::UdpSocket udp;
 
-	std::map<int, Client> clients;
+	std::map<sf::Uint16, Client> clients;
 	std::vector<sf::TcpSocket*> uninitialized;
 
-	std::set<int> publicLobby;
+	std::set<sf::Uint16> publicLobby;
 
-	int currentId = 0;
+	sf::Uint16 currentId = 0;
 };
 

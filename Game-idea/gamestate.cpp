@@ -11,11 +11,11 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 {
 	grassTexture.loadFromFile("textures/grass.png");
 	grassSprite.setTexture(grassTexture);
-	grassSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	grassSprite.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 
 	bodyTexture.loadFromFile("textures/player.png");
 	bodySprite.setTexture(bodyTexture);
-	bodySprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	bodySprite.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	bodySprite.setOrigin(bodySprite.getLocalBounds().width / 2, bodySprite.getLocalBounds().height / 2);
 	
 	font.loadFromFile("fonts/PublicPixel.ttf");
@@ -38,7 +38,7 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	size_t time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	if (time - lastServerUpdate > 70) {
 		sf::Packet p;
-		p << sf::Uint8(1) << sf::Int16(gameInfo.player.pos.x) << sf::Int16(gameInfo.player.pos.y);
+		p << sf::Uint8(1) << sf::Int64(lobbyInfo.player.pos.x) << sf::Int64(lobbyInfo.player.pos.y);
 		socketsManager.sendUdpPacket(p);	
 		lastServerUpdate = time;
 	}
@@ -47,21 +47,31 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	while (socketsManager.pollTcpPacket(p)) {
 		sf::Uint8 code;
 		p >> code;
+
 		//a client has connected
 		if (code == sf::Uint8(4)) {
 			Player other;
-			sf::Int32 otherId;
-			sf::Vector2<sf::Int16> otherPos;
-			p >> otherId >> otherPos.x >> otherPos.y;
-			other.pos = sf::Vector2f(otherPos);
-			gameInfo.otherPlayers.insert(std::pair<int, Player>(otherId, other));
+			sf::Uint16 otherId;
+			p >> otherId >> other.pos.x >> other.pos.y;
+			lobbyInfo.otherPlayers.insert(std::pair<sf::Uint16, Player>(otherId, other));
 		}
 		//a client has disconnected
 		else if (code == sf::Uint8(5)) {
-			sf::Int32 otherId;
+			sf::Uint16 otherId;
 			p >> otherId;
-			if (gameInfo.otherPlayers.count(otherId))
-				gameInfo.otherPlayers.erase(otherId);
+			if (lobbyInfo.otherPlayers.count(otherId))
+				lobbyInfo.otherPlayers.erase(otherId);
+		}
+		//set initial player position
+		else if (code == sf::Uint8(6)) {
+			p >> lobbyInfo.player.pos.x >> lobbyInfo.player.pos.y;
+
+			while (!p.endOfPacket()) {
+				Player other;
+				sf::Uint16 otherId;
+				p >> otherId >> other.pos.x >> other.pos.y;
+				lobbyInfo.otherPlayers.insert(std::pair<sf::Uint16, Player>(otherId, other));
+			}
 		}
 	}
 
@@ -70,13 +80,12 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		p >> code;
 
 		if (code == sf::Uint8(1)) {
-			sf::Int32 otherId;
-			sf::Vector2<sf::Int16> otherPos;
+			sf::Uint16 otherId;
+			sf::Vector2<sf::Int64> otherPos;
 			p >> otherId >> otherPos.x >> otherPos.y;
 		
-			if (gameInfo.otherPlayers.count(otherId)) {
-				gameInfo.otherPlayers[otherId].pos = sf::Vector2f(otherPos);
-			}
+			if (lobbyInfo.otherPlayers.count(otherId))
+				lobbyInfo.otherPlayers[otherId].pos = otherPos;
 		}
 	}
 
@@ -113,22 +122,23 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}
 
-	sf::Vector2f movement;
+	sf::Vector2<sf::Int64> movement;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		movement.y -= GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+		movement.y -= GameInfo::speeds[gameInfo.speed] * dTime * 10;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		movement.y += GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+		movement.y += GameInfo::speeds[gameInfo.speed] * dTime * 10;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		movement.x -= GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+		movement.x -= GameInfo::speeds[gameInfo.speed] * dTime * 10;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		movement.x += GameInfo::speeds[gameInfo.speed] * dTime / 10.f;
+		movement.x += GameInfo::speeds[gameInfo.speed] * dTime * 10;
 	if (movement.x != 0 && movement.y != 0) {
 		movement.x /= sqrt(2);
 		movement.y /= sqrt(2);
 	}
-	gameInfo.player.pos += movement;
+	lobbyInfo.player.pos += movement;
 
-	window.setView(sf::View(sf::Vector2f(gameInfo.player.pos), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
+	sf::Vector2f center = sf::Vector2f(lobbyInfo.player.pos.x / 100.f, lobbyInfo.player.pos.y / 100.f);
+	window.setView(sf::View(center, sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y)));
 
 	return 0;
 }
@@ -160,10 +170,10 @@ void GameState::draw()
 	}
 
 	//draw players
-	bodySprite.setPosition(sf::Vector2f(gameInfo.player.pos));
+	bodySprite.setPosition(lobbyInfo.player.pos.x / 100.f, lobbyInfo.player.pos.y / 100.f);
 	window.draw(bodySprite);
-	for (const auto& p : gameInfo.otherPlayers) {
-		bodySprite.setPosition(sf::Vector2f(p.second.pos));
+	for (const auto& p : lobbyInfo.otherPlayers) {
+		bodySprite.setPosition(p.second.pos.x / 100.f, p.second.pos.y / 100.f);
 		window.draw(bodySprite);
 	}
 

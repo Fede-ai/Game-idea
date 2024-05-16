@@ -17,6 +17,7 @@ private:
 	SocketsManager& socketsManager;
 	IngameState* ingameState = NULL;
 	GameInfo& gameInfo;
+	LobbyInfo lobbyInfo;
 	const Settings settings;
 	sf::Font font;
 
@@ -27,4 +28,3 @@ private:
 
 	size_t lastServerUpdate = 0;
 };
-

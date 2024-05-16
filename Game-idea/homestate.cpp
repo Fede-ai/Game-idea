@@ -9,7 +9,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 	socketsManager(inSocketsManager),
 	State(inWindow)
 {
-	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y)));
+	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y)));
 
 	//load font
 	font.loadFromFile("fonts/PublicPixel.ttf");
@@ -18,7 +18,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 	title.setFont(font);
 	title.setStyle(sf::Text::Bold);
 	title.setFillColor(sf::Color(66, 32, 26));
-	title.setString(Consts::GAME_NAME);
+	title.setString(CON::GAME_NAME);
 	title.setCharacterSize(70);
 	title.setOrigin(title.getLocalBounds().width/2, 0);
 	title.setPosition(0, -300);
@@ -26,34 +26,34 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 	//bg texture
 	bgTexture.loadFromFile("textures/background.png");
 	bgSprite.setTexture(bgTexture);
-	bgSprite.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	bgSprite.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	bgSprite.setOrigin(bgSprite.getLocalBounds().width / 2, bgSprite.getLocalBounds().height / 2);
 
 	//home bg texture
 	textureMenu.loadFromFile("textures/home_bg.png");
 	spriteMenu.setTexture(textureMenu);
-	spriteMenu.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteMenu.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteMenu.setOrigin(spriteMenu.getLocalBounds().width / 2, spriteMenu.getLocalBounds().height / 2);
 
 	//settings icon
 	textureSettings.loadFromFile("textures/settings.png");
 	spriteSettings.setTexture(textureSettings);
-	spriteSettings.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteSettings.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
-	spriteSettings.setPosition(sf::Vector2f(float(- Consts::VIEW_SIZE_X / 2 + 70), float(Consts::VIEW_SIZE_Y / 2 - 70)));
+	spriteSettings.setPosition(sf::Vector2f(float(- CON::VIEW_SIZE_X / 2 + 70), float(CON::VIEW_SIZE_Y / 2 - 70)));
 	//settings bg
 	textureSettingsBG.loadFromFile("textures/settings_bg.png");
 	spriteSettingsBG.setTexture(textureSettingsBG);
-	spriteSettingsBG.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteSettingsBG.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteSettingsBG.setOrigin(spriteSettingsBG.getLocalBounds().width / 2, spriteSettingsBG.getLocalBounds().height / 2);
 	spriteSettingsBG.setPosition(sf::Vector2f(spriteSettings.getPosition().x, spriteSettings.getPosition().y));
 
 	//close icon
 	textureClose.loadFromFile("textures/close.png");
 	spriteClose.setTexture(textureClose);
-	spriteClose.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteClose.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteClose.setOrigin(spriteClose.getLocalBounds().width / 2, spriteClose.getLocalBounds().height / 2);
-	spriteClose.setPosition(sf::Vector2f(float(Consts::VIEW_SIZE_X / 2 - 70), float(Consts::VIEW_SIZE_Y / 2 - 70)));
+	spriteClose.setPosition(sf::Vector2f(float(CON::VIEW_SIZE_X / 2 - 70), float(CON::VIEW_SIZE_Y / 2 - 70)));
 
 	//button bg 
 	textureBtn.loadFromFile("textures/button.png");
@@ -62,12 +62,12 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 	//texture notification
 	textureNotification.loadFromFile("textures/notification.png");
 	spriteNotification.setTexture(textureNotification);
-	spriteNotification.setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+	spriteNotification.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteNotification.setOrigin(spriteNotification.getLocalBounds().width / 2, spriteNotification.getLocalBounds().height / 2);
 
-	shadow.setSize(sf::Vector2f(Consts::VIEW_SIZE_X, Consts::VIEW_SIZE_Y));
+	shadow.setSize(sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y));
 	shadow.setFillColor(sf::Color(0, 0, 0, 150));
-	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(Consts::VIEW_SIZE_X / 2, Consts::VIEW_SIZE_Y / 2));
+	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(CON::VIEW_SIZE_X / 2, CON::VIEW_SIZE_Y / 2));
 
 	notificationText.setFont(font);
 	notificationText.setFillColor(sf::Color(66, 32, 26));
@@ -78,7 +78,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 
 	//Connection status connectionStatus
 	connectionStatus.setSize(sf::Vector2f(20, 20));
-	connectionStatus.setPosition(sf::Vector2f(-Consts::VIEW_SIZE_X / 2 + 50, -Consts::VIEW_SIZE_Y / 2 + 50));
+	connectionStatus.setPosition(sf::Vector2f(-CON::VIEW_SIZE_X / 2 + 50, -CON::VIEW_SIZE_Y / 2 + 50));
 
 	//home buttons
 	buttonsText[0].setString("PLAY");
@@ -88,7 +88,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 
 	for (int i = 0; i < 4; i++) {
 		//set buttons scale and texture
-		buttons[i].setScale(Consts::PIXEL_SIZE, Consts::PIXEL_SIZE);
+		buttons[i].setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 		buttons[i].setTexture(textureBtn);
 
 		//buttons' text, font and style
@@ -161,35 +161,21 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}	
 
+	connectionStatus.setFillColor(socketsManager.isConnected() ? sf::Color::Green : sf::Color::Red);
+	if (!socketsManager.isVersionCompatible())
+		return whatHappened;
+
 	sf::Packet p;
 	while (socketsManager.pollTcpPacket(p)) {
 		sf::Uint8 code;
 		p >> code;
+
+		//client joined public lobby
 		if (code == sf::Uint8(3)) {
-			sf::Vector2<sf::Int16> pos;
-			p >> pos.x >> pos.y;
-			gameInfo.player.pos = sf::Vector2f(pos);
-	
-			while (!p.endOfPacket()) {
-				Player other;
-				sf::Int32 otherId;
-				sf::Vector2<sf::Int16> otherPos;
-				p >> otherId >> otherPos.x >> otherPos.y;
-				other.pos = sf::Vector2f(otherPos);
-				gameInfo.otherPlayers.insert(std::pair<int, Player>(otherId, other));
-			}
-	
 			whatHappened = 1;
+			break;
 		}
 	}
-	
-	if (socketsManager.isConnected())
-		connectionStatus.setFillColor(sf::Color::Green);
-	else
-		connectionStatus.setFillColor(sf::Color::Red);
-	
-	if (!socketsManager.isVersionCompatible())
-		return whatHappened;
 
 	//on mouse hover rotates settings icon
 	if (spriteSettings.getGlobalBounds().contains(mousePos))

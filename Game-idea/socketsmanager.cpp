@@ -24,7 +24,7 @@ bool SocketsManager::pollTcpPacket(sf::Packet& p)
 	mutex.lock();
 	bool areThereOthers = tcpPackets.size() > 0;
 	if (areThereOthers > 0) {
-		p = tcpPackets.top();
+		p = tcpPackets.front();
 		tcpPackets.pop();
 	}
 	mutex.unlock();
@@ -38,7 +38,7 @@ bool SocketsManager::pollUdpPacket(sf::Packet& p)
 	mutex.lock();
 	bool areThereOthers = udpPackets.size() > 0;
 	if (areThereOthers > 0) {
-		p = udpPackets.top();
+		p = udpPackets.front();
 		udpPackets.pop();
 	}
 	mutex.unlock();
@@ -65,7 +65,7 @@ void SocketsManager::sendUdpPacket(sf::Packet p)
 	newP << id;
 	newP.append(p.getData(), p.getDataSize());
 
-	auto s = udpServer.send(newP, Consts::SERVER_IP, Consts::UDP_SERVER_PORT);
+	udpServer.send(newP, CON::SERVER_IP, CON::UDP_SERVER_PORT);
 }
 
 void SocketsManager::connect()
@@ -81,7 +81,7 @@ void SocketsManager::connect()
 	sf::Packet p;
 	sf::Uint8 res = 0;
 	while (res != 1 && res != 2) {
-		while (tcpServer.connect(Consts::SERVER_IP, Consts::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
+		while (tcpServer.connect(CON::SERVER_IP, CON::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
 			sf::sleep(sf::seconds(2));
 
 		p.clear();
@@ -135,7 +135,7 @@ void SocketsManager::receiveUdp()
 		sf::Packet p;
 		udpServer.receive(p, ip, port);
 
-		if (ip == Consts::SERVER_IP && port == Consts::UDP_SERVER_PORT) {
+		if (ip == CON::SERVER_IP && port == CON::UDP_SERVER_PORT) {
 			mutex.lock();
 			udpPackets.push(p);
 			mutex.unlock();
