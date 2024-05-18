@@ -34,14 +34,14 @@ int Server::run()
 		}
 
 		//handle tcp comms
-		std::queue<int> idsToRemove;
-		for (auto& c : clients) {
-			if (!selector.isReady(*c.second.tcp))
+		std::queue<sf::Uint32> idsToRemove;
+		for (auto& [id, client] : clients) {
+			if (!selector.isReady(*client.tcp))
 				continue;
 
 			sf::Packet p;
-			if (c.second.tcp->receive(p) == sf::Socket::Disconnected) {
-				idsToRemove.push(c.first);
+			if (client.tcp->receive(p) == sf::Socket::Disconnected) {
+				idsToRemove.push(id);
 				continue;
 			}
 			sf::Uint8 code;
@@ -49,42 +49,43 @@ int Server::run()
 			
 			//client thinks it is not connected
 			if (code == sf::Uint8(1))
-				idsToRemove.push(c.first);
+				idsToRemove.push(id);
 			//join public lobby
 			else if (code == sf::Uint8(2)) {
 				p.clear();
-				c.second.pos = sf::Vector2<sf::Int64>(100, 100);
+				client.pos = sf::Vector2<sf::Int64>(100, 100);
 				p << sf::Uint8(3);
-				c.second.tcp->send(p);
+				client.tcp->send(p);
 
 				p.clear();
-				p << sf::Uint8(6) << sf::Int64(c.second.pos.x) << sf::Int64(c.second.pos.y);
+				p << sf::Uint8(6) << sf::Int64(client.pos.x) << sf::Int64(client.pos.y);
 				//tell the new client about all other previous clients
-				for (const auto& id : publicLobby)
-					p << sf::Uint16(id) << sf::Int64(clients[id].pos.x) << sf::Int64(clients[id].pos.y);
-				c.second.tcp->send(p);
+				for (const auto& otherId : publicLobby)
+					p << sf::Uint32(otherId) << sf::Int64(clients[otherId].pos.x) << sf::Int64(clients[otherId].pos.y);
+				client.tcp->send(p);
 
 				//tell to all previous clients about the new client
 				p.clear();
-				p << sf::Uint8(4) << sf::Uint16(c.first) << sf::Int64(c.second.pos.x) << sf::Int64(c.second.pos.y);
-				for (const auto& id : publicLobby)
-					clients[id].tcp->send(p);
+				p << sf::Uint8(4) << sf::Uint32(id) << sf::Int64(client.pos.x) << sf::Int64(client.pos.y);
+				for (const auto& otherId : publicLobby)
+					clients[otherId].tcp->send(p);
 
-				publicLobby.insert(c.first);
-				std::cout << "joined public lobby, id: " << c.first << "\n";
+				publicLobby.insert(id);
+				std::cout << "joined public lobby, id: " << id << "\n";
 			}
 			//leave lobby
 			else if (code == sf::Uint8(3)) {
-				if (publicLobby.count(c.first)) {
-					publicLobby.erase(c.first);
+				if (!publicLobby.count(id))
+					continue;
 
-					sf::Packet p;
-					p << sf::Uint8(5) << sf::Uint16(c.first);
-					for (const auto& id : publicLobby)
-						clients[id].tcp->send(p);
+				publicLobby.erase(id);
 
-					std::cout << "left public lobby, id: " << c.first << "\n";
-				}
+				sf::Packet p;
+				p << sf::Uint8(5) << sf::Uint32(id);
+				for (const auto& otherId : publicLobby)
+					clients[otherId].tcp->send(p);
+
+				std::cout << "left public lobby, id: " << id << "\n";
 			}
 		}
 		while (!idsToRemove.empty()) {
@@ -95,7 +96,7 @@ int Server::run()
 				publicLobby.erase(idsToRemove.front());
 
 				sf::Packet p;
-				p << sf::Uint8(5) << sf::Uint16(idsToRemove.front());
+				p << sf::Uint8(5) << sf::Uint32(idsToRemove.front());
 				for (const auto& id : publicLobby)
 					clients[id].tcp->send(p);
 			}
@@ -104,7 +105,7 @@ int Server::run()
 		}
 
 		//initialize an accepted client
-		std::queue<sf::Uint16> indexesToRemove;
+		std::queue<int> indexesToRemove;
 		for (int i = 0; i < uninitialized.size(); i++) {
 			if (!selector.isReady(*uninitialized[i]))
 				continue;
@@ -125,7 +126,7 @@ int Server::run()
 				p >> version;
 
 			//incompatible client version
-			if (version != "dev") {
+			if (version != "dev0") {
 				p.clear();
 				p << sf::Uint8(2);
 				uninitialized[i]->send(p);
@@ -136,13 +137,12 @@ int Server::run()
 
 			//tell the client that it has been accepted
 			p.clear();
-			p << sf::Uint8(1) << sf::Uint16(++currentId);
+			p << sf::Uint8(1) << sf::Uint32(++currentId);
 			uninitialized[i]->send(p);
 
 			Client newClient;
-			newClient.ip = uninitialized[i]->getRemoteAddress();
 			newClient.tcp = uninitialized[i];
-			clients.insert(std::pair<sf::Uint16, Client>(currentId, newClient));
+			clients.insert(std::pair<sf::Uint32, Client>(currentId, newClient));
 			std::cout << "new client, id: " << currentId << "\n";
 		}
 		while (!indexesToRemove.empty()) {
@@ -158,32 +158,46 @@ void Server::handleUdp()
 {
 	while (true) {
 		sf::IpAddress ip;
-		sf::Uint16 port;
+		unsigned short port;
 		sf::Packet p;
 		udp.receive(p, ip, port);
 
-		sf::Uint16 id;
-		p >> id;
-
-		if (!publicLobby.count(id))
-			continue;
-
-		clients[id].port = port;
-		clients[id].ip = ip;
-
 		sf::Uint8 code;
 		p >> code;
+
 		//update client's pos
 		if (code == sf::Uint8(1)) {
+			sf::Uint32 id = 0;
+			for (const auto& c : publicLobby) {
+				if (clients[c].port == port && clients[c].tcp->getRemoteAddress() == ip) {
+					id = c;
+					break;
+				}
+			}
+			if (id == 0)
+				continue;
+
 			p >> clients[id].pos.x >> clients[id].pos.y;
-			
 			p.clear();
-			p << sf::Uint8(1) << sf::Uint16(id) << clients[id].pos.x << clients[id].pos.y;
+			p << sf::Uint8(1) << sf::Uint32(id) << clients[id].pos.x << clients[id].pos.y;
 			for (const auto& otherId : publicLobby) {
 				if (id == otherId)
 					continue;
-				udp.send(p, clients[otherId].ip, clients[otherId].port);
+				udp.send(p, clients[otherId].tcp->getRemoteAddress(), clients[otherId].port);
 			}
+		}
+		//init client port
+		else if (code == sf::Uint8(2)) {
+			sf::Uint32 id;
+			p >> id;
+
+			if (!clients.count(id))
+				continue;
+
+			clients[id].port = port;
+			p.clear();
+			p << sf::Uint8(7);
+			clients[id].tcp->send(p);
 		}
 	}
 }

@@ -10,12 +10,13 @@ namespace CON {
 
 	constexpr int TCP_SERVER_PORT = 5000;
 	constexpr int UDP_SERVER_PORT = 6000;
-	constexpr char SERVER_IP[] = "IP";
+	constexpr char SERVER_IP[] = "2.235.241.210";
 }
 
 namespace UDP {
 	namespace SEND {
 		constexpr sf::Uint8 UPDATE_POS = sf::Uint8(1);
+		constexpr sf::Uint8 INIT_PORT = sf::Uint8(2);
 	}
 
 	namespace REC {
@@ -37,5 +38,6 @@ namespace TCP {
 		constexpr sf::Uint8 CLIENT_CONNECTED = sf::Uint8(4);
 		constexpr sf::Uint8 CLIENT_DISCONNECTED = sf::Uint8(5);
 		constexpr sf::Uint8 SET_INITIAL_POS = sf::Uint8(6);
+		constexpr sf::Uint8 UDP_INITIALIZED = sf::Uint8(7);
 	}
 }

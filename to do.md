@@ -1,11 +1,8 @@
-<h1 align=center>TO DO</h1>
+# TO DO
 
-<h2>Fede-ai:</h2>
-
-- fix udp id
+## Fede-ai:
 - send relative position (udp)
 - run proper simulation on server
 
-<h2>Olix:</h2>
-
+## Olix:
 - nothing (as always)

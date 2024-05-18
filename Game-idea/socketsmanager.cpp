@@ -61,11 +61,7 @@ void SocketsManager::sendUdpPacket(sf::Packet p)
 	if (!connected)
 		return;
 
-	sf::Packet newP;
-	newP << id;
-	newP.append(p.getData(), p.getDataSize());
-
-	udpServer.send(newP, CON::SERVER_IP, CON::UDP_SERVER_PORT);
+	udpServer.send(p, CON::SERVER_IP, CON::UDP_SERVER_PORT);
 }
 
 void SocketsManager::connect()
@@ -78,6 +74,8 @@ void SocketsManager::connect()
 		isUdpBinded = true;
 	}
 
+initConnection:
+
 	sf::Packet p;
 	sf::Uint8 res = 0;
 	while (res != TCP::REC::CONNECTED && res != TCP::REC::VERSION_INCOMPATIBLE) {
@@ -85,7 +83,7 @@ void SocketsManager::connect()
 			sf::sleep(sf::seconds(2));
 
 		p.clear();
-		p << TCP::SEND::CONNECT << std::string("dev");
+		p << TCP::SEND::CONNECT << std::string("dev0");
 		tcpServer.send(p);
 
 		p.clear();
@@ -94,11 +92,34 @@ void SocketsManager::connect()
 	}
 
 	if (res == TCP::REC::CONNECTED) {
-		p >> id;
+		bool sendUdp = true;
+		sf::Uint32 myId;
+		p >> myId;
+
+		auto initUdp = [this](sf::Uint32 id, bool& send) {
+			while (send) {
+				sf::Packet pac;
+				pac << UDP::SEND::INIT_PORT << id;
+				udpServer.send(pac, CON::SERVER_IP, CON::UDP_SERVER_PORT);
+
+				sf::sleep(sf::seconds(2));
+			}
+		};
+		std::thread initUdpThread(initUdp, myId, std::ref(sendUdp));
+
+		p.clear();
+		tcpServer.receive(p);
+		p >> res;
+
+		sendUdp = false;
+		initUdpThread.join();
+
+		if (res != TCP::REC::UDP_INITIALIZED)
+			goto initConnection;
+
 		connected = true;
 		std::thread tcpThread(&SocketsManager::receiveTcp, this);
 		tcpThread.detach();
-
 		if (!isUdpRunning) {
 			std::thread udpThread(&SocketsManager::receiveUdp, this);
 			udpThread.detach();
