@@ -2,6 +2,7 @@
 #include "state.hpp"
 #include <iostream>
 #include "consts.hpp"
+#include <string>
 
 class ShopState : public State {
 public:
@@ -14,5 +15,17 @@ public:
 private:
 	//bg & menu
 	sf::Texture menuTexture;
-	sf::Sprite menuSprite;
+	sf::Sprite menuSprite;	
+
+	//currencies
+	int woodAmount = 10;
+	int stoneAmount = 1;
+	sf::Texture woodTexture;
+	sf::Sprite wood;
+	sf::Texture stoneTexture;
+	sf::Sprite stone;
+
+	sf::Font font;
+	sf::Text textWood;
+	sf::Text textStone;
 };
