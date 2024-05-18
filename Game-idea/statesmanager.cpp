@@ -19,6 +19,14 @@ StatesManager::StatesManager()
 	cursor.loadFromPixels(scaledCursor.getPixelsPtr(), scaledCursor.getSize(), sf::Vector2u(0, 0));
 }
 
+StatesManager::~StatesManager()
+{
+	if (state != NULL)
+		delete state;
+
+	state = NULL;
+}
+
 int StatesManager::run()
 {
 	sf::ContextSettings openGLSettings;
@@ -71,7 +79,7 @@ int StatesManager::run()
 		//from gamestate (pausestate) to homestate
 		else if (whatHappened == 2) {
 			sf::Packet p;
-			p << sf::Uint8(3);
+			p << TCP::SEND::EXITED_LOBBY;
 			socketsManager.sendTcpPacket(p);
 
 			delete state;

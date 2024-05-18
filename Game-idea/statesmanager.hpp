@@ -7,6 +7,7 @@
 class StatesManager {
 public:
 	StatesManager();
+	~StatesManager();
 	int run();
 
 private:

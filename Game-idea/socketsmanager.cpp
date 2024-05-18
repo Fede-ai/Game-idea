@@ -80,12 +80,12 @@ void SocketsManager::connect()
 
 	sf::Packet p;
 	sf::Uint8 res = 0;
-	while (res != 1 && res != 2) {
+	while (res != TCP::REC::CONNECTED && res != TCP::REC::VERSION_INCOMPATIBLE) {
 		while (tcpServer.connect(CON::SERVER_IP, CON::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
 			sf::sleep(sf::seconds(2));
 
 		p.clear();
-		p << sf::Uint8(1) << std::string("dev");
+		p << TCP::SEND::CONNECT << std::string("dev");
 		tcpServer.send(p);
 
 		p.clear();
@@ -93,7 +93,7 @@ void SocketsManager::connect()
 			p >> res;
 	}
 
-	if (res == 1) {
+	if (res == TCP::REC::CONNECTED) {
 		p >> id;
 		connected = true;
 		std::thread tcpThread(&SocketsManager::receiveTcp, this);
@@ -105,7 +105,7 @@ void SocketsManager::connect()
 			isUdpRunning = true;
 		}
 	}
-	else if (res == 2)
+	else if (res == TCP::REC::VERSION_INCOMPATIBLE)
 		version = false;
 }
 

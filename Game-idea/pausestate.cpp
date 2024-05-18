@@ -14,9 +14,9 @@ PauseState::PauseState(sf::RenderWindow& inWindow)
 	menuSprite.setPosition(window.getView().getCenter());
 
 	//shadow
-	shadow.setSize(sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y));
+	shadow.setSize(sf::Vector2f(CON::VIEW_WIDTH, CON::VIEW_HEIGHT));
 	shadow.setFillColor(sf::Color(0, 0, 0, 70));
-	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(CON::VIEW_SIZE_X / 2, CON::VIEW_SIZE_Y / 2));
+	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(CON::VIEW_WIDTH / 2, CON::VIEW_HEIGHT / 2));
 
 	//load font
 	font.loadFromFile("fonts/PublicPixel.ttf");

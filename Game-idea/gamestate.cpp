@@ -38,32 +38,33 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	size_t time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	if (time - lastServerUpdate > 70) {
 		sf::Packet p;
-		p << sf::Uint8(1) << sf::Int64(lobbyInfo.player.pos.x) << sf::Int64(lobbyInfo.player.pos.y);
+		p << UDP::SEND::UPDATE_POS << sf::Int64(lobbyInfo.player.pos.x) << sf::Int64(lobbyInfo.player.pos.y);
 		socketsManager.sendUdpPacket(p);	
 		lastServerUpdate = time;
 	}
 
 	sf::Packet p;
+	//manage tcp packets
 	while (socketsManager.pollTcpPacket(p)) {
 		sf::Uint8 code;
 		p >> code;
 
 		//a client has connected
-		if (code == sf::Uint8(4)) {
+		if (code == TCP::REC::CLIENT_CONNECTED) {
 			Player other;
 			sf::Uint16 otherId;
 			p >> otherId >> other.pos.x >> other.pos.y;
 			lobbyInfo.otherPlayers.insert(std::pair<sf::Uint16, Player>(otherId, other));
 		}
 		//a client has disconnected
-		else if (code == sf::Uint8(5)) {
+		else if (code == TCP::REC::CLIENT_DISCONNECTED) {
 			sf::Uint16 otherId;
 			p >> otherId;
 			if (lobbyInfo.otherPlayers.count(otherId))
 				lobbyInfo.otherPlayers.erase(otherId);
 		}
-		//set initial player position
-		else if (code == sf::Uint8(6)) {
+		//set initial players position
+		else if (code == TCP::REC::SET_INITIAL_POS) {
 			p >> lobbyInfo.player.pos.x >> lobbyInfo.player.pos.y;
 
 			while (!p.endOfPacket()) {
@@ -74,12 +75,12 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 			}
 		}
 	}
-
+	//manage udp packets
 	while (socketsManager.pollUdpPacket(p)) {
 		sf::Uint8 code;
 		p >> code;
 
-		if (code == sf::Uint8(1)) {
+		if (code == UDP::REC::UPDATE_POS) {
 			sf::Uint16 otherId;
 			sf::Vector2<sf::Int64> otherPos;
 			p >> otherId >> otherPos.x >> otherPos.y;
@@ -138,7 +139,7 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	lobbyInfo.player.pos += movement;
 
 	sf::Vector2f center = sf::Vector2f(lobbyInfo.player.pos.x / 100.f, lobbyInfo.player.pos.y / 100.f);
-	window.setView(sf::View(center, sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y)));
+	window.setView(sf::View(center, sf::Vector2f(CON::VIEW_WIDTH, CON::VIEW_HEIGHT)));
 
 	return 0;
 }

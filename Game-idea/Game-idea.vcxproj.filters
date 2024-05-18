@@ -10,9 +10,6 @@
     <Filter Include="managers">
       <UniqueIdentifier>{ced0c1f3-b7b1-492b-b7e8-74329414d5d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="other">
-      <UniqueIdentifier>{71d10168-e37d-4452-bb0d-c0b6ac8a1681}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="gamestate.cpp">
@@ -33,9 +30,7 @@
     <ClCompile Include="socketsmanager.cpp">
       <Filter>managers</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>other</Filter>
-    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shopstate.hpp">
@@ -56,17 +51,13 @@
     <ClInclude Include="socketsmanager.hpp">
       <Filter>managers</Filter>
     </ClInclude>
+    <ClInclude Include="settings.hpp" />
+    <ClInclude Include="consts.hpp" />
     <ClInclude Include="state.hpp">
-      <Filter>other</Filter>
-    </ClInclude>
-    <ClInclude Include="settings.hpp">
-      <Filter>other</Filter>
+      <Filter>other states</Filter>
     </ClInclude>
     <ClInclude Include="gameinfo.hpp">
-      <Filter>other</Filter>
-    </ClInclude>
-    <ClInclude Include="consts.hpp">
-      <Filter>other</Filter>
+      <Filter>gamestate</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
