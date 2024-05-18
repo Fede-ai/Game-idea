@@ -18,14 +18,25 @@ private:
 	sf::Sprite menuSprite;	
 
 	//currencies
-	int woodAmount = 10;
-	int stoneAmount = 1;
-	sf::Texture woodTexture;
-	sf::Sprite wood;
-	sf::Texture stoneTexture;
-	sf::Sprite stone;
+	int goldAmount = 10000;
+	sf::Texture goldTexture;
+	sf::Sprite gold;
 
 	sf::Font font;
-	sf::Text textWood;
-	sf::Text textStone;
+	sf::Text textGold;
+
+	//card
+	sf::Texture cardTexture;
+	sf::Sprite card;
+
+	sf::Texture weaponTexture;
+	sf::Sprite weapon;
+
+	sf::Texture buyTexture;
+	sf::Sprite buy;
+
+	sf::Text weaponTitle;
+	sf::Text weaponDetails;
+	sf::Text weaponDetailValues;
+
 };
