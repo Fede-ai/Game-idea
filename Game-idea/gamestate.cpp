@@ -52,13 +52,13 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		//a client has connected
 		if (code == TCP::REC::CLIENT_CONNECTED) {
 			Player other;
-			sf::Uint16 otherId;
+			sf::Uint32 otherId;
 			p >> otherId >> other.pos.x >> other.pos.y;
-			lobbyInfo.otherPlayers.insert(std::pair<sf::Uint16, Player>(otherId, other));
+			lobbyInfo.otherPlayers.insert(std::pair<sf::Uint32, Player>(otherId, other));
 		}
 		//a client has disconnected
 		else if (code == TCP::REC::CLIENT_DISCONNECTED) {
-			sf::Uint16 otherId;
+			sf::Uint32 otherId;
 			p >> otherId;
 			if (lobbyInfo.otherPlayers.count(otherId))
 				lobbyInfo.otherPlayers.erase(otherId);
@@ -69,9 +69,9 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 
 			while (!p.endOfPacket()) {
 				Player other;
-				sf::Uint16 otherId;
+				sf::Uint32 otherId;
 				p >> otherId >> other.pos.x >> other.pos.y;
-				lobbyInfo.otherPlayers.insert(std::pair<sf::Uint16, Player>(otherId, other));
+				lobbyInfo.otherPlayers.insert(std::pair<sf::Uint32, Player>(otherId, other));
 			}
 		}
 	}
@@ -79,9 +79,9 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	while (socketsManager.pollUdpPacket(p)) {
 		sf::Uint8 code;
 		p >> code;
-
+		
 		if (code == UDP::REC::UPDATE_POS) {
-			sf::Uint16 otherId;
+			sf::Uint32 otherId;
 			sf::Vector2<sf::Int64> otherPos;
 			p >> otherId >> otherPos.x >> otherPos.y;
 		
@@ -125,16 +125,16 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 
 	sf::Vector2<sf::Int64> movement;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		movement.y -= GameInfo::speeds[gameInfo.speed] * dTime * 10;
+		movement.y -= sf::Int64(GameInfo::speeds[gameInfo.speed] * dTime * 10);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		movement.y += GameInfo::speeds[gameInfo.speed] * dTime * 10;
+		movement.y += sf::Int64(GameInfo::speeds[gameInfo.speed] * dTime * 10);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		movement.x -= GameInfo::speeds[gameInfo.speed] * dTime * 10;
+		movement.x -= sf::Int64(GameInfo::speeds[gameInfo.speed] * dTime * 10);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		movement.x += GameInfo::speeds[gameInfo.speed] * dTime * 10;
+		movement.x += sf::Int64(GameInfo::speeds[gameInfo.speed] * dTime * 10);
 	if (movement.x != 0 && movement.y != 0) {
-		movement.x /= sqrt(2);
-		movement.y /= sqrt(2);
+		movement.x = sf::Int64(double(movement.x) / sqrt(2));
+		movement.y = sf::Int64(double(movement.y) / sqrt(2));
 	}
 	lobbyInfo.player.pos += movement;
 

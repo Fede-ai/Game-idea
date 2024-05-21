@@ -23,7 +23,7 @@ bool SocketsManager::pollTcpPacket(sf::Packet& p)
 
 	mutex.lock();
 	bool areThereOthers = tcpPackets.size() > 0;
-	if (areThereOthers > 0) {
+	if (areThereOthers) {
 		p = tcpPackets.front();
 		tcpPackets.pop();
 	}
@@ -37,7 +37,7 @@ bool SocketsManager::pollUdpPacket(sf::Packet& p)
 
 	mutex.lock();
 	bool areThereOthers = udpPackets.size() > 0;
-	if (areThereOthers > 0) {
+	if (areThereOthers) {
 		p = udpPackets.front();
 		udpPackets.pop();
 	}
@@ -80,7 +80,7 @@ initConnection:
 	sf::Uint8 res = 0;
 	while (res != TCP::REC::CONNECTED && res != TCP::REC::VERSION_INCOMPATIBLE) {
 		while (tcpServer.connect(CON::SERVER_IP, CON::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
-			sf::sleep(sf::seconds(2));
+			sf::sleep(sf::seconds(1));
 
 		p.clear();
 		p << TCP::SEND::CONNECT << std::string("dev0");
@@ -156,7 +156,7 @@ void SocketsManager::receiveUdp()
 		sf::Packet p;
 		udpServer.receive(p, ip, port);
 
-		if (ip == CON::SERVER_IP && port == CON::UDP_SERVER_PORT) {
+		if (ip == CON::SERVER_IP) {
 			mutex.lock();
 			udpPackets.push(p);
 			mutex.unlock();
