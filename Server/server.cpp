@@ -168,6 +168,7 @@ void Server::handleUdp()
 		//update client's pos
 		if (code == sf::Uint8(1)) {
 			sf::Uint32 id = 0;
+			//find out who sent the msg
 			for (const auto& c : publicLobby) {
 				if (clients[c].port == port && clients[c].tcp->getRemoteAddress() == ip) {
 					id = c;
@@ -177,9 +178,26 @@ void Server::handleUdp()
 			if (id == 0)
 				continue;
 
-			p >> clients[id].pos.x >> clients[id].pos.y;
+			auto& pos = clients[id].pos;
+			sf::Vector2<sf::Int16> newPos;
+			p >> newPos.x >> newPos.y;
+			//code needed to be able to send 4 bytes and not 16
+			if (abs(pos.x % 32700 - newPos.x) > abs(pos.x % 32700 - newPos.x - 32700))
+				pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x + 32700);
+			else if (abs(pos.x % 32700 - newPos.x) > abs(pos.x % 32700 - newPos.x + 32700))
+				pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x - 32700);
+			else
+				pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x);
+			if (abs(pos.y % 32700 - newPos.y) > abs(pos.y % 32700 - newPos.y - 32700))
+				pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y + 32700);
+			else if (abs(pos.y % 32700 - newPos.y) > abs(pos.y % 32700 - newPos.y + 32700))
+				pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y - 32700);
+			else
+				pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y);
+
+			//send this packet to all other clients
 			p.clear();
-			p << sf::Uint8(1) << sf::Uint32(id) << clients[id].pos.x << clients[id].pos.y;
+			p << sf::Uint8(1) << sf::Uint32(id) << sf::Int16(pos.x % 32700) << sf::Int16(pos.y % 32700);
 			for (const auto& otherId : publicLobby) {
 				if (id == otherId)
 					continue;

@@ -10,7 +10,7 @@ namespace CON {
 
 	constexpr int TCP_SERVER_PORT = 5000;
 	constexpr int UDP_SERVER_PORT = 6000;
-	constexpr char SERVER_IP[] = "2.235.241.210";
+	constexpr char SERVER_IP[] = "IP";
 }
 
 namespace UDP {
