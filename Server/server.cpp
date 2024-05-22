@@ -120,13 +120,14 @@ int Server::run()
 
 			sf::Uint8 code = 0;
 			std::string version = "";
+			sf::Uint16 port = 0;
 			p >> code;
 			//check if client is trying to "login"
 			if (code == 1)
-				p >> version;
+				p >> version >> port;
 
 			//incompatible client version
-			if (version != "dev0") {
+			if (version != "dev1") {
 				p.clear();
 				p << sf::Uint8(2);
 				uninitialized[i]->send(p);
@@ -137,13 +138,14 @@ int Server::run()
 
 			//tell the client that it has been accepted
 			p.clear();
-			p << sf::Uint8(1) << sf::Uint32(++currentId);
+			p << sf::Uint8(1);
 			uninitialized[i]->send(p);
 
 			Client newClient;
 			newClient.tcp = uninitialized[i];
-			clients.insert(std::pair<sf::Uint32, Client>(currentId, newClient));
-			std::cout << "new client, id: " << currentId << "\n";
+			newClient.port = port;
+			clients.insert(std::pair<sf::Uint32, Client>(++currentId, newClient));
+			std::cout << "new client, id: " << currentId << ", " << uninitialized[i]->getRemoteAddress() << ":" << port << "\n";
 		}
 		while (!indexesToRemove.empty()) {
 			uninitialized.erase(uninitialized.begin() + indexesToRemove.front());
@@ -165,19 +167,21 @@ void Server::handleUdp()
 		sf::Uint8 code;
 		p >> code;
 
+		sf::Uint32 id = 0;
+		//find out who sent the msg
+		for (const auto& c : publicLobby) {
+			if (clients[c].port == port && clients[c].tcp->getRemoteAddress() == ip) {
+				id = c;
+				break;
+			}
+		}
+		if (id == 0) {
+			std::cout << "msg from unidentified udp port, " << ip << ":" << port << "\n";
+			continue;
+		}
+
 		//update client's pos
 		if (code == sf::Uint8(1)) {
-			sf::Uint32 id = 0;
-			//find out who sent the msg
-			for (const auto& c : publicLobby) {
-				if (clients[c].port == port && clients[c].tcp->getRemoteAddress() == ip) {
-					id = c;
-					break;
-				}
-			}
-			if (id == 0)
-				continue;
-
 			auto& pos = clients[id].pos;
 			sf::Vector2<sf::Int16> newPos;
 			p >> newPos.x >> newPos.y;
@@ -203,19 +207,6 @@ void Server::handleUdp()
 					continue;
 				udp.send(p, clients[otherId].tcp->getRemoteAddress(), clients[otherId].port);
 			}
-		}
-		//init client port
-		else if (code == sf::Uint8(2)) {
-			sf::Uint32 id;
-			p >> id;
-
-			if (!clients.count(id))
-				continue;
-
-			clients[id].port = port;
-			p.clear();
-			p << sf::Uint8(7);
-			clients[id].tcp->send(p);
 		}
 	}
 }

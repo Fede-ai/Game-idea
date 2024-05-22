@@ -74,7 +74,40 @@ void SocketsManager::connect()
 		isUdpBinded = true;
 	}
 
-initConnection:
+	//construct a simple STUN binding request
+	char request[20] = { 0 };
+	request[0] = 0x00; //STUN message type: binding request
+	request[1] = 0x01;
+	request[2] = 0x00; //message Length: 0
+	request[3] = 0x00;
+	request[4] = 0x21; //magic Cookie
+	request[5] = 0x12;
+	request[6] = 0xA4;
+	request[7] = 0x42;
+
+	//random transaction ID
+	srand(time(NULL));
+	for (int i = 8; i < 20; ++i)
+		request[i] = rand() % 256;
+
+	if (udpServer.send(request, sizeof(request), "stun.l.google.com", 19302) != sf::Socket::Done)
+		std::exit(-3);
+
+	char response[64];
+	std::size_t received;
+	sf::IpAddress sender;
+	unsigned short senderPort;
+	if (udpServer.receive(response, sizeof(response), received, sender, senderPort) != sf::Socket::Done)
+		std::exit(-4);
+
+	unsigned short port = 0;
+	//process the STUN response to get the public IP and port
+	if (received >= 28 && response[0] == 0x01 && response[1] == 0x01)
+		 port = ((response[26] << 8) | response[27]) ^ 0x2112;
+	else
+		std::exit(-5);
+
+	std::cout << "local: " << udpServer.getLocalPort() << ", public: " << port << "\n";
 
 	sf::Packet p;
 	sf::Uint8 res = 0;
@@ -83,7 +116,7 @@ initConnection:
 			sf::sleep(sf::seconds(1));
 
 		p.clear();
-		p << TCP::SEND::CONNECT << std::string("dev0");
+		p << TCP::SEND::CONNECT << std::string("dev1") << sf::Uint16(port);
 		tcpServer.send(p);
 
 		p.clear();
@@ -92,31 +125,6 @@ initConnection:
 	}
 
 	if (res == TCP::REC::CONNECTED) {
-		bool sendUdp = true;
-		sf::Uint32 myId;
-		p >> myId;
-
-		auto initUdp = [this](sf::Uint32 id, bool& send) {
-			while (send) {
-				sf::Packet pac;
-				pac << UDP::SEND::INIT_PORT << id;
-				udpServer.send(pac, CON::SERVER_IP, CON::UDP_SERVER_PORT);
-
-				sf::sleep(sf::seconds(2));
-			}
-		};
-		std::thread initUdpThread(initUdp, myId, std::ref(sendUdp));
-
-		p.clear();
-		tcpServer.receive(p);
-		p >> res;
-
-		sendUdp = false;
-		initUdpThread.join();
-
-		if (res != TCP::REC::UDP_INITIALIZED)
-			goto initConnection;
-
 		connected = true;
 		std::thread tcpThread(&SocketsManager::receiveTcp, this);
 		tcpThread.detach();
