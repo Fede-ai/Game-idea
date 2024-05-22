@@ -2,12 +2,13 @@
 #include <iostream>
 #include <chrono>
 
-GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, SocketsManager& inSocketsManager)
+GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, SocketsManager& inSocketsManager, WeaponsManager& inWeaponManager)
 	:
 	socketsManager(inSocketsManager),
 	State(inWindow),
 	gameInfo(inGameInfo),
-	settings(inSettings)
+	settings(inSettings),
+	weaponManager(inWeaponManager)
 {
 	grassTexture.loadFromFile("textures/grass.png");
 	grassSprite.setTexture(grassTexture);

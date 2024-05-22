@@ -18,9 +18,6 @@
     <ClCompile Include="pausestate.cpp">
       <Filter>gamestate</Filter>
     </ClCompile>
-    <ClCompile Include="shopstate.cpp">
-      <Filter>gamestate</Filter>
-    </ClCompile>
     <ClCompile Include="homestate.cpp">
       <Filter>other states</Filter>
     </ClCompile>
@@ -31,11 +28,11 @@
       <Filter>managers</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shopstate.cpp">
+      <Filter>other states</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="shopstate.hpp">
-      <Filter>gamestate</Filter>
-    </ClInclude>
     <ClInclude Include="pausestate.hpp">
       <Filter>gamestate</Filter>
     </ClInclude>
@@ -60,5 +57,8 @@
       <Filter>gamestate</Filter>
     </ClInclude>
     <ClInclude Include="weapons.hpp" />
+    <ClInclude Include="shopstate.hpp">
+      <Filter>other states</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

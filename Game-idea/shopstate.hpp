@@ -3,16 +3,20 @@
 #include <iostream>
 #include "consts.hpp"
 #include <string>
+#include "weapons.hpp"
 
 class ShopState : public State {
 public:
-	ShopState(sf::RenderWindow& inWindow);
+	ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManager);
 	~ShopState() {}
 
 	int update(std::vector<sf::Event> events, float dTime);
 	void draw();
 
 private:
+
+	WeaponsManager& weaponsManager;
+
 	//bg & menu
 	sf::Texture menuTexture;
 	sf::Sprite menuSprite;	
@@ -38,5 +42,4 @@ private:
 	sf::Text weaponTitle;
 	sf::Text weaponDetails;
 	sf::Text weaponDetailValues;
-
 };

@@ -3,6 +3,7 @@
 #include "homestate.hpp"
 #include "shopstate.hpp"
 #include "socketsmanager.hpp"
+#include "weapons.hpp"
 
 class StatesManager {
 public:
@@ -13,6 +14,7 @@ private:
 	Settings settings;
 	GameInfo gameInfo;
 	SocketsManager socketsManager;
+	WeaponsManager weaponManager;
 
 	sf::RenderWindow window;
 	State* state = NULL;
