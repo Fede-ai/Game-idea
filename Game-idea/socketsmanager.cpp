@@ -19,6 +19,9 @@ bool SocketsManager::isConnected()
 
 bool SocketsManager::pollTcpPacket(sf::Packet& p)
 {
+	if (!connected)
+		return false;
+
 	p.clear();
 
 	mutex.lock();
@@ -33,6 +36,9 @@ bool SocketsManager::pollTcpPacket(sf::Packet& p)
 }
 bool SocketsManager::pollUdpPacket(sf::Packet& p)
 {
+	if (!connected)
+		return false;
+
 	p.clear();
 
 	mutex.lock();
@@ -66,48 +72,41 @@ void SocketsManager::sendUdpPacket(sf::Packet p)
 
 void SocketsManager::connect()
 {
-	if (!isUdpBinded) {
+	//bind udp if not already binded
+	if (!isUdpRunning) {
 		if (udpServer.bind(sf::Socket::AnyPort) != sf::Socket::Done) {
 			//handle failed binding
 			std::exit(-2);
 		}
-		isUdpBinded = true;
+		std::thread udpThread(&SocketsManager::receiveUdp, this);
+		udpThread.detach();
+
+		isUdpRunning = true;
 	}
 
-	//construct a simple STUN binding request
-	char request[20] = { 0 };
-	request[0] = 0x00; //STUN message type: binding request
-	request[1] = 0x01;
-	request[2] = 0x00; //message Length: 0
-	request[3] = 0x00;
-	request[4] = 0x21; //magic Cookie
-	request[5] = 0x12;
-	request[6] = 0xA4;
-	request[7] = 0x42;
+	sf::Uint16 port = 0;
+	std::thread initUdpPort([&port, this]() {
+		sf::Packet p;
+		p << UDP::SEND::GET_UDP_PORT;
+		while (port == sf::Uint16(0)) {
+			udpServer.send(p, CON::SERVER_IP, CON::UDP_SERVER_PORT);
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+	});
+	while (port == sf::Uint16(0)) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		if (udpPackets.empty())
+			continue;
 
-	//random transaction ID
-	srand(time(NULL));
-	for (int i = 8; i < 20; ++i)
-		request[i] = rand() % 256;
+		sf::Packet p = udpPackets.front();
+		udpPackets.pop();
 
-	if (udpServer.send(request, sizeof(request), "stun.l.google.com", 19302) != sf::Socket::Done)
-		std::exit(-3);
-
-	char response[64];
-	std::size_t received;
-	sf::IpAddress sender;
-	unsigned short senderPort;
-	if (udpServer.receive(response, sizeof(response), received, sender, senderPort) != sf::Socket::Done)
-		std::exit(-4);
-
-	unsigned short port = 0;
-	//process the STUN response to get the public IP and port
-	if (received >= 28 && response[0] == 0x01 && response[1] == 0x01)
-		 port = ((response[26] << 8) | response[27]) ^ 0x2112;
-	else
-		std::exit(-5);
-
-	std::cout << "local: " << udpServer.getLocalPort() << ", public: " << port << "\n";
+		sf::Uint8 code;
+		p >> code;
+		if (code == UDP::REC::GET_UDP_PORT)
+			p >> port;
+	}
+	initUdpPort.join();
 
 	sf::Packet p;
 	sf::Uint8 res = 0;
@@ -116,7 +115,7 @@ void SocketsManager::connect()
 			sf::sleep(sf::seconds(1));
 
 		p.clear();
-		p << TCP::SEND::CONNECT << std::string("dev1") << sf::Uint16(port);
+		p << TCP::SEND::CONNECT << std::string("dev2") << sf::Uint16(port);
 		tcpServer.send(p);
 
 		p.clear();
@@ -128,11 +127,6 @@ void SocketsManager::connect()
 		connected = true;
 		std::thread tcpThread(&SocketsManager::receiveTcp, this);
 		tcpThread.detach();
-		if (!isUdpRunning) {
-			std::thread udpThread(&SocketsManager::receiveUdp, this);
-			udpThread.detach();
-			isUdpRunning = true;
-		}
 	}
 	else if (res == TCP::REC::VERSION_INCOMPATIBLE)
 		version = false;

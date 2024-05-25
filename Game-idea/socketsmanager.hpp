@@ -27,7 +27,6 @@ private:
 
 	sf::TcpSocket tcpServer;
 	bool isUdpRunning = false;
-	bool isUdpBinded = false;
 	sf::UdpSocket udpServer;
 
 	bool version = true;

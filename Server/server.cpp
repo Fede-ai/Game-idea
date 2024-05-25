@@ -127,7 +127,7 @@ int Server::run()
 				p >> version >> port;
 
 			//incompatible client version
-			if (version != "dev1") {
+			if (version != "dev2") {
 				p.clear();
 				p << sf::Uint8(2);
 				uninitialized[i]->send(p);
@@ -166,6 +166,14 @@ void Server::handleUdp()
 
 		sf::Uint8 code;
 		p >> code;
+
+		//tell the client their port
+		if (code == sf::Uint8(200)) {
+			p.clear();
+			p << sf::Uint8(200) << sf::Uint16(port);
+			udp.send(p, ip, port);
+			continue;
+		}
 
 		sf::Uint32 id = 0;
 		//find out who sent the msg

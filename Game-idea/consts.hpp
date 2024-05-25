@@ -16,10 +16,12 @@ namespace CON {
 namespace UDP {
 	namespace SEND {
 		constexpr sf::Uint8 UPDATE_POS = sf::Uint8(1);
+		constexpr sf::Uint8 GET_UDP_PORT = sf::Uint8(200);
 	}
 
 	namespace REC {
 		constexpr sf::Uint8 UPDATE_POS = sf::Uint8(1);
+		constexpr sf::Uint8 GET_UDP_PORT = sf::Uint8(200);
 	}
 }
 
