@@ -68,7 +68,7 @@ int StatesManager::run()
 			delete state;
 			state = new GameState(window, gameInfo, settings, socketsManager, weaponManager);
 		}
-		//from gamestate (pausestate) to homestate
+		//from gamestate (pausestate) to homestate || from shop to home
 		else if (whatHappened == 2) {
 			sf::Packet p;
 			p << sf::Uint8(3);

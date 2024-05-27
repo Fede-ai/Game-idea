@@ -4,6 +4,7 @@
 #include "consts.hpp"
 #include <string>
 #include "weapons.hpp"
+#include "SFML/Network.hpp"
 
 class ShopState : public State {
 public:
@@ -16,10 +17,18 @@ public:
 private:
 
 	WeaponsManager& weaponsManager;
+	float deltaCards = 0;
+	float deltaMin = 0;
 
 	//bg & menu
 	sf::Texture menuTexture;
 	sf::Sprite menuSprite;	
+	sf::Texture categoriesBgTexture;
+	sf::Sprite categoriesBgSprite;
+	sf::RectangleShape cardsOverlay;
+
+	sf::Texture exitTexture;
+	sf::Sprite exitSprite;
 
 	//currencies
 	int goldAmount = 10000;
