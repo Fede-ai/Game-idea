@@ -66,6 +66,7 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 
 	// buy
 	buyTexture.loadFromFile("textures/shop/buy.png");
+	buyClickedTexture.loadFromFile("textures/shop/buy_clicked.png");
 	buy.setTexture(buyTexture);
 	buy.setScale(sf::Vector2f(CON::PIXEL_SIZE, CON::PIXEL_SIZE));
 
@@ -74,6 +75,11 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 	weaponTitle.setFillColor(sf::Color::Black);
 	weaponTitle.setStyle(sf::Text::Bold);
 	weaponTitle.setCharacterSize(20);
+
+	weaponPrice.setFont(font);
+	weaponPrice.setFillColor(sf::Color::Black);
+	weaponPrice.setStyle(sf::Text::Bold);
+	weaponPrice.setCharacterSize(20);
 
 	weaponDetails.setFont(font);
 	weaponDetails.setStyle(sf::Text::Bold);
@@ -99,9 +105,31 @@ int ShopState::update(std::vector<sf::Event> events, float dTime)
 	for (const auto& e : events) {
 		if (e.type == sf::Event::Closed)
 			window.close();
+		else if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left) {
+
+			for (int i = 0; i < weaponsManager.weapons.size(); i++)
+			{
+				int boundx = -CON::VIEW_SIZE_X / 2 + 250 + i * 320 + deltaCards + 15;
+				if (mousePos.x > boundx && mousePos.x < boundx + card.getGlobalBounds().width - 20 && mousePos.y > 425 && mousePos.y < 470)
+					btnPressed = i;
+			}
+		}
 		else if (e.type == sf::Event::MouseButtonReleased && e.key.code == sf::Mouse::Left) {
+			if (btnPressed > -1)
+				for (int i = 0; i < weaponsManager.weapons.size(); i++)
+				{
+					int boundx = -CON::VIEW_SIZE_X / 2 + 250 + i * 320 + deltaCards + 15;
+					if (mousePos.x > boundx && mousePos.x < boundx + card.getGlobalBounds().width - 20 && mousePos.y > 425 && mousePos.y < 470)
+					{
+						buttonClicked(i);
+					}
+				}
+			btnPressed = -1;
+
+			buy.setTexture(buyTexture);
 			if (exitSprite.getGlobalBounds().contains(mousePos)) 
 				whatHappened = 2;
+
 		}
 		else if (e.type == sf::Event::MouseWheelScrolled && e.key.code == sf::Mouse::VerticalWheel && (mousePos.x >= -720 && mousePos.y > 30)) {
 			int newDelta = deltaCards + e.mouseWheelScroll.delta * 30;
@@ -131,11 +159,24 @@ void ShopState::draw()
 		int VIEW_X = CON::VIEW_SIZE_X / 2, VIEW_Y = CON::VIEW_SIZE_Y / 2;
 		card.setPosition(sf::Vector2f(-VIEW_X + 250 + i * 320 + deltaCards, -VIEW_Y + 595));
 		weapon.setPosition(sf::Vector2f(card.getPosition().x + 23, card.getPosition().y + 18));
+
+		if (btnPressed > -1)
+			if (btnPressed == i)
+				buy.setTexture(buyClickedTexture);
+			else
+				buy.setTexture(buyTexture);
+
 		buy.setPosition(sf::Vector2f(card.getPosition().x + 12, card.getPosition().y + card.getGlobalBounds().height - 80));
 
 		weaponTitle.setString(currentWeapon.name);
 		weaponTitle.setOrigin(sf::Vector2f(weaponTitle.getLocalBounds().width / 2, 0));
 		weaponTitle.setPosition(card.getPosition() + sf::Vector2f(card.getGlobalBounds().width / 2, 140));
+
+		weaponPrice.setString('$' + std::to_string(currentWeapon.price));
+		weaponPrice.setOrigin(sf::Vector2f(weaponPrice.getLocalBounds().width / 2, 0));
+		weaponPrice.setPosition(card.getPosition() + sf::Vector2f(card.getGlobalBounds().width / 2, 17));
+
+
 		weaponDetails.setPosition(card.getPosition() + sf::Vector2f(20, 190));
 			
 		std::string firerateStr = std::to_string(1000.f / currentWeapon.firerate[currentWeapon.firerateIndex]);
@@ -158,10 +199,17 @@ void ShopState::draw()
 		window.draw(weapon);
 
 		window.draw(weaponTitle);
+		window.draw(weaponPrice);
 		window.draw(weaponDetails);
 		window.draw(weaponDetailValues);
 
 		window.draw(categoriesBgSprite); // important, it has to be the last
 		window.draw(cardsOverlay); // important, it has to be the last
 	}
+}
+
+int ShopState::buttonClicked(int buttonId)
+{
+	//handle button buy/upgrade
+	return 0;
 }

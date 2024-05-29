@@ -14,6 +14,7 @@ struct Weapon {
 	void shoot(int angle, std::vector<Bullet>& bullets) {};
 
 	std::string name = "";
+	int price = 0;
 	char bullet = 0;
 	int nBullets = 1;
 
@@ -47,6 +48,7 @@ public:
 	WeaponsManager() {
 		Weapon w;
 		w.name = "Pistol";
+		w.price = 900;
 		w.damage = { 80, 90, 100, 110 };
 		w.firerate = { 1000, 800, 700, 600 }; // ms
 		w.reload = { 3000, 2500, 2000, 1000 }; // ms
@@ -59,6 +61,7 @@ public:
 
 		w = Weapon();
 		w.name = "NoceGun";
+		w.price = 900;
 		w.damage = { 80, 90, 100, 110 };
 		w.firerate = { 600, 800, 700, 0 }; // ms
 		w.reload = { 3000, 2500, 2000, 1000 }; // ms
@@ -71,6 +74,7 @@ public:
 
 		w = Weapon();
 		w.name = "Knife";
+		w.price = 900;
 		w.damage = { 600, 650 };
 		w.firerate = { 1000, 800, 700, 500 }; // ms
 		w.reload = { 3000, 2500, 2000, 1000 }; // ms
@@ -83,6 +87,7 @@ public:
 
 		w = Weapon();
 		w.name = "Sniper";
+		w.price = 900;
 		w.damage = { 900, 1000 };
 		w.firerate = { 100, 80, 70, 50 }; // ms
 		w.reload = { 2000, 1500, 1300 }; // ms
@@ -95,6 +100,7 @@ public:
 
 		w = Weapon();
 		w.name = "Micro SMG";
+		w.price = 900;
 		w.damage = { 40, 50, 55, 60 };
 		w.firerate = { 2000, 1800, 1500 }; // ms
 		w.reload = { 5000, 4000, 3500, 3000 }; // ms
@@ -107,18 +113,7 @@ public:
 
 		w = Weapon();
 		w.name = "Assoult Rifle";
-		w.damage = { 300, 350, 400 };
-		w.firerate = { 500, 450, 400 }; // ms
-		w.reload = { 3000, 3500, 3000 }; // ms
-		w.magazine = { 30, 35, 49 };
-		w.range = { 500, 550, 600 }; // px
-		w.speed = { 19, 20, 22 }; // px/ms
-		w.weight = { 1000, 1100, 1200 }; // percent of your potential speed
-		w.accuracy = { 30, 25, 20 };
-		weapons.push_back(w);
-
-		w = Weapon();
-		w.name = "Assoult Rifle";
+		w.price = 900;
 		w.damage = { 300, 350, 400 };
 		w.firerate = { 500, 450, 400 }; // ms
 		w.reload = { 3000, 3500, 3000 }; // ms
