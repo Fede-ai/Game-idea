@@ -3,12 +3,11 @@
 #include "settings.hpp"
 #include "pausestate.hpp"
 #include "state.hpp"
-#include "socketsmanager.hpp"
 #include "weapons.hpp"
 
 class GameState : public State {
 public:
-	GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, SocketsManager& inSocketsManager, WeaponsManager& inWeaponManager);
+	GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, Server& inServer, WeaponsManager& inWeaponManager);
 	~GameState();
 
 private:
@@ -16,7 +15,10 @@ private:
 	void draw();
 	
 	WeaponsManager& weaponManager;
-	SocketsManager& socketsManager;
+	Server& server;
+	sf::UdpSocket udp;
+	sf::Uint32 myId = 0;
+
 	IngameState* ingameState = NULL;
 	GameInfo& gameInfo;
 	LobbyInfo lobbyInfo;

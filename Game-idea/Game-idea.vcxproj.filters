@@ -59,6 +59,8 @@
     <ClInclude Include="weapons.hpp" />
     <ClInclude Include="shopstate.hpp">
       <Filter>other states</Filter>
+    <ClInclude Include="cursorsmanager.hpp">
+      <Filter>managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

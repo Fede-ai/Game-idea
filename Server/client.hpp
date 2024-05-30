@@ -3,8 +3,7 @@
 
 struct Client {
 	sf::TcpSocket* tcp = NULL;
-	sf::Uint16 port = 0;
-	sf::IpAddress ip = "";
+	unsigned short port = 0;
 
 	sf::Vector2<sf::Int64> pos = { 0, 0 };
 };

@@ -188,7 +188,7 @@ void ShopState::draw()
 			std::to_string(currentWeapon.reload[currentWeapon.reloadIndex] / 100) + "s\n" + 
 			std::to_string(currentWeapon.magazine[currentWeapon.magazineIndex]) + "\n" + 
 			std::to_string(currentWeapon.range[currentWeapon.rangeIndex] / 10) + "\n" + 
-			std::to_string(currentWeapon.accuracy[currentWeapon.accuracyIndex]) + "°"
+			std::to_string(currentWeapon.accuracy[currentWeapon.accuracyIndex]) + "ï¿½"
 		);
 
 		weaponDetailValues.setOrigin(weaponDetailValues.getLocalBounds().width, 0);

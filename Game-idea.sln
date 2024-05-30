@@ -9,7 +9,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcx
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{429C588E-4680-4857-A047-FA59BF79F9C3}"
 	ProjectSection(SolutionItems) = preProject
-		to do.txt = to do.txt
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+		TO DO.md = TO DO.md
 	EndProjectSection
 EndProject
 Global

@@ -2,19 +2,21 @@
 #include "gamestate.hpp"
 #include "homestate.hpp"
 #include "shopstate.hpp"
-#include "socketsmanager.hpp"
 #include "weapons.hpp"
 
 class StatesManager {
 public:
 	StatesManager();
+	~StatesManager();
 	int run();
 
 private:
+	void handleTcp();
+
 	Settings settings;
 	GameInfo gameInfo;
-	SocketsManager socketsManager;
 	WeaponsManager weaponManager;
+	Server server;
 
 	sf::RenderWindow window;
 	State* state = NULL;

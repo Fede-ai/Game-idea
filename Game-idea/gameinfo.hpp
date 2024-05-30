@@ -12,7 +12,8 @@ struct LobbyInfo {
 	sf::Uint16 stone = 0;
 
 	Player player;
-	std::map<sf::Uint16, Player> otherPlayers;
+	std::map<sf::Uint32, Player> otherPlayers;
+	sf::Uint16 serverUdpPort;
 };
 
 //stored on the server

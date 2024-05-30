@@ -3,13 +3,13 @@
 #include <iostream>
 #include <vector>
 
-HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsManager& inSocketsManager)
+HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Server& inServer)
 	:
+	State(inWindow),
 	gameInfo(inGameInfo),
-	socketsManager(inSocketsManager),
-	State(inWindow)
+	server(inServer)
 {
-	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y)));
+	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(CON::VIEW_WIDTH, CON::VIEW_HEIGHT)));
 
 	//load font
 	font.loadFromFile("fonts/PublicPixel.ttf");
@@ -40,7 +40,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 	spriteSettings.setTexture(textureSettings);
 	spriteSettings.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteSettings.setOrigin(spriteSettings.getLocalBounds().width / 2, spriteSettings.getLocalBounds().height / 2);
-	spriteSettings.setPosition(sf::Vector2f(float(- CON::VIEW_SIZE_X / 2 + 70), float(CON::VIEW_SIZE_Y / 2 - 70)));
+	spriteSettings.setPosition(sf::Vector2f(float(- CON::VIEW_WIDTH / 2 + 70), float(CON::VIEW_HEIGHT / 2 - 70)));
 	//settings bg
 	textureSettingsBG.loadFromFile("textures/settings_bg.png");
 	spriteSettingsBG.setTexture(textureSettingsBG);
@@ -53,7 +53,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 	spriteClose.setTexture(textureClose);
 	spriteClose.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteClose.setOrigin(spriteClose.getLocalBounds().width / 2, spriteClose.getLocalBounds().height / 2);
-	spriteClose.setPosition(sf::Vector2f(float(CON::VIEW_SIZE_X / 2 - 70), float(CON::VIEW_SIZE_Y / 2 - 70)));
+	spriteClose.setPosition(sf::Vector2f(float(CON::VIEW_WIDTH / 2 - 70), float(CON::VIEW_HEIGHT / 2 - 70)));
 
 	//button bg 
 	textureBtn.loadFromFile("textures/button.png");
@@ -65,9 +65,9 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 	spriteNotification.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
 	spriteNotification.setOrigin(spriteNotification.getLocalBounds().width / 2, spriteNotification.getLocalBounds().height / 2);
 
-	shadow.setSize(sf::Vector2f(CON::VIEW_SIZE_X, CON::VIEW_SIZE_Y));
+	shadow.setSize(sf::Vector2f(CON::VIEW_WIDTH, CON::VIEW_HEIGHT));
 	shadow.setFillColor(sf::Color(0, 0, 0, 150));
-	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(CON::VIEW_SIZE_X / 2, CON::VIEW_SIZE_Y / 2));
+	shadow.setPosition(window.getView().getCenter() - sf::Vector2f(CON::VIEW_WIDTH / 2, CON::VIEW_HEIGHT / 2));
 
 	notificationText.setFont(font);
 	notificationText.setFillColor(sf::Color(66, 32, 26));
@@ -78,7 +78,7 @@ HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsMa
 
 	//Connection status connectionStatus
 	connectionStatus.setSize(sf::Vector2f(20, 20));
-	connectionStatus.setPosition(sf::Vector2f(-CON::VIEW_SIZE_X / 2 + 50, -CON::VIEW_SIZE_Y / 2 + 50));
+	connectionStatus.setPosition(sf::Vector2f(-CON::VIEW_WIDTH / 2 + 50, -CON::VIEW_HEIGHT / 2 + 50));
 
 	//home buttons
 	buttonsText[0].setString("PLAY");
@@ -118,7 +118,7 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		if (e.type == sf::Event::Closed) 
 			window.close();
 
-		if (!socketsManager.isVersionCompatible())
+		if (!server.versionCompatible)
 			continue;
 		
 		//handle left pressed
@@ -161,20 +161,23 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}	
 
-	connectionStatus.setFillColor(socketsManager.isConnected() ? sf::Color::Green : sf::Color::Red);
-	if (!socketsManager.isVersionCompatible())
+	connectionStatus.setFillColor(server.isConnected ? sf::Color::Green : sf::Color::Red);
+	if (!server.versionCompatible)
 		return whatHappened;
 
-	sf::Packet p;
-	while (socketsManager.pollTcpPacket(p)) {
+	//manage tcp packets
+	while (!server.packets.empty()) {
+		sf::Packet p = server.packets.front();
 		sf::Uint8 code;
 		p >> code;
 
 		//client joined public lobby
-		if (code == sf::Uint8(3)) {
+		if (code == TCP::REC::JOIN_PUBLIC) {
 			whatHappened = 1;
 			break;
 		}
+
+		server.packets.pop();
 	}
 
 	//on mouse hover rotates settings icon
@@ -203,7 +206,7 @@ void HomeState::draw()
 	window.draw(spriteClose);
 	window.draw(connectionStatus);
 
-	if (!socketsManager.isVersionCompatible()) {
+	if (!server.versionCompatible) {
 		window.draw(shadow);
 		window.draw(spriteNotification);
 		window.draw(notificationText);
@@ -217,8 +220,8 @@ int HomeState::handleClick(int buttonId)
 	sf::Packet p;
 	switch (buttonId) {
 	case 0: //new game
-		p << sf::Uint8(2);
-		socketsManager.sendTcpPacket(p);
+		p << TCP::SEND::JOIN_PUBLIC;
+		server.tcp.send(p);
 		break;
       
 	case 1: //shop

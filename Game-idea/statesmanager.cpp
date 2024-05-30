@@ -17,6 +17,17 @@ StatesManager::StatesManager()
 		}
 	}
 	cursor.loadFromPixels(scaledCursor.getPixelsPtr(), scaledCursor.getSize(), sf::Vector2u(0, 0));
+
+	std::thread tcpThread(&StatesManager::handleTcp, this);
+	tcpThread.detach();
+}
+
+StatesManager::~StatesManager()
+{
+	if (state != NULL)
+		delete state;
+
+	state = NULL;
 }
 
 int StatesManager::run()
@@ -30,7 +41,7 @@ int StatesManager::run()
 	window.setKeyRepeatEnabled(false);
 	window.setMouseCursor(cursor);
 
-	state = new HomeState(window, gameInfo, socketsManager);
+	state = new HomeState(window, gameInfo, server);
 	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 	while (window.isOpen()) {
@@ -49,6 +60,7 @@ int StatesManager::run()
 				window.setKeyRepeatEnabled(false);
 				window.setMouseCursor(cursor);
 			}
+
 			events.push_back(e);
 		}
 
@@ -63,21 +75,21 @@ int StatesManager::run()
 			state->draw();
 			window.display();
 		}
-		//from homestate go gamestate
+		//from home-state go game-state
 		else if (whatHappened == 1) {
 			delete state;
-			state = new GameState(window, gameInfo, settings, socketsManager, weaponManager);
+			state = new GameState(window, gameInfo, settings, server, weaponManager);
 		}
-		//from gamestate (pausestate) to homestate || from shop to home
+		//from game-state (pause-state) to home-state
 		else if (whatHappened == 2) {
 			sf::Packet p;
-			p << sf::Uint8(3);
-			socketsManager.sendTcpPacket(p);
+			p << TCP::SEND::EXITED_LOBBY;
+			server.tcp.send(p);
 
 			delete state;
-			state = new HomeState(window, gameInfo, socketsManager);
+			state = new HomeState(window, gameInfo, server);
 		}
-		//from homestate to shop
+		//from home-state to shop
 		else if (whatHappened == 3) {
 			delete state;
 			state = new ShopState(window, weaponManager);
@@ -85,5 +97,38 @@ int StatesManager::run()
 	}
 
 	return 0;
-  
+}
+
+void StatesManager::handleTcp()
+{
+	sf::Packet p;
+	sf::Uint8 res = 0;
+	while (res != TCP::REC::CONNECTED && res != TCP::REC::VERSION_INCOMPATIBLE) {
+		while (server.tcp.connect(CON::SERVER_IP, CON::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
+			sf::sleep(sf::seconds(1));
+
+		p.clear();
+		p << TCP::SEND::CONNECT << std::string("dev5");
+		server.tcp.send(p);
+
+		p.clear();
+		if (server.tcp.receive(p) == sf::Socket::Done)
+			p >> res;
+	}
+
+	if (res == TCP::REC::CONNECTED)
+		server.isConnected = true;
+	else if (res == TCP::REC::VERSION_INCOMPATIBLE) {
+		server.versionCompatible = false;
+		return;
+	}
+
+	while (true) {
+		sf::Packet p;
+		sf::Socket::Status status = server.tcp.receive(p);
+		if (status == sf::Socket::Done)
+			server.packets.push(p);
+		else if (status == sf::Socket::Disconnected)
+			server.isConnected = false;
+	}
 }
