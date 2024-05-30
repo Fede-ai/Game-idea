@@ -2,12 +2,13 @@
 #include <iostream>
 #include <chrono>
 
-GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, Server& inServer)
+GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, Server& inServer, WeaponsManager& inWeaponManager)
 	:
 	State(inWindow),
 	server(inServer),
 	gameInfo(inGameInfo),
-	settings(inSettings)
+	settings(inSettings),
+	weaponManager(inWeaponManager)
 {
 	udp.bind(sf::Socket::AnyPort);
 	udp.setBlocking(false);

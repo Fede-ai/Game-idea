@@ -18,21 +18,21 @@
     <ClCompile Include="pausestate.cpp">
       <Filter>gamestate</Filter>
     </ClCompile>
-    <ClCompile Include="shopstate.cpp">
-      <Filter>gamestate</Filter>
-    </ClCompile>
     <ClCompile Include="homestate.cpp">
       <Filter>other states</Filter>
     </ClCompile>
     <ClCompile Include="statesmanager.cpp">
       <Filter>managers</Filter>
     </ClCompile>
+    <ClCompile Include="socketsmanager.cpp">
+      <Filter>managers</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shopstate.cpp">
+      <Filter>other states</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="shopstate.hpp">
-      <Filter>gamestate</Filter>
-    </ClInclude>
     <ClInclude Include="pausestate.hpp">
       <Filter>gamestate</Filter>
     </ClInclude>
@@ -45,6 +45,9 @@
     <ClInclude Include="statesmanager.hpp">
       <Filter>managers</Filter>
     </ClInclude>
+    <ClInclude Include="socketsmanager.hpp">
+      <Filter>managers</Filter>
+    </ClInclude>
     <ClInclude Include="settings.hpp" />
     <ClInclude Include="consts.hpp" />
     <ClInclude Include="state.hpp">
@@ -53,6 +56,9 @@
     <ClInclude Include="gameinfo.hpp">
       <Filter>gamestate</Filter>
     </ClInclude>
+    <ClInclude Include="weapons.hpp" />
+    <ClInclude Include="shopstate.hpp">
+      <Filter>other states</Filter>
     <ClInclude Include="cursorsmanager.hpp">
       <Filter>managers</Filter>
     </ClInclude>

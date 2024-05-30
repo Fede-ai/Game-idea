@@ -78,7 +78,7 @@ int StatesManager::run()
 		//from home-state go game-state
 		else if (whatHappened == 1) {
 			delete state;
-			state = new GameState(window, gameInfo, settings, server);
+			state = new GameState(window, gameInfo, settings, server, weaponManager);
 		}
 		//from game-state (pause-state) to home-state
 		else if (whatHappened == 2) {
@@ -92,7 +92,7 @@ int StatesManager::run()
 		//from home-state to shop
 		else if (whatHappened == 3) {
 			delete state;
-			state = new ShopState(window);
+			state = new ShopState(window, weaponManager);
 		}
 	}
 

@@ -20,6 +20,6 @@ struct LobbyInfo {
 struct GameInfo {
 	sf::Uint16 gold = 0;
 
-	sf::Uint8 speed = 0;
+	unsigned char speed = 0;
 	static constexpr sf::Uint8 speeds[] = { 4, 5, 6, 7 };
 };

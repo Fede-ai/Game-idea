@@ -37,6 +37,7 @@
     <ClInclude Include="shopstate.hpp" />
     <ClInclude Include="state.hpp" />
     <ClInclude Include="statesmanager.hpp" />
+    <ClInclude Include="weapons.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

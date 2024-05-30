@@ -3,19 +3,22 @@
 #include "settings.hpp"
 #include "pausestate.hpp"
 #include "state.hpp"
+#include "weapons.hpp"
 
 class GameState : public State {
 public:
-	GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, Server& inServer);
+	GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, Server& inServer, WeaponsManager& inWeaponManager);
 	~GameState();
 
 private:
 	int update(std::vector<sf::Event> events, float dTime);
 	void draw();
 	
+	WeaponsManager& weaponManager;
 	Server& server;
 	sf::UdpSocket udp;
 	sf::Uint32 myId = 0;
+
 	IngameState* ingameState = NULL;
 	GameInfo& gameInfo;
 	LobbyInfo lobbyInfo;

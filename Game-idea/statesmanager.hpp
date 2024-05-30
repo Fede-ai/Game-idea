@@ -2,6 +2,7 @@
 #include "gamestate.hpp"
 #include "homestate.hpp"
 #include "shopstate.hpp"
+#include "weapons.hpp"
 
 class StatesManager {
 public:
@@ -14,6 +15,7 @@ private:
 
 	Settings settings;
 	GameInfo gameInfo;
+	WeaponsManager weaponManager;
 	Server server;
 
 	sf::RenderWindow window;
