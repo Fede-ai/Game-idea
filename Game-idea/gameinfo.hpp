@@ -13,6 +13,7 @@ struct LobbyInfo {
 
 	Player player;
 	std::map<sf::Uint32, Player> otherPlayers;
+	sf::Uint16 serverUdpPort;
 };
 
 //stored on the server

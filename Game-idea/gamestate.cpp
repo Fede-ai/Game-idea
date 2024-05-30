@@ -2,13 +2,16 @@
 #include <iostream>
 #include <chrono>
 
-GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, SocketsManager& inSocketsManager)
+GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings inSettings, Server& inServer)
 	:
-	socketsManager(inSocketsManager),
 	State(inWindow),
+	server(inServer),
 	gameInfo(inGameInfo),
 	settings(inSettings)
 {
+	udp.bind(sf::Socket::AnyPort);
+	udp.setBlocking(false);
+
 	grassTexture.loadFromFile("textures/grass.png");
 	grassSprite.setTexture(grassTexture);
 	grassSprite.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
@@ -32,20 +35,21 @@ GameState::~GameState()
 
 int GameState::update(std::vector<sf::Event> events, float dTime)
 {
-	if (!socketsManager.isConnected())
+	if (!server.isConnected)
 		std::exit(100);
 
 	size_t time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	if (time - lastServerUpdate > 50) {
 		sf::Packet p;
-		p << UDP::SEND::UPDATE_POS << sf::Int16(lobbyInfo.player.pos.x % 32700) << sf::Int16(lobbyInfo.player.pos.y % 32700);
-		socketsManager.sendUdpPacket(p);	
+		p << UDP::SEND::UPDATE_INFO << sf::Uint32(myId);
+		p << sf::Int16(lobbyInfo.player.pos.x % 32700) << sf::Int16(lobbyInfo.player.pos.y % 32700);
+		udp.send(p, CON::SERVER_IP, lobbyInfo.serverUdpPort);
 		lastServerUpdate = time;
 	}
 
-	sf::Packet p;
 	//manage tcp packets
-	while (socketsManager.pollTcpPacket(p)) {
+	while (!server.packets.empty()) {
+		sf::Packet p = server.packets.front();
 		sf::Uint8 code;
 		p >> code;
 
@@ -64,9 +68,9 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 				lobbyInfo.otherPlayers.erase(otherId);
 		}
 		//set initial players position
-		else if (code == TCP::REC::SET_INITIAL_POS) {
-			p >> lobbyInfo.player.pos.x >> lobbyInfo.player.pos.y;
-
+		else if (code == TCP::REC::INIT_LOBBY_INFO) {
+			p >> lobbyInfo.serverUdpPort >> myId >> lobbyInfo.player.pos.x >> lobbyInfo.player.pos.y;
+			
 			while (!p.endOfPacket()) {
 				Player other;
 				sf::Uint32 otherId;
@@ -74,13 +78,22 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 				lobbyInfo.otherPlayers.insert(std::pair<sf::Uint32, Player>(otherId, other));
 			}
 		}
+
+		server.packets.pop();
 	}
+
 	//manage udp packets
-	while (socketsManager.pollUdpPacket(p)) {
+	sf::Packet p;
+	sf::IpAddress ip;
+	unsigned short port;
+	while (udp.receive(p, ip, port) == sf::Socket::Done) {
 		sf::Uint8 code;
 		p >> code;
+
+		if (ip != CON::SERVER_IP)
+			continue;
 		
-		if (code == UDP::REC::UPDATE_POS) {
+		if (code == UDP::REC::UPDATE_INFO) {
 			sf::Uint32 otherId;
 			sf::Vector2<sf::Int16> newPos;
 			p >> otherId >> newPos.x >> newPos.y;

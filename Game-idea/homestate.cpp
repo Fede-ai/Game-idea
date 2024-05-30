@@ -3,11 +3,11 @@
 #include <iostream>
 #include <vector>
 
-HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, SocketsManager& inSocketsManager)
+HomeState::HomeState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Server& inServer)
 	:
+	State(inWindow),
 	gameInfo(inGameInfo),
-	socketsManager(inSocketsManager),
-	State(inWindow)
+	server(inServer)
 {
 	window.setView(sf::View(sf::Vector2f(0, 0), sf::Vector2f(CON::VIEW_WIDTH, CON::VIEW_HEIGHT)));
 
@@ -118,7 +118,7 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		if (e.type == sf::Event::Closed) 
 			window.close();
 
-		if (!socketsManager.isVersionCompatible())
+		if (!server.versionCompatible)
 			continue;
 		
 		//handle left pressed
@@ -161,12 +161,13 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}	
 
-	connectionStatus.setFillColor(socketsManager.isConnected() ? sf::Color::Green : sf::Color::Red);
-	if (!socketsManager.isVersionCompatible())
+	connectionStatus.setFillColor(server.isConnected ? sf::Color::Green : sf::Color::Red);
+	if (!server.versionCompatible)
 		return whatHappened;
 
-	sf::Packet p;
-	while (socketsManager.pollTcpPacket(p)) {
+	//manage tcp packets
+	while (!server.packets.empty()) {
+		sf::Packet p = server.packets.front();
 		sf::Uint8 code;
 		p >> code;
 
@@ -175,6 +176,8 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 			whatHappened = 1;
 			break;
 		}
+
+		server.packets.pop();
 	}
 
 	//on mouse hover rotates settings icon
@@ -203,7 +206,7 @@ void HomeState::draw()
 	window.draw(spriteClose);
 	window.draw(connectionStatus);
 
-	if (!socketsManager.isVersionCompatible()) {
+	if (!server.versionCompatible) {
 		window.draw(shadow);
 		window.draw(spriteNotification);
 		window.draw(notificationText);
@@ -218,7 +221,7 @@ int HomeState::handleClick(int buttonId)
 	switch (buttonId) {
 	case 0: //new game
 		p << TCP::SEND::JOIN_PUBLIC;
-		socketsManager.sendTcpPacket(p);
+		server.tcp.send(p);
 		break;
       
 	case 1: //shop

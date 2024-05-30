@@ -2,7 +2,6 @@
 #include "gamestate.hpp"
 #include "homestate.hpp"
 #include "shopstate.hpp"
-#include "socketsmanager.hpp"
 
 class StatesManager {
 public:
@@ -11,9 +10,11 @@ public:
 	int run();
 
 private:
+	void handleTcp();
+
 	Settings settings;
 	GameInfo gameInfo;
-	SocketsManager socketsManager;
+	Server server;
 
 	sf::RenderWindow window;
 	State* state = NULL;

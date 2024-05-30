@@ -27,9 +27,6 @@
     <ClCompile Include="statesmanager.cpp">
       <Filter>managers</Filter>
     </ClCompile>
-    <ClCompile Include="socketsmanager.cpp">
-      <Filter>managers</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -48,9 +45,6 @@
     <ClInclude Include="statesmanager.hpp">
       <Filter>managers</Filter>
     </ClInclude>
-    <ClInclude Include="socketsmanager.hpp">
-      <Filter>managers</Filter>
-    </ClInclude>
     <ClInclude Include="settings.hpp" />
     <ClInclude Include="consts.hpp" />
     <ClInclude Include="state.hpp">
@@ -58,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="gameinfo.hpp">
       <Filter>gamestate</Filter>
+    </ClInclude>
+    <ClInclude Include="cursorsmanager.hpp">
+      <Filter>managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

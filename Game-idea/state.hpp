@@ -1,6 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <SFML/Network.hpp>
+#include <queue>
+
+struct Server {
+	bool isConnected = false;
+	bool versionCompatible = true;
+	std::queue<sf::Packet> packets;
+	sf::TcpSocket tcp;
+};
 
 class State {
 public:

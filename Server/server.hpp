@@ -1,7 +1,5 @@
 #pragma once
-#include <SFML/Network.hpp>
-#include "client.hpp"
-#include <set>
+#include "lobby.hpp"
 
 class Server {
 public:
@@ -9,16 +7,14 @@ public:
 	int run();
 
 private:
-	void handleUdp();
-
-	sf::TcpListener listener;
 	sf::SocketSelector selector;
+	sf::TcpListener listener;
 	sf::UdpSocket udp;
 
 	std::map<sf::Uint32, Client> clients;
+	sf::Uint32 currentId = 0;
 	std::vector<sf::TcpSocket*> uninitialized;
 
-	std::set<sf::Uint32> publicLobby;
-	sf::Uint32 currentId = 0;
+	Lobby publicLobby;
 };
 
