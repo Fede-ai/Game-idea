@@ -30,5 +30,6 @@ private:
 	sf::Texture bodyTexture;
 	sf::Sprite bodySprite;
 
-	size_t lastServerUpdate = 0;
+	size_t lastUpdateReceived = 0;
+	size_t lastUpdateSent = 0;
 };

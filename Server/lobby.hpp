@@ -9,6 +9,8 @@ public:
 	void joinLobby(sf::Uint32 id, Client newClient);
 
 private:
+	void handleIncomingMsgs();
+
 	char name[7] = "public";
 	sf::SocketSelector selector;
 	sf::UdpSocket udp;

@@ -172,7 +172,7 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		p >> code;
 
 		//client joined public lobby
-		if (code == TCP::REC::JOIN_PUBLIC) {
+		if (code == REC::JOIN_PUBLIC) {
 			whatHappened = 1;
 			break;
 		}
@@ -220,7 +220,7 @@ int HomeState::handleClick(int buttonId)
 	sf::Packet p;
 	switch (buttonId) {
 	case 0: //new game
-		p << TCP::SEND::JOIN_PUBLIC;
+		p << SEND::JOIN_PUBLIC;
 		server.tcp.send(p);
 		break;
       

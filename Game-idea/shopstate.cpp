@@ -31,13 +31,10 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 	goldTexture.loadFromFile("textures/currencies/gold.png");
 	gold.setTexture(goldTexture);
 	gold.setScale(sf::Vector2f(CON::PIXEL_SIZE, CON::PIXEL_SIZE));
+	gold.setOrigin(sf::Vector2f(gold.getLocalBounds().width / 2, gold.getLocalBounds().height / 2));
 
-	int currencyWidth = gold.getLocalBounds().width, currencyHeight = gold.getLocalBounds().height;
-
-	gold.setOrigin(sf::Vector2f(currencyWidth / 2, currencyHeight / 2));
-
-	int X = 200, Y = 60, dist = 80 + Y;
-	gold.setPosition(sf::Vector2f(CON::VIEW_WIDTH / 2 - X, -CON::VIEW_HEIGHT / 2 + Y));
+	int x = 200, y = 60, dist = 80 + y;
+	gold.setPosition(sf::Vector2f(CON::VIEW_WIDTH / 2.f - x, -CON::VIEW_HEIGHT / 2.f + y));
 	
 	// currencies texts
 	font.loadFromFile("fonts/PublicPixel.ttf");
@@ -51,8 +48,7 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 	textGold.setString(woodString);
 
 	textGold.setOrigin(sf::Vector2f(0, textGold.getLocalBounds().height / 2));
-
-	textGold.setPosition(sf::Vector2f(CON::VIEW_WIDTH / 2 - (X - 45), -CON::VIEW_HEIGHT / 2 + Y));
+	textGold.setPosition(sf::Vector2f(CON::VIEW_WIDTH / 2.f - (x - 45), -CON::VIEW_HEIGHT / 2.f + y));
 
 	// card
 	cardTexture.loadFromFile("textures/shop/card.png");
@@ -86,13 +82,13 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 	weaponDetails.setFillColor(sf::Color::Black);
 	weaponDetails.setCharacterSize(18);
 	weaponDetails.setString("Damage\nFirerate\nReload\nMagsize\nRange\nAccuracy");
-	weaponDetails.setLineSpacing(1.6);
+	weaponDetails.setLineSpacing(1.6f);
 
 	weaponDetailValues.setFont(font);
 	weaponDetailValues.setStyle(sf::Text::Bold);
 	weaponDetailValues.setFillColor(sf::Color::Black);
 	weaponDetailValues.setCharacterSize(18);
-	weaponDetailValues.setLineSpacing(1.6);
+	weaponDetailValues.setLineSpacing(1.6f);
 
 	//delta mouse setup
 	deltaMin = -1 * (weaponsManager.weapons.size() * card.getGlobalBounds().width + (weaponsManager.weapons.size()+1) * 25) + 1720;
@@ -106,24 +102,21 @@ int ShopState::update(std::vector<sf::Event> events, float dTime)
 		if (e.type == sf::Event::Closed)
 			window.close();
 		else if (e.type == sf::Event::MouseButtonPressed && e.key.code == sf::Mouse::Left) {
-
-			for (int i = 0; i < weaponsManager.weapons.size(); i++)
-			{
-				int boundx = -CON::VIEW_WIDTH / 2 + 250 + i * 320 + deltaCards + 15;
+			for (int i = 0; i < weaponsManager.weapons.size(); i++) {
+				float boundx = -CON::VIEW_WIDTH / 2 + 250 + i * 320 + deltaCards + 15;
 				if (mousePos.x > boundx && mousePos.x < boundx + card.getGlobalBounds().width - 20 && mousePos.y > 425 && mousePos.y < 470)
 					btnPressed = i;
 			}
 		}
 		else if (e.type == sf::Event::MouseButtonReleased && e.key.code == sf::Mouse::Left) {
-			if (btnPressed > -1)
-				for (int i = 0; i < weaponsManager.weapons.size(); i++)
-				{
-					int boundx = -CON::VIEW_WIDTH / 2 + 250 + i * 320 + deltaCards + 15;
+			if (btnPressed != -1) {
+				for (int i = 0; i < weaponsManager.weapons.size(); i++) {
+					float boundx = -CON::VIEW_WIDTH / 2 + 250 + i * 320 + deltaCards + 15;
 					if (mousePos.x > boundx && mousePos.x < boundx + card.getGlobalBounds().width - 20 && mousePos.y > 425 && mousePos.y < 470)
-					{
 						buttonClicked(i);
-					}
 				}
+			}
+
 			btnPressed = -1;
 
 			buy.setTexture(buyTexture);
@@ -132,7 +125,7 @@ int ShopState::update(std::vector<sf::Event> events, float dTime)
 
 		}
 		else if (e.type == sf::Event::MouseWheelScrolled && e.key.code == sf::Mouse::VerticalWheel && (mousePos.x >= -720 && mousePos.y > 30)) {
-			int newDelta = deltaCards + e.mouseWheelScroll.delta * 30;
+			float newDelta = deltaCards + e.mouseWheelScroll.delta * 30;
 			if (newDelta < 3) 
 				deltaCards = newDelta < deltaMin ? deltaMin : newDelta;
 			else
@@ -157,7 +150,7 @@ void ShopState::draw()
 	{
 		auto currentWeapon = weaponsManager.weapons[i];
 		int VIEW_X = CON::VIEW_WIDTH / 2, VIEW_Y = CON::VIEW_HEIGHT / 2;
-		card.setPosition(sf::Vector2f(-VIEW_X + 250 + i * 320 + deltaCards, -VIEW_Y + 595));
+		card.setPosition(sf::Vector2f(-VIEW_X + 250 + i * 320 + deltaCards, -VIEW_Y + 595.f));
 		weapon.setPosition(sf::Vector2f(card.getPosition().x + 23, card.getPosition().y + 18));
 
 		if (btnPressed > -1)

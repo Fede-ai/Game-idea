@@ -4,6 +4,7 @@
 
 struct Player {
 	sf::Vector2<sf::Int64> pos;
+	sf::Vector2<sf::Int64> goingTo;
 };
 
 //reset every time you join a lobby

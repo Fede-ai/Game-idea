@@ -42,7 +42,7 @@ int StatesManager::run()
 	window.setMouseCursor(cursor);
 
 	state = new HomeState(window, gameInfo, server);
-	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	auto lastTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
 	while (window.isOpen()) {
 		sf::Event e;
@@ -64,7 +64,7 @@ int StatesManager::run()
 			events.push_back(e);
 		}
 
-		auto time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		auto time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		int whatHappened = 0;
 		if (!isTransitioning)
 			whatHappened = state->update(events, int(std::max(time - lastTime, long long(1))) / 1000.f);
@@ -83,7 +83,7 @@ int StatesManager::run()
 		//from game-state (pause-state) to home-state
 		else if (whatHappened == 2) {
 			sf::Packet p;
-			p << TCP::SEND::EXITED_LOBBY;
+			p << SEND::EXITED_LOBBY;
 			server.tcp.send(p);
 
 			delete state;
@@ -103,12 +103,12 @@ void StatesManager::handleTcp()
 {
 	sf::Packet p;
 	sf::Uint8 res = 0;
-	while (res != TCP::REC::CONNECTED && res != TCP::REC::VERSION_INCOMPATIBLE) {
+	while (res != REC::CONNECTED && res != REC::VERSION_INCOMPATIBLE) {
 		while (server.tcp.connect(CON::SERVER_IP, CON::TCP_SERVER_PORT, sf::seconds(10)) != sf::Socket::Done)
 			sf::sleep(sf::seconds(1));
 
 		p.clear();
-		p << TCP::SEND::CONNECT << std::string("dev5");
+		p << SEND::CONNECT << std::string("dev5");
 		server.tcp.send(p);
 
 		p.clear();
@@ -116,9 +116,9 @@ void StatesManager::handleTcp()
 			p >> res;
 	}
 
-	if (res == TCP::REC::CONNECTED)
+	if (res == REC::CONNECTED)
 		server.isConnected = true;
-	else if (res == TCP::REC::VERSION_INCOMPATIBLE) {
+	else if (res == REC::VERSION_INCOMPATIBLE) {
 		server.versionCompatible = false;
 		return;
 	}

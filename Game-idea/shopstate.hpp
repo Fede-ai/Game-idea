@@ -19,7 +19,7 @@ private:
 	WeaponsManager& weaponsManager;
 	float deltaCards = 0;
 	float deltaMin = 0;
-	float btnPressed = -1;
+	int btnPressed = -1;
 
 	//bg & menu
 	sf::Texture menuTexture;

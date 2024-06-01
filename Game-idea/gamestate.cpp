@@ -23,7 +23,7 @@ GameState::GameState(sf::RenderWindow& inWindow, GameInfo& inGameInfo, Settings 
 	bodySprite.setOrigin(bodySprite.getLocalBounds().width / 2, bodySprite.getLocalBounds().height / 2);
 	
 	font.loadFromFile("fonts/PublicPixel.ttf");
-	lastServerUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	lastUpdateSent = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 }
 
 GameState::~GameState()
@@ -39,13 +39,14 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	if (!server.isConnected)
 		std::exit(100);
 
-	size_t time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	if (time - lastServerUpdate > 50) {
+	//send udp packet to server
+	size_t time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+	if (time - lastUpdateSent > 50) {
 		sf::Packet p;
-		p << UDP::SEND::UPDATE_INFO << sf::Uint32(myId);
+		p << sf::Uint32(myId) << sf::Uint16(time % 65500);
 		p << sf::Int16(lobbyInfo.player.pos.x % 32700) << sf::Int16(lobbyInfo.player.pos.y % 32700);
 		udp.send(p, CON::SERVER_IP, lobbyInfo.serverUdpPort);
-		lastServerUpdate = time;
+		lastUpdateSent = time;
 	}
 
 	//manage tcp packets
@@ -55,21 +56,21 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		p >> code;
 
 		//a client has connected
-		if (code == TCP::REC::CLIENT_CONNECTED) {
+		if (code == REC::CLIENT_CONNECTED) {
 			Player other;
 			sf::Uint32 otherId;
 			p >> otherId >> other.pos.x >> other.pos.y;
 			lobbyInfo.otherPlayers.insert(std::pair<sf::Uint32, Player>(otherId, other));
 		}
 		//a client has disconnected
-		else if (code == TCP::REC::CLIENT_DISCONNECTED) {
+		else if (code == REC::CLIENT_DISCONNECTED) {
 			sf::Uint32 otherId;
 			p >> otherId;
 			if (lobbyInfo.otherPlayers.count(otherId))
 				lobbyInfo.otherPlayers.erase(otherId);
 		}
 		//set initial players position
-		else if (code == TCP::REC::INIT_LOBBY_INFO) {
+		else if (code == REC::INIT_LOBBY_INFO) {
 			p >> lobbyInfo.serverUdpPort >> myId >> lobbyInfo.player.pos.x >> lobbyInfo.player.pos.y;
 			
 			while (!p.endOfPacket()) {
@@ -88,35 +89,59 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	sf::IpAddress ip;
 	unsigned short port;
 	while (udp.receive(p, ip, port) == sf::Socket::Done) {
-		sf::Uint8 code;
-		p >> code;
-
 		if (ip != CON::SERVER_IP)
 			continue;
 		
-		if (code == UDP::REC::UPDATE_INFO) {
+		sf::Uint16 timeServerMsg, numPlayers;
+		p >> timeServerMsg >> numPlayers;
+
+		//update lastUpdateReceived
+		size_t receivedTime = 0;
+		if (abs(long(lastUpdateReceived % 65500 - timeServerMsg)) > abs(long(lastUpdateReceived % 65500 - timeServerMsg - 65500)))
+			receivedTime = sf::Int64(65500 * std::floor(lastUpdateReceived / 65500) + timeServerMsg + 65500);
+		else
+			receivedTime = sf::Int64(65500 * std::floor(lastUpdateReceived / 65500) + timeServerMsg);
+
+		//ignore the late packet
+		if (receivedTime <= lastUpdateReceived)
+			continue;
+		else
+			lastUpdateReceived = receivedTime;
+		
+		for (unsigned int i = 0; i < numPlayers; i++) {
 			sf::Uint32 otherId;
 			sf::Vector2<sf::Int16> newPos;
 			p >> otherId >> newPos.x >> newPos.y;
-		
-			if (lobbyInfo.otherPlayers.count(otherId)) {
-				auto& pos = lobbyInfo.otherPlayers[otherId].pos;
-				if (abs(pos.x % 32700 - newPos.x) > abs(pos.x % 32700 - newPos.x - 32700))
-					pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x + 32700);
-				else if (abs(pos.x % 32700 - newPos.x) > abs(pos.x % 32700 - newPos.x + 32700))
-					pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x - 32700);
-				else
-					pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x);
-				if (abs(pos.y % 32700 - newPos.y) > abs(pos.y % 32700 - newPos.y - 32700))
-					pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y + 32700);
-				else if (abs(pos.y % 32700 - newPos.y) > abs(pos.y % 32700 - newPos.y + 32700))
-					pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y - 32700);
-				else
-					pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y);
-			}
+
+			if (!lobbyInfo.otherPlayers.count(otherId))
+				continue;
+
+			auto& pos = lobbyInfo.otherPlayers[otherId].goingTo;
+			if (abs(pos.x % 32700 - newPos.x) > abs(pos.x % 32700 - newPos.x - 32700))
+				pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x + 32700);
+			else if (abs(pos.x % 32700 - newPos.x) > abs(pos.x % 32700 - newPos.x + 32700))
+				pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x - 32700);
+			else
+				pos.x = sf::Int64(32700 * std::floor(pos.x / 32700) + newPos.x);
+
+			if (abs(pos.y % 32700 - newPos.y) > abs(pos.y % 32700 - newPos.y - 32700))
+				pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y + 32700);
+			else if (abs(pos.y % 32700 - newPos.y) > abs(pos.y % 32700 - newPos.y + 32700))
+				pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y - 32700);
+			else
+				pos.y = sf::Int64(32700 * std::floor(pos.y / 32700) + newPos.y);
 		}
 	}
 
+	for (auto& [id, player] : lobbyInfo.otherPlayers) {
+		if (player.pos == player.goingTo)
+			continue;
+
+		player.pos.x += (player.goingTo.x - player.pos.x) * dTime / 30;
+		player.pos.y += (player.goingTo.y - player.pos.y) * dTime / 30;
+	}
+
+	//manage ingame states events
 	if (ingameState != NULL) {
 		int whatHappened = ingameState->update(events, dTime);
 
@@ -150,6 +175,7 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		}
 	}
 
+	//manage movement
 	sf::Vector2<sf::Int64> movement;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		movement.y -= sf::Int64(GameInfo::speeds[gameInfo.speed] * dTime);
@@ -165,6 +191,7 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 	}
 	lobbyInfo.player.pos += movement;
 
+	//move view so that the player is centered
 	sf::Vector2f center = sf::Vector2f(lobbyInfo.player.pos.x / 10.f, lobbyInfo.player.pos.y / 10.f);
 	window.setView(sf::View(center, sf::Vector2f(CON::VIEW_WIDTH, CON::VIEW_HEIGHT)));
 
