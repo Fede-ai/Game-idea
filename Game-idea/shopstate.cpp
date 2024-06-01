@@ -10,22 +10,22 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 	menuTexture.loadFromFile("textures/shop/shop.png");
 	menuSprite.setTexture(menuTexture);
 	menuSprite.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
-	menuSprite.setPosition(-CON::VIEW_SIZE_X / 2, -CON::VIEW_SIZE_Y / 2);
+	menuSprite.setPosition(-CON::VIEW_WIDTH / 2, -CON::VIEW_HEIGHT / 2);
 
 	categoriesBgTexture.loadFromFile("textures/shop/categories_bg.png");
 	categoriesBgSprite.setTexture(categoriesBgTexture);
 	categoriesBgSprite.setScale(CON::PIXEL_SIZE, CON::PIXEL_SIZE);
-	categoriesBgSprite.setPosition(-CON::VIEW_SIZE_X / 2, CON::VIEW_SIZE_Y / 2 - categoriesBgSprite.getGlobalBounds().height);
+	categoriesBgSprite.setPosition(-CON::VIEW_WIDTH / 2, CON::VIEW_HEIGHT / 2 - categoriesBgSprite.getGlobalBounds().height);
 
 	cardsOverlay.setFillColor(sf::Color(44,21,17, 255));
 	cardsOverlay.setSize(sf::Vector2f(20, 490));
-	cardsOverlay.setPosition(sf::Vector2f(CON::VIEW_SIZE_X / 2 - 20, CON::VIEW_SIZE_Y / 2 - 500));
+	cardsOverlay.setPosition(sf::Vector2f(CON::VIEW_WIDTH / 2 - 20, CON::VIEW_HEIGHT / 2 - 500));
 
 	exitTexture.loadFromFile("textures/close.png");
 	exitSprite.setTexture(exitTexture);
 	exitSprite.setScale(3,3);
 	exitSprite.setOrigin(exitSprite.getLocalBounds().width / 2, exitSprite.getLocalBounds().height / 2);
-	exitSprite.setPosition(sf::Vector2f(-CON::VIEW_SIZE_X/2 + 70, 70));
+	exitSprite.setPosition(sf::Vector2f(-CON::VIEW_WIDTH/2 + 70, -CON::VIEW_HEIGHT / 2 + 70));
 
 	//currencies
 	goldTexture.loadFromFile("textures/currencies/gold.png");
@@ -37,7 +37,7 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 	gold.setOrigin(sf::Vector2f(currencyWidth / 2, currencyHeight / 2));
 
 	int X = 200, Y = 60, dist = 80 + Y;
-	gold.setPosition(sf::Vector2f(CON::VIEW_SIZE_X / 2 - X, -CON::VIEW_SIZE_Y / 2 + Y));
+	gold.setPosition(sf::Vector2f(CON::VIEW_WIDTH / 2 - X, -CON::VIEW_HEIGHT / 2 + Y));
 	
 	// currencies texts
 	font.loadFromFile("fonts/PublicPixel.ttf");
@@ -52,7 +52,7 @@ ShopState::ShopState(sf::RenderWindow& inWindow, WeaponsManager& inWeaponsManage
 
 	textGold.setOrigin(sf::Vector2f(0, textGold.getLocalBounds().height / 2));
 
-	textGold.setPosition(sf::Vector2f(CON::VIEW_SIZE_X / 2 - (X - 45), -CON::VIEW_SIZE_Y / 2 + Y));
+	textGold.setPosition(sf::Vector2f(CON::VIEW_WIDTH / 2 - (X - 45), -CON::VIEW_HEIGHT / 2 + Y));
 
 	// card
 	cardTexture.loadFromFile("textures/shop/card.png");
@@ -109,7 +109,7 @@ int ShopState::update(std::vector<sf::Event> events, float dTime)
 
 			for (int i = 0; i < weaponsManager.weapons.size(); i++)
 			{
-				int boundx = -CON::VIEW_SIZE_X / 2 + 250 + i * 320 + deltaCards + 15;
+				int boundx = -CON::VIEW_WIDTH / 2 + 250 + i * 320 + deltaCards + 15;
 				if (mousePos.x > boundx && mousePos.x < boundx + card.getGlobalBounds().width - 20 && mousePos.y > 425 && mousePos.y < 470)
 					btnPressed = i;
 			}
@@ -118,7 +118,7 @@ int ShopState::update(std::vector<sf::Event> events, float dTime)
 			if (btnPressed > -1)
 				for (int i = 0; i < weaponsManager.weapons.size(); i++)
 				{
-					int boundx = -CON::VIEW_SIZE_X / 2 + 250 + i * 320 + deltaCards + 15;
+					int boundx = -CON::VIEW_WIDTH / 2 + 250 + i * 320 + deltaCards + 15;
 					if (mousePos.x > boundx && mousePos.x < boundx + card.getGlobalBounds().width - 20 && mousePos.y > 425 && mousePos.y < 470)
 					{
 						buttonClicked(i);
@@ -156,7 +156,7 @@ void ShopState::draw()
 	for (int i = 0; i < weaponsManager.weapons.size(); i++)
 	{
 		auto currentWeapon = weaponsManager.weapons[i];
-		int VIEW_X = CON::VIEW_SIZE_X / 2, VIEW_Y = CON::VIEW_SIZE_Y / 2;
+		int VIEW_X = CON::VIEW_WIDTH / 2, VIEW_Y = CON::VIEW_HEIGHT / 2;
 		card.setPosition(sf::Vector2f(-VIEW_X + 250 + i * 320 + deltaCards, -VIEW_Y + 595));
 		weapon.setPosition(sf::Vector2f(card.getPosition().x + 23, card.getPosition().y + 18));
 

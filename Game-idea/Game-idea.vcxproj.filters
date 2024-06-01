@@ -1,66 +1,74 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="gamestate">
-      <UniqueIdentifier>{da99172f-9af3-4f16-a113-f25d6517cea8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="other states">
-      <UniqueIdentifier>{e7a34d48-895a-4dda-acd1-d7e0f9394e10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="managers">
-      <UniqueIdentifier>{ced0c1f3-b7b1-492b-b7e8-74329414d5d2}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="statesmanager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
     <ClCompile Include="gamestate.cpp">
-      <Filter>gamestate</Filter>
+      <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="pausestate.cpp">
-      <Filter>gamestate</Filter>
+      <Filter>Game\InGameState</Filter>
     </ClCompile>
     <ClCompile Include="homestate.cpp">
-      <Filter>other states</Filter>
+      <Filter>Home</Filter>
     </ClCompile>
-    <ClCompile Include="statesmanager.cpp">
-      <Filter>managers</Filter>
-    </ClCompile>
-    <ClCompile Include="socketsmanager.cpp">
-      <Filter>managers</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="shopstate.cpp">
-      <Filter>other states</Filter>
+      <Filter>Home\Shop</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pausestate.hpp">
-      <Filter>gamestate</Filter>
+    <ClInclude Include="state.hpp" />
+    <ClInclude Include="statesmanager.hpp">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="cursorsmanager.hpp">
+      <Filter>Managers</Filter>
     </ClInclude>
     <ClInclude Include="gamestate.hpp">
-      <Filter>gamestate</Filter>
+      <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="homestate.hpp">
-      <Filter>other states</Filter>
-    </ClInclude>
-    <ClInclude Include="statesmanager.hpp">
-      <Filter>managers</Filter>
-    </ClInclude>
-    <ClInclude Include="socketsmanager.hpp">
-      <Filter>managers</Filter>
-    </ClInclude>
-    <ClInclude Include="settings.hpp" />
-    <ClInclude Include="consts.hpp" />
-    <ClInclude Include="state.hpp">
-      <Filter>other states</Filter>
+    <ClInclude Include="pausestate.hpp">
+      <Filter>Game\InGameState</Filter>
     </ClInclude>
     <ClInclude Include="gameinfo.hpp">
-      <Filter>gamestate</Filter>
+      <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="weapons.hpp" />
+    <ClInclude Include="consts.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="weapons.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="homestate.hpp">
+      <Filter>Home</Filter>
+    </ClInclude>
     <ClInclude Include="shopstate.hpp">
-      <Filter>other states</Filter>
-    <ClInclude Include="cursorsmanager.hpp">
-      <Filter>managers</Filter>
+      <Filter>Home\Shop</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{9e921702-724b-4427-a085-b570ce2fdf15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{9874a719-9b25-402f-9dfb-87371053ea68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\InGameState">
+      <UniqueIdentifier>{b553fb8b-1746-46c7-99b8-94f22846b48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{90c9ee12-f84d-4c88-b625-23c1b7a77591}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Home">
+      <UniqueIdentifier>{41752d1a-d9b1-4557-8160-dbb33f3c7a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Home\Shop">
+      <UniqueIdentifier>{92513439-d6a3-4910-8c85-a820e33481e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
