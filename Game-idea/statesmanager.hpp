@@ -12,6 +12,7 @@ public:
 
 private:
 	void handleTcp();
+	std::array<unsigned char, 20> getHardwareId();
 
 	Settings settings;
 	GameInfo gameInfo;
