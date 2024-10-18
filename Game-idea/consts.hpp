@@ -9,7 +9,7 @@ namespace CON {
 	constexpr int VIEW_HEIGHT = 1080;
 
 	constexpr int TCP_SERVER_PORT = 5000;
-	constexpr char SERVER_IP[] = "2.235.241.210";
+	constexpr char SERVER_IP[] = "10.0.0.138";
 }
 
 namespace SEND {
@@ -24,5 +24,4 @@ namespace REC {
 	constexpr sf::Uint8 JOIN_PUBLIC = sf::Uint8(3);
 	constexpr sf::Uint8 CLIENT_CONNECTED = sf::Uint8(4);
 	constexpr sf::Uint8 CLIENT_DISCONNECTED = sf::Uint8(5);
-	constexpr sf::Uint8 INIT_LOBBY_INFO = sf::Uint8(6);
 }

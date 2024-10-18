@@ -40,16 +40,12 @@ void Lobby::runLobby()
 
 void Lobby::joinLobby(sf::Uint32 id, Client newClient)
 {
-	sf::Packet p;
-	p << sf::Uint8(3);
-	newClient.tcp->send(p);
-
 	//decide the spawn position
 	newClient.pos = sf::Vector2<sf::Int64>(100, 100);
 
 	//tell the new client about all other previous clients
-	p.clear();
-	p << sf::Uint8(6) << sf::Uint16(udp.getLocalPort()) << sf::Uint32(id) << sf::Int64(newClient.pos.x) << sf::Int64(newClient.pos.y);
+	sf::Packet p;
+	p << sf::Uint8(3) << sf::Uint16(udp.getLocalPort()) << sf::Uint32(id) << sf::Int64(newClient.pos.x) << sf::Int64(newClient.pos.y);
 	for (const auto& [otherId, player] : players)
 		p << sf::Uint32(otherId) << sf::Int64(player.pos.x) << sf::Int64(player.pos.y);
 	newClient.tcp->send(p);

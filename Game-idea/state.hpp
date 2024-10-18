@@ -3,6 +3,8 @@
 #include <SFML/Network.hpp>
 #include <queue>
 
+//struct containing the server connection info, the  
+//server socket and the queue of packets received
 struct Server {
 	bool isConnected = false;
 	bool versionCompatible = true;

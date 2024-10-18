@@ -70,7 +70,7 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 				lobbyInfo.otherPlayers.erase(otherId);
 		}
 		//set initial players position
-		else if (code == REC::INIT_LOBBY_INFO) {
+		else if (code == REC::JOIN_PUBLIC) {
 			p >> lobbyInfo.serverUdpPort >> myId >> lobbyInfo.player.pos.x >> lobbyInfo.player.pos.y;
 			
 			while (!p.endOfPacket()) {
@@ -137,8 +137,8 @@ int GameState::update(std::vector<sf::Event> events, float dTime)
 		if (player.pos == player.goingTo)
 			continue;
 
-		player.pos.x += (player.goingTo.x - player.pos.x) * dTime / 30;
-		player.pos.y += (player.goingTo.y - player.pos.y) * dTime / 30;
+		player.pos.x += sf::Int64((player.goingTo.x - player.pos.x) * dTime / 30.f);
+		player.pos.y += sf::Int64((player.goingTo.y - player.pos.y) * dTime / 30.f);
 	}
 
 	//manage ingame states events

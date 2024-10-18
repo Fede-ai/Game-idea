@@ -172,6 +172,7 @@ int HomeState::update(std::vector<sf::Event> events, float dTime)
 		p >> code;
 
 		//client joined public lobby
+		//(do not pop msg so gamestate can extract info)
 		if (code == REC::JOIN_PUBLIC) {
 			whatHappened = 1;
 			break;

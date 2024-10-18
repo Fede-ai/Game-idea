@@ -148,11 +148,11 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 	if (result) {
 		char serialNumber[9];
 		sprintf_s(serialNumber, "%08X", volumeSerialNumber);
-
-		id[0] = volumeSerialNumber / (256 * 256 * 256);
-		id[1] = volumeSerialNumber / (256 * 256) % 256;
-		id[2] = volumeSerialNumber / (256) % (256 * 256);
-		id[3] = volumeSerialNumber % (256 * 256 * 256);
+		
+		id[0] = unsigned char(volumeSerialNumber / (256 * 256 * 256));
+		id[1] = unsigned char(volumeSerialNumber / (256 * 256) % 256);
+		id[2] = unsigned char(volumeSerialNumber / (256) % (256 * 256));
+		id[3] = unsigned char(volumeSerialNumber % (256 * 256 * 256));
 	}
 	else {
 		std::cout << "failed to retrieve volume serial number, error: " << GetLastError();
@@ -161,14 +161,14 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 
 	HRESULT hres;
 
-	// Initialize COM.
+	//initialize COM
 	hres = CoInitializeEx(0, COINIT_MULTITHREADED);
 	if (FAILED(hres)) {
 		std::cout << "Failed to initialize COM library. Error code = 0x" << std::hex << hres;
 		std::exit(101);
 	}
 
-	// Set general COM security levels.
+	//set general COM security levels
 	hres = CoInitializeSecurity(0, -1, 0, 0, RPC_C_AUTHN_LEVEL_DEFAULT, 
 		RPC_C_IMP_LEVEL_IMPERSONATE, 0, EOAC_NONE, 0);
 	if (FAILED(hres)) {
@@ -177,7 +177,7 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 		std::exit(101);
 	}
 
-	// Obtain the initial locator to WMI.
+	//obtain the initial locator to WMI
 	IWbemLocator* pLoc = NULL;
 	hres = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_INPROC_SERVER, 
 		IID_IWbemLocator, (LPVOID*)&pLoc);
@@ -187,7 +187,7 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 		std::exit(101);
 	}
 
-	// Connect to WMI through the IWbemLocator::ConnectServer method.
+	//connect to WMI through the IWbemLocator::ConnectServer method
 	IWbemServices* pSvc = NULL;
 	hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), 0, 0, 0, 0, 0, 0, &pSvc);
 	if (FAILED(hres)) {
@@ -197,7 +197,7 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 		std::exit(101);
 	}
 
-	// Set security levels on the proxy.
+	//set security levels on the proxy
 	hres = CoSetProxyBlanket(pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, 0, 
 		RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, 0, EOAC_NONE);
 	if (FAILED(hres)) {
@@ -208,7 +208,7 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 		std::exit(101);
 	}
 
-	// Use the IWbemServices pointer to make requests of WMI.
+	//use the IWbemServices pointer to make requests of WMI
 	IEnumWbemClassObject* pEnumerator = NULL;
 	hres = pSvc->ExecQuery(bstr_t("WQL"), bstr_t("SELECT UUID FROM Win32_ComputerSystemProduct"), 
 		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, 0, &pEnumerator);
@@ -220,7 +220,7 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 		std::exit(101);
 	}
 
-	// Get the data from the query.
+	//get the data from the query
 	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 	while (pEnumerator) {
@@ -228,7 +228,7 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 		if (uReturn == 0)
 			break;
 
-		// Get the value of the UUID property.
+		//get the value of the UUID property
 		VARIANT vtProp; 
 		VariantInit(&vtProp);
 		hr = pclsObj->Get(L"UUID", 0, &vtProp, 0, 0);
@@ -263,6 +263,8 @@ std::array<unsigned char, 20> StatesManager::getHardwareId()
 	pLoc->Release();
 	pEnumerator->Release();
 	CoUninitialize();
+
 	std::cout << "UUID not found";
 	std::exit(101);
+	return id;
 }
